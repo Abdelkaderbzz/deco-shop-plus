@@ -49,10 +49,10 @@ export function AddToCartButton({
               <button
                 key={size}
                 onClick={() => setSelectedSize(size)}
-                className={`border px-4 py-2 text-sm font-light transition-all ${
+                className={`rounded-full border px-4 py-2 text-sm font-light transition-all ${
                   selectedSize === size
-                    ? 'border-primary bg-primary text-primary-foreground'
-                    : 'border-border text-muted-foreground hover:border-primary/50 hover:text-primary'
+                    ? 'border-primary bg-primary text-primary-foreground shadow-sm shadow-primary/20'
+                    : 'border-border text-muted-foreground hover:border-primary/40 hover:bg-primary/5 hover:text-primary'
                 }`}
               >
                 {size}
@@ -66,7 +66,7 @@ export function AddToCartButton({
         <button
           onClick={handleAdd}
           disabled={!selectedSize}
-          className="flex-1 border border-primary py-3 text-xs font-light tracking-[0.3em] text-primary transition-all hover:bg-primary hover:text-primary-foreground disabled:opacity-40"
+          className="flex-1 rounded-full border border-primary bg-primary/5 py-3 text-xs font-light tracking-[0.3em] text-primary transition-all hover:bg-primary hover:text-primary-foreground disabled:opacity-40"
         >
           {added ? 'AJOUTE !' : 'AJOUTER AU PANIER'}
         </button>
@@ -76,7 +76,7 @@ export function AddToCartButton({
             router.push('/checkout')
           }}
           disabled={!selectedSize}
-          className="border border-foreground bg-foreground px-6 py-3 text-xs font-light tracking-[0.3em] text-background transition-all hover:bg-primary hover:border-primary disabled:opacity-40"
+          className="rounded-full border border-foreground bg-foreground px-6 py-3 text-xs font-light tracking-[0.3em] text-background transition-all hover:border-primary hover:bg-primary disabled:opacity-40"
         >
           COMMANDER
         </button>

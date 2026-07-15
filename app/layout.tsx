@@ -17,14 +17,28 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'Jannah Parfume | Parfums',
-  description: 'Boutique de parfums de qualite en Tunisie — Jannah Parfume.',
-  keywords: ['parfum', 'Tunisie', 'Jannah Parfume', 'fragrance'],
+  title: 'Parfumerie Janna | Beaute feminine',
+  description:
+    'Boutique feminine en Tunisie — parfums, maquillage, sacs et soins selectionnes avec amour pour sublimer votre elegance.',
+  keywords: [
+    'beaute',
+    'parfum',
+    'maquillage',
+    'sacs',
+    'soins',
+    'Tunisie',
+    'Parfumerie Janna',
+    'femme',
+  ],
+  icons: {
+    icon: '/logo.png',
+    apple: '/logo.png',
+  },
 }
 
 export const viewport: Viewport = {
   colorScheme: 'light',
-  themeColor: '#f5f0e8',
+  themeColor: '#fef8f6',
 }
 
 export default function RootLayout({

@@ -282,7 +282,7 @@ export function TestimonialsSection() {
   const { ref, visible } = useInView(0.1)
 
   return (
-    <section className="border-t border-border bg-secondary/30 py-20">
+    <section className="border-t border-border bg-secondary/50 py-20">
       <div ref={ref} className="mx-auto max-w-6xl px-4">
         <div
           className="mb-14 text-center"
@@ -294,10 +294,10 @@ export function TestimonialsSection() {
         >
           <p className="text-[10px] font-light tracking-[0.4em] text-primary">TEMOIGNAGES</p>
           <h2 className="mt-2 font-serif text-3xl font-light tracking-widest text-foreground">
-            ILS NOUS FONT CONFIANCE
+            ELLES NOUS FONT CONFIANCE
           </h2>
           <p className="mx-auto mt-3 max-w-lg text-sm font-light text-muted-foreground">
-            Des messages reels de nos clients sur Instagram, WhatsApp et Facebook.
+            Des avis authentiques de nos clientes sur Instagram, WhatsApp et Facebook.
           </p>
         </div>
 

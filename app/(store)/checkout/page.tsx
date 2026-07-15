@@ -13,9 +13,9 @@ import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 const storeInputCls =
-  'w-full border border-border bg-input px-3 py-2.5 text-sm font-light text-foreground outline-none focus:border-primary/50'
+  'w-full rounded-xl border border-border bg-input px-3 py-2.5 text-sm font-light text-foreground outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10'
 const storeInputErrorCls =
-  'w-full border border-destructive bg-input px-3 py-2.5 text-sm font-light text-foreground outline-none focus:border-destructive'
+  'w-full rounded-xl border border-destructive bg-input px-3 py-2.5 text-sm font-light text-foreground outline-none focus:border-destructive'
 
 function StoreFieldError({ message }: { message?: string }) {
   if (!message) return null
@@ -90,9 +90,9 @@ export default function CheckoutPage() {
         <p className="text-sm font-light tracking-widest text-muted-foreground">VOTRE PANIER EST VIDE</p>
         <Link
           href="/products"
-          className="border border-primary px-8 py-3 text-xs font-light tracking-[0.3em] text-primary hover:bg-primary hover:text-primary-foreground transition-all"
+          className="rounded-full border border-primary bg-primary/5 px-8 py-3 text-xs font-light tracking-[0.3em] text-primary transition-all hover:bg-primary hover:text-primary-foreground"
         >
-          VOIR LES PARFUMS
+          VOIR LA BOUTIQUE
         </Link>
       </div>
     )
@@ -110,7 +110,7 @@ export default function CheckoutPage() {
           {items.map((item) => (
             <div
               key={`${item.productId}-${item.size}`}
-              className="flex gap-4 border border-border bg-card p-4"
+              className="flex gap-4 rounded-2xl border border-border bg-card p-4"
             >
               {item.imageUrl && (
                 <img
@@ -162,13 +162,13 @@ export default function CheckoutPage() {
             </div>
           ))}
 
-          <div className="border border-border bg-card p-6 mt-6">
+          <div className="mt-6 rounded-2xl border border-border bg-card p-6">
             <p className="mb-4 text-[10px] font-light tracking-[0.3em] text-muted-foreground">MODE DE RECEPTION</p>
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
                 onClick={() => setValue('orderType', 'delivery', { shouldValidate: true })}
-                className={`border p-4 text-left transition-all ${
+                className={`rounded-xl border p-4 text-left transition-all ${
                   orderType === 'delivery'
                     ? 'border-primary bg-primary/5'
                     : 'border-border hover:border-primary/40'
@@ -180,7 +180,7 @@ export default function CheckoutPage() {
               <button
                 type="button"
                 onClick={() => setValue('orderType', 'boutique', { shouldValidate: true })}
-                className={`border p-4 text-left transition-all ${
+                className={`rounded-xl border p-4 text-left transition-all ${
                   orderType === 'boutique'
                     ? 'border-primary bg-primary/5'
                     : 'border-border hover:border-primary/40'
@@ -196,7 +196,7 @@ export default function CheckoutPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="lg:col-span-2 space-y-6">
           <input type="hidden" {...register('orderType')} />
 
-          <div className="border border-border bg-card p-6">
+          <div className="rounded-2xl border border-border bg-card p-6">
             <p className="mb-5 text-[10px] font-light tracking-[0.3em] text-muted-foreground">VOS COORDONNEES</p>
             <div className="space-y-4">
               <div>
@@ -250,7 +250,7 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          <div className="border border-border bg-card p-6 space-y-3">
+          <div className="space-y-3 rounded-2xl border border-border bg-card p-6">
             <p className="text-[10px] font-light tracking-[0.3em] text-muted-foreground">RECAPITULATIF</p>
             <div className="flex justify-between text-sm font-light text-muted-foreground">
               <span>Sous-total</span>
@@ -272,7 +272,7 @@ export default function CheckoutPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-primary py-4 text-xs font-light tracking-[0.3em] text-primary-foreground transition-all hover:opacity-90 disabled:opacity-60"
+            className="w-full rounded-full bg-primary py-4 text-xs font-light tracking-[0.3em] text-primary-foreground shadow-sm shadow-primary/20 transition-all hover:opacity-90 disabled:opacity-60"
           >
             {isSubmitting ? 'TRAITEMENT...' : 'CONFIRMER LA COMMANDE'}
           </button>
