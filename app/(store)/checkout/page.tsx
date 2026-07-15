@@ -2,15 +2,17 @@
 
 import { createOrder } from '@/app/actions/orders'
 import { getDeliveryFee } from '@/app/actions/settings'
+import { StoreSelect } from '@/components/store-select'
 import { useCart } from '@/components/cart-context'
 import { useToast } from '@/components/toast-provider'
 import { getErrorMessage } from '@/lib/get-error-message'
+import { GOVERNORATE_SELECT_OPTIONS } from '@/lib/tunisia-governorates'
 import { checkoutSchema, type CheckoutFormValues } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 
 const storeInputCls =
   'w-full rounded-xl border border-border bg-input px-3 py-2.5 text-sm font-light text-foreground outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10'
@@ -33,6 +35,7 @@ export default function CheckoutPage() {
     handleSubmit,
     setValue,
     watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutSchema),
@@ -40,6 +43,7 @@ export default function CheckoutPage() {
       orderType: 'delivery',
       customerName: '',
       customerPhone: '',
+      customerGovernorate: '',
       customerAddress: '',
       notes: '',
     },
@@ -64,6 +68,7 @@ export default function CheckoutPage() {
       const orderId = await createOrder({
         customerName: values.customerName,
         customerPhone: values.customerPhone,
+        customerGovernorate: values.customerGovernorate || undefined,
         customerAddress: values.customerAddress || undefined,
         orderType: values.orderType,
         notes: values.notes || undefined,
@@ -223,18 +228,39 @@ export default function CheckoutPage() {
                 <StoreFieldError message={errors.customerPhone?.message} />
               </div>
               {orderType === 'delivery' && (
-                <div>
-                  <label className="mb-1 block text-[10px] font-light tracking-widest text-muted-foreground">
-                    ADRESSE DE LIVRAISON *
-                  </label>
-                  <textarea
-                    rows={3}
-                    placeholder="Rue, ville, gouvernorat..."
-                    className={`${errors.customerAddress ? storeInputErrorCls : storeInputCls} resize-none`}
-                    {...register('customerAddress')}
-                  />
-                  <StoreFieldError message={errors.customerAddress?.message} />
-                </div>
+                <>
+                  <div>
+                    <label className="mb-1 block text-[10px] font-light tracking-widest text-muted-foreground">
+                      GOUVERNORAT *
+                    </label>
+                    <Controller
+                      control={control}
+                      name="customerGovernorate"
+                      render={({ field }) => (
+                        <StoreSelect
+                          value={field.value}
+                          onChange={field.onChange}
+                          options={GOVERNORATE_SELECT_OPTIONS}
+                          placeholder="Choisir un gouvernorat"
+                          hasError={!!errors.customerGovernorate}
+                        />
+                      )}
+                    />
+                    <StoreFieldError message={errors.customerGovernorate?.message} />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-[10px] font-light tracking-widest text-muted-foreground">
+                      ADRESSE DE LIVRAISON *
+                    </label>
+                    <textarea
+                      rows={3}
+                      placeholder="Rue, ville, code postal..."
+                      className={`${errors.customerAddress ? storeInputErrorCls : storeInputCls} resize-none`}
+                      {...register('customerAddress')}
+                    />
+                    <StoreFieldError message={errors.customerAddress?.message} />
+                  </div>
+                </>
               )}
               <div>
                 <label className="mb-1 block text-[10px] font-light tracking-widest text-muted-foreground">

@@ -9,6 +9,7 @@ import {
 import { useToast } from '@/components/toast-provider'
 import { useConfirm } from '@/components/confirm-provider'
 import { getErrorMessage } from '@/lib/get-error-message'
+import { GOVERNORATE_SELECT_OPTIONS, getGovernorateLabel } from '@/lib/tunisia-governorates'
 import { orderEditSchema, type OrderEditFormValues } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Eye, Pencil, Trash2 } from 'lucide-react'
@@ -36,6 +37,7 @@ type Order = {
   id: number
   customerName: string
   customerPhone: string
+  customerGovernorate: string | null
   customerAddress: string | null
   orderType: string
   status: string
@@ -92,6 +94,7 @@ export function AdminOrdersClient({ initialOrders }: { initialOrders: Order[] })
     defaultValues: {
       customerName: '',
       customerPhone: '',
+      customerGovernorate: '',
       customerAddress: '',
       orderType: 'delivery',
       status: 'pending',
@@ -118,6 +121,7 @@ export function AdminOrdersClient({ initialOrders }: { initialOrders: Order[] })
     reset({
       customerName: order.customerName,
       customerPhone: order.customerPhone,
+      customerGovernorate: order.customerGovernorate ?? '',
       customerAddress: order.customerAddress ?? '',
       orderType: order.orderType as 'delivery' | 'boutique',
       status: order.status,
@@ -146,6 +150,7 @@ export function AdminOrdersClient({ initialOrders }: { initialOrders: Order[] })
         await updateOrder(editingOrder.id, {
           customerName: values.customerName,
           customerPhone: values.customerPhone,
+          customerGovernorate: values.customerGovernorate || undefined,
           customerAddress: values.customerAddress || undefined,
           orderType: values.orderType,
           status: values.status,
@@ -161,6 +166,7 @@ export function AdminOrdersClient({ initialOrders }: { initialOrders: Order[] })
                     id: refreshed.id,
                     customerName: refreshed.customerName,
                     customerPhone: refreshed.customerPhone,
+                    customerGovernorate: refreshed.customerGovernorate,
                     customerAddress: refreshed.customerAddress,
                     orderType: refreshed.orderType,
                     status: refreshed.status,
@@ -239,7 +245,7 @@ export function AdminOrdersClient({ initialOrders }: { initialOrders: Order[] })
         <AdminTable>
             <thead className="border-b border-slate-200 bg-slate-50">
               <tr>
-                {['#', 'Client', 'Tel', 'Adresse', 'Type', 'Total', 'Statut', 'Date', 'Actions'].map((h) => (
+                {['#', 'Client', 'Tel', 'Gouvernorat', 'Adresse', 'Type', 'Total', 'Statut', 'Date', 'Actions'].map((h) => (
                   <th key={h} className={adminTableHeadCls}>
                     {h}
                   </th>
@@ -252,6 +258,16 @@ export function AdminOrdersClient({ initialOrders }: { initialOrders: Order[] })
                     <td className={`${adminTableMutedCls} font-mono`}>#{o.id}</td>
                     <td className={`${adminTableCellCls} font-medium`}>{o.customerName}</td>
                     <td className={adminTableMutedCls}>{o.customerPhone}</td>
+                    <td className={adminTableCellCls}>
+                      <AdminCellEllipsis
+                        text={
+                          o.orderType === 'delivery'
+                            ? getGovernorateLabel(o.customerGovernorate)
+                            : '—'
+                        }
+                        maxWidthClass="max-w-[140px]"
+                      />
+                    </td>
                     <td className={`${adminTableCellCls} max-w-[200px]`}>
                       <AdminCellEllipsis
                         text={o.orderType === 'delivery' ? o.customerAddress : 'Retrait boutique'}
@@ -328,6 +344,14 @@ export function AdminOrdersClient({ initialOrders }: { initialOrders: Order[] })
               </div>
             </div>
 
+            {selectedOrder.customerGovernorate && (
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Gouvernorat</p>
+                <p className="mt-1 text-slate-800">
+                  {getGovernorateLabel(selectedOrder.customerGovernorate)}
+                </p>
+              </div>
+            )}
             {selectedOrder.customerAddress && (
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Adresse</p>
@@ -408,15 +432,33 @@ export function AdminOrdersClient({ initialOrders }: { initialOrders: Order[] })
               <AdminFieldError message={errors.orderType?.message} />
             </div>
             {orderType === 'delivery' && (
-              <div>
-                <label className={adminLabelCls}>ADRESSE</label>
-                <textarea
-                  rows={3}
-                  className={`${adminInputWithError(!!errors.customerAddress)} resize-none`}
-                  {...register('customerAddress')}
-                />
-                <AdminFieldError message={errors.customerAddress?.message} />
-              </div>
+              <>
+                <div>
+                  <label className={adminLabelCls}>GOUVERNORAT *</label>
+                  <Controller
+                    control={control}
+                    name="customerGovernorate"
+                    render={({ field }) => (
+                      <AdminSelect
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        items={GOVERNORATE_SELECT_OPTIONS}
+                        error={!!errors.customerGovernorate}
+                      />
+                    )}
+                  />
+                  <AdminFieldError message={errors.customerGovernorate?.message} />
+                </div>
+                <div>
+                  <label className={adminLabelCls}>ADRESSE</label>
+                  <textarea
+                    rows={3}
+                    className={`${adminInputWithError(!!errors.customerAddress)} resize-none`}
+                    {...register('customerAddress')}
+                  />
+                  <AdminFieldError message={errors.customerAddress?.message} />
+                </div>
+              </>
             )}
             <div>
               <label className={adminLabelCls}>STATUT</label>

@@ -114,8 +114,9 @@ const statements = [
     ('Sacs', 'sacs'),
     ('Soins', 'soins')
    ON CONFLICT ("slug") DO NOTHING`,
-  `DELETE FROM "categories" WHERE "slug" IN ('homme', 'femme', 'unisex')`,
+  `DELETE FROM "categories" WHERE "slug" IN ('homme', 'femme', 'unisex', 'tous')`,
   `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "images" text NOT NULL DEFAULT '[]'`,
+  `ALTER TABLE "orders" ADD COLUMN IF NOT EXISTS "customerGovernorate" text`,
   `UPDATE "products"
    SET "images" = json_build_array("imageUrl")::text
    WHERE "imageUrl" IS NOT NULL

@@ -85,6 +85,7 @@ export const orders = pgTable('orders', {
   customerName: text('customerName').notNull(),
   customerPhone: text('customerPhone').notNull(),
   customerAddress: text('customerAddress'),
+  customerGovernorate: text('customerGovernorate'),
   orderType: text('orderType').notNull().default('delivery'),
   status: text('status').notNull().default('pending'),
   totalAmount: numeric('totalAmount', { precision: 10, scale: 3 }).notNull(),

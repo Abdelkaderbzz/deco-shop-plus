@@ -168,7 +168,7 @@ export function AdminCategoriesClient({ initialCategories }: { initialCategories
               <label className={adminLabelCls}>SLUG (optionnel)</label>
               <input
                 className={adminInputWithError(!!errors.slug)}
-                placeholder="Ex: homme"
+                placeholder="Ex: parfums"
                 {...register('slug')}
               />
               <AdminFieldError message={errors.slug?.message} />

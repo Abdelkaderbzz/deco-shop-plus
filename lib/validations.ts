@@ -1,4 +1,7 @@
 import { z } from 'zod'
+import { GOVERNORATE_SLUGS } from '@/lib/tunisia-governorates'
+
+const governorateSchema = z.enum(GOVERNORATE_SLUGS as [string, ...string[]])
 
 export const loginSchema = z.object({
   email: z.string().min(1, 'Email requis').email('Email invalide'),
@@ -59,18 +62,35 @@ export const orderEditSchema = z
       .string()
       .min(1, 'Telephone requis')
       .min(8, 'Telephone invalide (8 chiffres minimum)'),
+    customerGovernorate: z.string(),
     customerAddress: z.string(),
     orderType: z.enum(['delivery', 'boutique']),
     status: z.string().min(1, 'Statut requis'),
     notes: z.string().max(500, 'Notes trop longues'),
   })
   .superRefine((data, ctx) => {
-    if (data.orderType === 'delivery' && !data.customerAddress.trim()) {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'Adresse requise pour la livraison',
-        path: ['customerAddress'],
-      })
+    if (data.orderType === 'delivery') {
+      if (!data.customerGovernorate) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Gouvernorat requis pour la livraison',
+          path: ['customerGovernorate'],
+        })
+      } else if (!GOVERNORATE_SLUGS.includes(data.customerGovernorate)) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Gouvernorat invalide',
+          path: ['customerGovernorate'],
+        })
+      }
+
+      if (!data.customerAddress.trim()) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Adresse requise pour la livraison',
+          path: ['customerAddress'],
+        })
+      }
     }
   })
 
@@ -84,16 +104,33 @@ export const checkoutSchema = z
       .string()
       .min(1, 'Telephone requis')
       .min(8, 'Telephone invalide (8 chiffres minimum)'),
+    customerGovernorate: z.string(),
     customerAddress: z.string(),
     notes: z.string().max(500, 'Notes trop longues'),
   })
   .superRefine((data, ctx) => {
-    if (data.orderType === 'delivery' && !data.customerAddress.trim()) {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'Adresse de livraison requise',
-        path: ['customerAddress'],
-      })
+    if (data.orderType === 'delivery') {
+      if (!data.customerGovernorate) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Gouvernorat requis',
+          path: ['customerGovernorate'],
+        })
+      } else if (!GOVERNORATE_SLUGS.includes(data.customerGovernorate)) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Gouvernorat invalide',
+          path: ['customerGovernorate'],
+        })
+      }
+
+      if (!data.customerAddress.trim()) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Adresse de livraison requise',
+          path: ['customerAddress'],
+        })
+      }
     }
   })
 

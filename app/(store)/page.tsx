@@ -42,7 +42,7 @@ export default async function HomePage() {
               <p className="mt-4 text-sm font-light tracking-widest text-muted-foreground">TUNISIE</p>
             </div>
             <p className="mt-6 max-w-md text-base font-light leading-relaxed text-muted-foreground">
-              Votre boutique en ligne pour parfums, maquillage, sacs et soins des produits choisis avec amour pour
+              Votre boutique en ligne pour parfums, maquillage, sacs et soins — des produits choisis avec amour pour
               reveler votre elegance.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3 md:justify-start">
@@ -91,7 +91,7 @@ export default async function HomePage() {
             <p className="text-[10px] font-light tracking-[0.4em] text-primary">SELECTION</p>
             <h2 className="mt-2 font-serif text-3xl font-light tracking-widest text-foreground">COUPS DE COEUR</h2>
             <p className="mx-auto mt-3 max-w-md text-sm font-light text-muted-foreground">
-              Nos produits preferes du moment, parfums, maquillage et accessoires.
+              Nos produits preferes du moment — parfums, maquillage et accessoires.
             </p>
           </div>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">

@@ -26,6 +26,7 @@ export type CartItem = {
 export async function createOrder(data: {
   customerName: string
   customerPhone: string
+  customerGovernorate?: string
   customerAddress?: string
   orderType: 'delivery' | 'boutique'
   notes?: string
@@ -40,6 +41,7 @@ export async function createOrder(data: {
     .values({
       customerName: data.customerName,
       customerPhone: data.customerPhone,
+      customerGovernorate: data.customerGovernorate,
       customerAddress: data.customerAddress,
       orderType: data.orderType,
       totalAmount: totalAmount.toFixed(3),
@@ -90,6 +92,7 @@ export async function updateOrder(
   data: {
     customerName?: string
     customerPhone?: string
+    customerGovernorate?: string
     customerAddress?: string
     orderType?: 'delivery' | 'boutique'
     status?: string
