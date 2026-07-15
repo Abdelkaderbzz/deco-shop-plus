@@ -53,7 +53,7 @@ const EMPTY_FORM: ProductFormValues = {
   brand: '',
   description: '',
   price: '',
-  category: 'unisex',
+  category: 'parfums',
   images: [],
   sizes: '',
   inStock: true,
@@ -75,7 +75,7 @@ export function AdminProductsClient({
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [isPending, startTransition] = useTransition()
 
-  const defaultCategory = categories[0]?.slug ?? 'unisex'
+  const defaultCategory = categories[0]?.slug ?? 'parfums'
 
   const {
     register,

@@ -58,7 +58,7 @@ export default async function AdminDashboardPage() {
         <AdminQuickLink
           href="/admin/categories"
           title="Gerer les categories"
-          description="Organiser homme, femme, unisex et plus."
+          description="Organiser parfums, maquillage, sacs, soins et plus."
         />
         <AdminQuickLink
           href="/admin/settings"

@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { getCategoryBySlug, getShowcaseByCategory, STORE_CATEGORIES } from '@/lib/store-categories'
+import { getCategoryBySlug, STORE_CATEGORIES } from '@/lib/store-categories'
 
 export function CategoryPhotos({ category }: { category: string }) {
   if (category === 'all') {
@@ -41,8 +41,6 @@ export function CategoryPhotos({ category }: { category: string }) {
   const storeCategory = getCategoryBySlug(category)
   if (!storeCategory) return null
 
-  const photos = getShowcaseByCategory(category)
-
   return (
     <div className="mb-10">
       <div className="overflow-hidden rounded-3xl border border-border/60 bg-card">
@@ -59,19 +57,6 @@ export function CategoryPhotos({ category }: { category: string }) {
           </div>
         </div>
       </div>
-
-      {photos.length > 0 && (
-        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-          {photos.map((photo) => (
-            <div
-              key={photo.src}
-              className="overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm shadow-primary/5"
-            >
-              <img src={photo.src} alt={photo.alt} className="aspect-[4/5] w-full object-cover" />
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   )
 }
