@@ -1,5 +1,8 @@
-// Run with: node --env-file=.env.local scripts/migrate.mjs
+// Run with: node scripts/migrate.mjs
 import { Pool } from 'pg'
+import { loadEnv } from './load-env.mjs'
+
+loadEnv()
 
 const DATABASE_URL = process.env.DATABASE_URL
 if (!DATABASE_URL) {
@@ -106,14 +109,12 @@ const statements = [
   `INSERT INTO "settings" ("id", "deliveryFee") VALUES (1, '7.000')
    ON CONFLICT ("id") DO NOTHING`,
   `INSERT INTO "categories" ("name", "slug") VALUES
-    ('Homme', 'homme'),
-    ('Femme', 'femme'),
-    ('Unisex', 'unisex'),
     ('Parfums', 'parfums'),
     ('Maquillage', 'maquillage'),
     ('Sacs', 'sacs'),
     ('Soins', 'soins')
    ON CONFLICT ("slug") DO NOTHING`,
+  `DELETE FROM "categories" WHERE "slug" IN ('homme', 'femme', 'unisex')`,
   `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "images" text NOT NULL DEFAULT '[]'`,
   `UPDATE "products"
    SET "images" = json_build_array("imageUrl")::text

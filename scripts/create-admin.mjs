@@ -1,13 +1,16 @@
-// Run with: node --env-file=.env.local scripts/create-admin.mjs
+// Run with: node scripts/create-admin.mjs
 import { Pool } from 'pg'
 import crypto from 'crypto'
 import { promisify } from 'util'
+import { loadEnv } from './load-env.mjs'
+
+loadEnv()
 
 const scrypt = promisify(crypto.scrypt)
 
 const DATABASE_URL = process.env.DATABASE_URL
 if (!DATABASE_URL) {
-  console.error('DATABASE_URL not set. Set it in .env.local or pass it in the environment.')
+  console.error('DATABASE_URL not set. Set it in .env or pass it in the environment.')
   process.exit(1)
 }
 

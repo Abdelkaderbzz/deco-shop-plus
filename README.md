@@ -15,10 +15,9 @@ Boutique de parfums en Tunisie — Next.js storefront and admin dashboard.
 ```bash
 pnpm install
 cp env.example .env
-# Fill BETTER_AUTH_SECRET, Cloudinary keys
-vercel link
-vercel integration add neon --name jannah-parfume-db --plan free_v3 -e development -e preview -e production
-node --env-file=.env.local scripts/migrate.mjs
+# Fill DATABASE_URL, BETTER_AUTH_SECRET, Cloudinary keys in .env
+node scripts/migrate.mjs
+pnpm seed
 pnpm dev
 ```
 
