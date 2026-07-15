@@ -8,7 +8,7 @@ import { getPrimaryImage, parseProductImages, serializeProductImages } from '@/l
 import { productSchema, type ProductFormValues } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ExternalLink, Pencil, Trash2 } from 'lucide-react'
-import { useState, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import {
   AdminBadge,
@@ -27,6 +27,7 @@ import {
 } from './admin-ui'
 import { AdminSelect } from './admin-select'
 import { ProductImagesField } from './product-images-field'
+import { ADMIN_PAGE_SIZE, AdminPagination, paginateItems } from './admin-pagination'
 
 type Product = {
   id: number
@@ -71,6 +72,7 @@ export function AdminProductsClient({
   const { confirm } = useConfirm()
   const [products, setProducts] = useState(initialProducts)
   const [search, setSearch] = useState('')
+  const [page, setPage] = useState(1)
   const [showForm, setShowForm] = useState(false)
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [isPending, startTransition] = useTransition()
@@ -100,6 +102,12 @@ export function AdminProductsClient({
       p.category.toLowerCase().includes(q)
     )
   })
+
+  const paginated = paginateItems(filtered, page, ADMIN_PAGE_SIZE)
+
+  useEffect(() => {
+    setPage(1)
+  }, [search])
 
   function openAdd() {
     setEditingProduct(null)
@@ -235,7 +243,7 @@ export function AdminProductsClient({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {filtered.map((p) => {
+              {paginated.map((p) => {
                 const primaryImage = getPrimaryImage(p)
                 const imageCount = parseProductImages(p).length
 
@@ -295,6 +303,15 @@ export function AdminProductsClient({
               )})}
             </tbody>
         </AdminTable>
+      )}
+
+      {filtered.length > 0 && (
+        <AdminPagination
+          page={page}
+          pageSize={ADMIN_PAGE_SIZE}
+          totalItems={filtered.length}
+          onPageChange={setPage}
+        />
       )}
 
       {showForm && (

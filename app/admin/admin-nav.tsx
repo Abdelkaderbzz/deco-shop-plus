@@ -51,7 +51,7 @@ export function AdminNav({ userEmail }: { userEmail: string }) {
 
   return (
     <>
-      <header className="border-b border-slate-200 bg-white lg:hidden">
+      <header className="shrink-0 border-b border-slate-200 bg-white lg:hidden">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
           <Link href="/admin" className="text-base font-bold text-amber-800">
             HF Admin
@@ -93,7 +93,7 @@ export function AdminNav({ userEmail }: { userEmail: string }) {
         </nav>
       </header>
 
-      <aside className="hidden w-64 shrink-0 border-r border-slate-200 bg-white lg:flex lg:flex-col">
+      <aside className="hidden h-full w-64 shrink-0 flex-col border-r border-slate-200 bg-white lg:flex">
         <div className="border-b border-slate-200 px-6 py-6">
           <Link href="/admin" className="text-xl font-bold text-amber-800">
             HF Admin
@@ -101,7 +101,7 @@ export function AdminNav({ userEmail }: { userEmail: string }) {
           <p className="mt-1 text-sm font-medium text-slate-500">Jannah Parfume</p>
         </div>
 
-        <nav className="flex-1 space-y-1 px-3 py-4">
+        <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
           {NAV_ITEMS.map((item) => (
             <Link
               key={item.href}

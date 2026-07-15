@@ -13,7 +13,7 @@ import { GOVERNORATE_SELECT_OPTIONS, getGovernorateLabel } from '@/lib/tunisia-g
 import { orderEditSchema, type OrderEditFormValues } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Eye, Pencil, Trash2 } from 'lucide-react'
-import { useState, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import {
   AdminBadge,
@@ -32,6 +32,7 @@ import {
   adminTableMutedCls,
 } from '../admin-ui'
 import { AdminSelect } from '../admin-select'
+import { ADMIN_PAGE_SIZE, AdminPagination, paginateItems } from '../admin-pagination'
 
 type Order = {
   id: number
@@ -80,6 +81,7 @@ export function AdminOrdersClient({ initialOrders }: { initialOrders: Order[] })
   const [selectedOrder, setSelectedOrder] = useState<Awaited<ReturnType<typeof getOrderWithItems>> | null>(null)
   const [editingOrder, setEditingOrder] = useState<Order | null>(null)
   const [filter, setFilter] = useState('all')
+  const [page, setPage] = useState(1)
   const [isPending, startTransition] = useTransition()
 
   const {
@@ -106,6 +108,12 @@ export function AdminOrdersClient({ initialOrders }: { initialOrders: Order[] })
 
   const filtered =
     filter === 'all' ? orders : orders.filter((order) => order.status === filter)
+
+  const paginated = paginateItems(filtered, page, ADMIN_PAGE_SIZE)
+
+  useEffect(() => {
+    setPage(1)
+  }, [filter])
 
   async function openOrder(id: number) {
     try {
@@ -253,7 +261,7 @@ export function AdminOrdersClient({ initialOrders }: { initialOrders: Order[] })
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {filtered.map((o) => (
+              {paginated.map((o) => (
                   <tr key={o.id} className="transition-colors hover:bg-slate-50">
                     <td className={`${adminTableMutedCls} font-mono`}>#{o.id}</td>
                     <td className={`${adminTableCellCls} font-medium`}>{o.customerName}</td>
@@ -315,6 +323,15 @@ export function AdminOrdersClient({ initialOrders }: { initialOrders: Order[] })
               ))}
             </tbody>
         </AdminTable>
+      )}
+
+      {filtered.length > 0 && (
+        <AdminPagination
+          page={page}
+          pageSize={ADMIN_PAGE_SIZE}
+          totalItems={filtered.length}
+          onPageChange={setPage}
+        />
       )}
 
       {selectedOrder && (

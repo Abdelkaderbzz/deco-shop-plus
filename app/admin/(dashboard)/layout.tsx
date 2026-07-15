@@ -8,10 +8,10 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
   if (!session?.user) redirect('/admin/login')
 
   return (
-    <div className="min-h-screen bg-slate-100 font-sans text-slate-900">
-      <div className="lg:flex">
+    <div className="h-screen overflow-hidden bg-slate-100 font-sans text-slate-900">
+      <div className="flex h-full flex-col lg:flex-row">
         <AdminNav userEmail={session.user.email} />
-        <main className="flex-1 px-4 py-8 lg:px-8">
+        <main className="flex-1 overflow-y-auto px-4 py-8 lg:px-8">
           <div className="mx-auto max-w-6xl">{children}</div>
         </main>
       </div>
