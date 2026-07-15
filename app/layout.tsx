@@ -31,8 +31,12 @@ export const metadata: Metadata = {
     'femme',
   ],
   icons: {
-    icon: '/logo.png',
-    apple: '/logo.png',
+    icon: [
+      { url: '/logo.png', type: 'image/png', sizes: '32x32' },
+      { url: '/logo.png', type: 'image/png', sizes: '192x192' },
+    ],
+    apple: [{ url: '/logo.png', type: 'image/png', sizes: '180x180' }],
+    shortcut: '/logo.png',
   },
 }
 
