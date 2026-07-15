@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { getCategoryLabel } from '@/lib/store-categories'
 
 type Product = {
   id: number
@@ -12,12 +13,19 @@ type Product = {
   inStock: boolean
 }
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({
+  product,
+  categories,
+}: {
+  product: Product
+  categories?: { slug: string; name: string }[]
+}) {
+  const categoryLabel = getCategoryLabel(product.category, categories)
+
   return (
     <Link href={`/products/${product.id}`} prefetch={false} className="group block">
-      <div className="relative overflow-hidden border border-border bg-card transition-all duration-300 hover:border-primary/40 hover:shadow-md">
-        {/* Image */}
-        <div className="relative aspect-[3/4] overflow-hidden bg-secondary">
+      <div className="relative overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10">
+        <div className="relative aspect-[4/5] overflow-hidden bg-secondary">
           {product.imageUrl ? (
             <img
               src={product.imageUrl}
@@ -37,13 +45,12 @@ export function ProductCard({ product }: { product: Product }) {
             </div>
           )}
           <div className="absolute top-3 left-3">
-            <span className="bg-background/80 px-2 py-1 text-[10px] font-light tracking-widest text-muted-foreground">
-              {product.category.toUpperCase()}
+            <span className="rounded-full bg-card/90 px-2.5 py-1 text-[10px] font-light tracking-widest text-primary backdrop-blur-sm">
+              {categoryLabel.toUpperCase()}
             </span>
           </div>
         </div>
 
-        {/* Info */}
         <div className="p-4">
           <p className="text-[10px] font-light tracking-widest text-primary">{product.brand.toUpperCase()}</p>
           <h3 className="mt-1 font-serif text-base font-light tracking-wide text-foreground leading-tight">{product.name}</h3>

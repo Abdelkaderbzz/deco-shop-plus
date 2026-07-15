@@ -1,7 +1,9 @@
 import { getProductById } from '@/app/actions/products'
+import { getCategories } from '@/app/actions/categories'
 import { getDeliveryFee } from '@/app/actions/settings'
 import { ProductGallery } from '@/components/product-gallery'
 import { parseProductImages } from '@/lib/product-images'
+import { getCategoryLabel } from '@/lib/store-categories'
 import { AddToCartButton } from './add-to-cart-button'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
@@ -14,11 +16,14 @@ export default async function ProductDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const [product, deliveryFee] = await Promise.all([
+  const [product, deliveryFee, categories] = await Promise.all([
     getProductById(Number(id)),
     getDeliveryFee(),
+    getCategories(),
   ])
   if (!product) notFound()
+
+  const categoryLabel = getCategoryLabel(product.category, categories)
 
   const sizes: string[] = JSON.parse(product.sizes || '[]')
   const images = parseProductImages(product)
@@ -29,7 +34,7 @@ export default async function ProductDetailPage({
       <nav className="mb-8 flex items-center gap-2 text-[11px] font-light tracking-widest text-muted-foreground">
         <Link href="/" className="hover:text-primary transition-colors">ACCUEIL</Link>
         <span>/</span>
-        <Link href="/products" className="hover:text-primary transition-colors">PARFUMS</Link>
+        <Link href="/products" className="hover:text-primary transition-colors">BOUTIQUE</Link>
         <span>/</span>
         <span className="text-foreground">{product.name.toUpperCase()}</span>
       </nav>
@@ -51,7 +56,7 @@ export default async function ProductDetailPage({
               {product.name}
             </h1>
             <p className="mt-1 text-[10px] font-light tracking-widest text-muted-foreground">
-              {product.category.toUpperCase()}
+              {categoryLabel.toUpperCase()}
             </p>
           </div>
 

@@ -1,6 +1,8 @@
 'use client'
 
 import { ProductCard } from '@/components/product-card'
+import { CategoryPhotos } from '@/components/category-photos'
+import { getCategoryBySlug } from '@/lib/store-categories'
 import { usePathname } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 
@@ -99,6 +101,8 @@ export function ProductsClient({
 
   return (
     <>
+      <CategoryPhotos category={category} />
+
       <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-start lg:gap-6">
         <div className="relative w-full lg:w-72 lg:shrink-0">
           <svg
@@ -115,7 +119,7 @@ export function ProductsClient({
           </svg>
           <input
             type="text"
-            placeholder="Rechercher un parfum..."
+            placeholder="Rechercher un produit..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => {
@@ -123,20 +127,20 @@ export function ProductsClient({
                 syncUrl(search, category)
               }
             }}
-            className="w-full border border-border bg-card py-2.5 pl-9 pr-4 text-sm font-light text-foreground placeholder:text-muted-foreground outline-none transition-colors focus:border-primary/50"
+            className="w-full rounded-xl border border-border bg-input py-2.5 pl-9 pr-4 text-sm font-light text-foreground placeholder:text-muted-foreground outline-none transition-colors focus:border-primary/50 focus:ring-2 focus:ring-primary/10"
           />
         </div>
 
-        <div className="grid w-full flex-1 grid-cols-2 gap-2 sm:grid-cols-4 lg:max-w-xl">
+        <div className="flex w-full flex-1 flex-wrap gap-2">
           {allCategories.map((cat) => (
             <button
               key={cat.value}
               type="button"
               onClick={() => selectCategory(cat.value)}
-              className={`border px-3 py-2 text-center text-[10px] font-light tracking-[0.2em] transition-colors ${
+              className={`rounded-full border px-3 py-2 text-center text-[10px] font-light tracking-[0.2em] transition-colors ${
                 category === cat.value
-                  ? 'border-primary bg-primary text-primary-foreground'
-                  : 'border-border text-muted-foreground hover:border-primary/50 hover:text-primary'
+                  ? 'border-primary bg-primary text-primary-foreground shadow-sm shadow-primary/20'
+                  : 'border-border text-muted-foreground hover:border-primary/40 hover:bg-primary/5 hover:text-primary'
               }`}
             >
               {cat.label}
@@ -145,15 +149,21 @@ export function ProductsClient({
         </div>
       </div>
 
-      <div className="min-h-[50vh]">
+      <div className="min-h-[30vh]">
         {filteredProducts.length === 0 ? (
-          <div className="py-24 text-center">
-            <p className="text-sm font-light tracking-widest text-[#8a8a8a]">AUCUN PARFUM TROUVE</p>
-          </div>
+          category !== 'all' && getCategoryBySlug(category) ? (
+            <p className="py-8 text-center text-sm font-light tracking-widest text-muted-foreground">
+              Produits bientot disponibles dans cette categorie
+            </p>
+          ) : (
+            <div className="py-24 text-center">
+              <p className="text-sm font-light tracking-widest text-muted-foreground">AUCUN PRODUIT TROUVE</p>
+            </div>
+          )
         ) : (
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
             {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard key={product.id} product={product} categories={categories} />
             ))}
           </div>
         )}
