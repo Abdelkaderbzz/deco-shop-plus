@@ -2,6 +2,8 @@
 
 import { useCallback, useRef, useState } from 'react'
 
+const INSTAGRAM_URL = 'https://www.instagram.com/parfumerie_jannah_/'
+
 function extractReelId(url: string) {
   const match = url.match(/reel\/([^/?]+)/)
   return match?.[1] ?? ''
@@ -14,11 +16,19 @@ function circularDiff(index: number, active: number, total: number) {
   return diff
 }
 
-function ReelFrame({ reelId, interactive }: { reelId: string; interactive: boolean }) {
+function ReelFrame({ reelId, interactive, isCenter }: { reelId: string; interactive: boolean; isCenter: boolean }) {
   return (
     <div
-      className="relative overflow-hidden rounded-xl border border-border/50 bg-black shadow-xl"
-      style={{ width: 290, height: 450 }}
+      className={`relative overflow-hidden rounded-2xl border bg-black transition-all duration-500 ${
+        isCenter ? 'border-primary/25' : 'border-border/40'
+      }`}
+      style={{
+        width: 290,
+        height: 450,
+        boxShadow: isCenter
+          ? '0 12px 36px -10px rgba(196, 137, 122, 0.22), 0 4px 14px -4px rgba(248, 232, 236, 0.9)'
+          : 'none',
+      }}
     >
       <iframe
         src={`https://www.instagram.com/reel/${reelId}/embed`}
@@ -33,8 +43,8 @@ function ReelFrame({ reelId, interactive }: { reelId: string; interactive: boole
         scrolling="no"
         allow="autoplay; encrypted-media; clipboard-write"
       />
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-16 bg-gradient-to-b from-black via-black to-transparent" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-36 bg-gradient-to-t from-black via-black to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-14 bg-gradient-to-b from-black/70 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-28 bg-gradient-to-t from-black/70 to-transparent" />
       {!interactive && <div className="absolute inset-0 bg-background/10" aria-hidden />}
     </div>
   )
@@ -101,7 +111,7 @@ export function InstagramCarousel({ reels }: { reels: string[] }) {
                   cursor: isCenter ? 'default' : 'pointer',
                 }}
               >
-                <ReelFrame reelId={reelId} interactive={isCenter} />
+                <ReelFrame reelId={reelId} interactive={isCenter} isCenter={isCenter} />
               </button>
             )
           })}
@@ -113,7 +123,7 @@ export function InstagramCarousel({ reels }: { reels: string[] }) {
               type="button"
               onClick={goPrev}
               aria-label="Reel precedent"
-              className="absolute left-0 top-1/2 z-40 -translate-y-1/2 border border-border bg-card/90 p-3 text-muted-foreground backdrop-blur-sm transition-colors hover:border-primary hover:text-primary"
+              className="absolute left-0 top-1/2 z-40 -translate-y-1/2 rounded-full border border-border bg-card/90 p-3 text-muted-foreground shadow-sm backdrop-blur-sm transition-colors hover:border-primary hover:bg-primary/5 hover:text-primary"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <polyline points="15 18 9 12 15 6" />
@@ -123,7 +133,7 @@ export function InstagramCarousel({ reels }: { reels: string[] }) {
               type="button"
               onClick={goNext}
               aria-label="Reel suivant"
-              className="absolute right-0 top-1/2 z-40 -translate-y-1/2 border border-border bg-card/90 p-3 text-muted-foreground backdrop-blur-sm transition-colors hover:border-primary hover:text-primary"
+              className="absolute right-0 top-1/2 z-40 -translate-y-1/2 rounded-full border border-border bg-card/90 p-3 text-muted-foreground shadow-sm backdrop-blur-sm transition-colors hover:border-primary hover:bg-primary/5 hover:text-primary"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <polyline points="9 18 15 12 9 6" />
@@ -157,6 +167,48 @@ export function InstagramCarousel({ reels }: { reels: string[] }) {
   )
 }
 
+function InstagramIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" />
+      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+    </svg>
+  )
+}
+
+export function InstagramSectionHeader() {
+  return (
+    <div className="mb-12 text-center">
+      <p className="text-[10px] font-light tracking-[0.4em] text-primary">INSTAGRAM</p>
+      <h2 className="mt-2 font-serif text-3xl font-light tracking-widest text-foreground">
+        @parfumerie_jannah_
+      </h2>
+      <p className="mx-auto mt-3 max-w-md text-sm font-light text-muted-foreground">
+        Coulisses, nouveautes et inspirations parfumees au quotidien.
+      </p>
+    </div>
+  )
+}
+
+export function InstagramFollowButton() {
+  return (
+    <div className="mt-10 text-center">
+      <a
+        href={INSTAGRAM_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-3 rounded-full border border-border px-8 py-3 text-xs font-light tracking-[0.25em] text-muted-foreground transition-all hover:border-primary hover:bg-primary/5 hover:text-primary"
+      >
+        <InstagramIcon />
+        SUIVRE @parfumerie_jannah_
+      </a>
+    </div>
+  )
+}
+
 export function InstagramEmbed({ permalink }: { permalink: string }) {
   return <InstagramCarousel reels={[permalink]} />
 }
+
+export { INSTAGRAM_URL }
