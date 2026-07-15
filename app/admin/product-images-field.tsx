@@ -28,6 +28,14 @@ export function ProductImagesField({ value, onChange, error }: ProductImagesFiel
       return
     }
 
+    const maxBytes = 5 * 1024 * 1024
+    const oversized = selected.find((file) => file.size > maxBytes)
+    if (oversized) {
+      toast.error(`"${oversized.name}" depasse 5 Mo. Choisissez une image plus legere.`)
+      if (inputRef.current) inputRef.current.value = ''
+      return
+    }
+
     const files = selected.slice(0, remainingSlots)
     if (selected.length > remainingSlots) {
       toast.error(`Seules ${remainingSlots} image(s) supplementaire(s) acceptee(s).`)
