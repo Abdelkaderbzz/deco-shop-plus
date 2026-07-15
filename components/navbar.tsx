@@ -1,47 +1,51 @@
 'use client'
 
+import { Logo } from '@/components/logo'
 import { useCart } from '@/components/cart-context'
+import { INSTAGRAM_URL } from '@/components/instagram-embed'
+import { STORE_CATEGORIES } from '@/lib/store-categories'
 import Link from 'next/link'
 import { useState } from 'react'
+
+const NAV_LINKS = [
+  { href: '/products', label: 'BOUTIQUE' },
+  ...STORE_CATEGORIES.map((c) => ({
+    href: `/products?category=${c.slug}`,
+    label: c.name.toUpperCase(),
+  })),
+]
 
 export function Navbar() {
   const { count } = useCart()
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-card/95 backdrop-blur-sm">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-        {/* Logo */}
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/80 bg-card/95 backdrop-blur-md">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3.5">
         <Link href="/" className="flex items-center gap-3">
-          <img
-            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/524882961_17994883307831957_4888978496307767385_n-TtsjvPe8IlxmIpNnpU0tEgXgfwr2N4.jpg"
-            alt="Jannah Parfume Logo"
-            className="h-10 w-10 rounded-full object-cover"
-          />
-          <span className="font-serif text-xl font-light tracking-widest text-foreground">
-            JANNAH PARFUME
-          </span>
+          <Logo size="sm" />
         </Link>
 
-        {/* Desktop nav */}
-        <nav className="hidden items-center gap-8 md:flex">
-          <Link
-            href="/products"
-            className="text-sm font-light tracking-widest text-muted-foreground transition-colors hover:text-primary"
-          >
-            PARFUMS
-          </Link>
+        <nav className="hidden items-center gap-6 lg:flex">
+          {NAV_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-[11px] font-light tracking-[0.25em] text-muted-foreground transition-colors hover:text-primary"
+            >
+              {link.label}
+            </Link>
+          ))}
           <a
-            href="https://www.instagram.com/jannahparfume/"
+            href={INSTAGRAM_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm font-light tracking-widest text-muted-foreground transition-colors hover:text-primary"
+            className="text-[11px] font-light tracking-[0.25em] text-muted-foreground transition-colors hover:text-primary"
           >
             INSTAGRAM
           </a>
         </nav>
 
-        {/* Cart & mobile menu */}
         <div className="flex items-center gap-4">
           <Link
             href="/checkout"
@@ -59,9 +63,8 @@ export function Navbar() {
             )}
           </Link>
 
-          {/* Mobile hamburger */}
           <button
-            className="flex flex-col gap-1.5 md:hidden"
+            className="flex flex-col gap-1.5 lg:hidden"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Toggle menu"
           >
@@ -72,19 +75,21 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu */}
       {menuOpen && (
-        <div className="border-t border-border bg-card px-4 py-6 md:hidden">
-          <nav className="flex flex-col gap-6">
-            <Link
-              href="/products"
-              onClick={() => setMenuOpen(false)}
-              className="text-sm font-light tracking-widest text-muted-foreground hover:text-primary"
-            >
-              PARFUMS
-            </Link>
+        <div className="border-t border-border bg-card px-4 py-6 lg:hidden">
+          <nav className="flex flex-col gap-5">
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMenuOpen(false)}
+                className="text-sm font-light tracking-widest text-muted-foreground hover:text-primary"
+              >
+                {link.label}
+              </Link>
+            ))}
             <a
-              href="https://www.instagram.com/jannahparfume/"
+              href={INSTAGRAM_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm font-light tracking-widest text-muted-foreground hover:text-primary"
