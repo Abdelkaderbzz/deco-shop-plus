@@ -40,6 +40,10 @@ export default async function HomePage() {
               </p>
               <p className="mt-4 text-sm font-light tracking-widest text-muted-foreground">TUNISIE</p>
             </div>
+            <p className="mt-6 max-w-md text-base font-light leading-relaxed text-muted-foreground">
+              Votre boutique en ligne pour parfums, maquillage, sacs et soins. Des produits choisis avec amour pour
+              reveler votre elegance.
+            </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3 md:justify-start">
               <Link
                 href="/products"
