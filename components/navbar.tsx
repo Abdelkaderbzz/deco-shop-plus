@@ -3,21 +3,22 @@
 import { Logo } from '@/components/logo'
 import { useCart } from '@/components/cart-context'
 import { INSTAGRAM_URL } from '@/components/instagram-embed'
-import { STORE_CATEGORIES } from '@/lib/store-categories'
+import { TIKTOK_URL } from '@/lib/social-links'
+import type { StoreCategory } from '@/lib/store-categories'
 import Link from 'next/link'
 import { useState } from 'react'
 
-const NAV_LINKS = [
-  { href: '/products', label: 'BOUTIQUE' },
-  ...STORE_CATEGORIES.map((c) => ({
-    href: `/products?category=${c.slug}`,
-    label: c.name.toUpperCase(),
-  })),
-]
-
-export function Navbar() {
+export function Navbar({ storeCategories }: { storeCategories: StoreCategory[] }) {
   const { count } = useCart()
   const [menuOpen, setMenuOpen] = useState(false)
+
+  const navLinks = [
+    { href: '/products', label: 'BOUTIQUE' },
+    ...storeCategories.map((category) => ({
+      href: `/products?category=${category.slug}`,
+      label: category.name.toUpperCase(),
+    })),
+  ]
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/80 bg-card/95 backdrop-blur-md">
@@ -27,7 +28,7 @@ export function Navbar() {
         </Link>
 
         <nav className="hidden items-center gap-6 lg:flex">
-          {NAV_LINKS.map((link) => (
+          {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -43,6 +44,14 @@ export function Navbar() {
             className="text-[11px] font-light tracking-[0.25em] text-muted-foreground transition-colors hover:text-primary"
           >
             INSTAGRAM
+          </a>
+          <a
+            href={TIKTOK_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[11px] font-light tracking-[0.25em] text-muted-foreground transition-colors hover:text-primary"
+          >
+            TIKTOK
           </a>
         </nav>
 
@@ -78,7 +87,7 @@ export function Navbar() {
       {menuOpen && (
         <div className="border-t border-border bg-card px-4 py-6 lg:hidden">
           <nav className="flex flex-col gap-5">
-            {NAV_LINKS.map((link) => (
+            {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -95,6 +104,14 @@ export function Navbar() {
               className="text-sm font-light tracking-widest text-muted-foreground hover:text-primary"
             >
               INSTAGRAM
+            </a>
+            <a
+              href={TIKTOK_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-light tracking-widest text-muted-foreground hover:text-primary"
+            >
+              TIKTOK
             </a>
           </nav>
         </div>
