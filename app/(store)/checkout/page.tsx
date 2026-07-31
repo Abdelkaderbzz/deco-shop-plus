@@ -14,14 +14,16 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
+const storeLabelCls = 'mb-2 block text-sm font-semibold text-foreground'
+const storeSectionCls = 'mb-5 text-sm font-semibold uppercase tracking-wide text-primary'
 const storeInputCls =
-  'w-full rounded-xl border border-border bg-input px-3 py-2.5 text-sm font-light text-foreground outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10'
+  'w-full rounded-xl border-2 border-border bg-white px-4 py-3 text-base text-foreground outline-none transition-colors placeholder:text-muted-foreground/80 focus:border-primary focus:ring-2 focus:ring-primary/20'
 const storeInputErrorCls =
-  'w-full rounded-xl border border-destructive bg-input px-3 py-2.5 text-sm font-light text-foreground outline-none focus:border-destructive'
+  'w-full rounded-xl border-2 border-destructive bg-white px-4 py-3 text-base text-foreground outline-none focus:border-destructive focus:ring-2 focus:ring-destructive/20'
 
 function StoreFieldError({ message }: { message?: string }) {
   if (!message) return null
-  return <p className="mt-1 text-xs text-destructive">{message}</p>
+  return <p className="mt-1.5 text-sm font-medium text-destructive">{message}</p>
 }
 
 export default function CheckoutPage() {
@@ -106,8 +108,8 @@ export default function CheckoutPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-12">
       <div className="mb-10">
-        <p className="text-[10px] font-light tracking-[0.4em] text-primary">VOTRE COMMANDE</p>
-        <h1 className="mt-2 font-serif text-3xl font-light tracking-widest text-foreground">PANIER</h1>
+        <p className="text-sm font-semibold uppercase tracking-wide text-primary">Votre commande</p>
+        <h1 className="mt-2 font-serif text-3xl font-semibold text-foreground">Panier</h1>
       </div>
 
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-5">
@@ -167,32 +169,32 @@ export default function CheckoutPage() {
             </div>
           ))}
 
-          <div className="mt-6 rounded-2xl border border-border bg-card p-6">
-            <p className="mb-4 text-[10px] font-light tracking-[0.3em] text-muted-foreground">MODE DE RECEPTION</p>
-            <div className="grid grid-cols-2 gap-3">
+          <div className="mt-6 rounded-2xl border-2 border-primary/20 bg-card p-6">
+            <p className={storeSectionCls}>Comment recevoir votre commande ?</p>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <button
                 type="button"
                 onClick={() => setValue('orderType', 'delivery', { shouldValidate: true })}
-                className={`rounded-xl border p-4 text-left transition-all ${
+                className={`rounded-xl border-2 p-4 text-left transition-all ${
                   orderType === 'delivery'
-                    ? 'border-primary bg-primary/5'
-                    : 'border-border hover:border-primary/40'
+                    ? 'border-primary bg-primary/15 ring-2 ring-primary/25'
+                    : 'border-border bg-white hover:border-primary/50'
                 }`}
               >
-                <p className="text-xs font-light tracking-widest text-foreground">LIVRAISON</p>
-                <p className="mt-1 text-[11px] text-muted-foreground">{deliveryFee.toFixed(3)} TND</p>
+                <p className="text-sm font-semibold text-foreground">Livraison a domicile</p>
+                <p className="mt-1 text-sm font-medium text-primary">{deliveryFee.toFixed(3)} TND</p>
               </button>
               <button
                 type="button"
                 onClick={() => setValue('orderType', 'boutique', { shouldValidate: true })}
-                className={`rounded-xl border p-4 text-left transition-all ${
+                className={`rounded-xl border-2 p-4 text-left transition-all ${
                   orderType === 'boutique'
-                    ? 'border-primary bg-primary/5'
-                    : 'border-border hover:border-primary/40'
+                    ? 'border-primary bg-primary/15 ring-2 ring-primary/25'
+                    : 'border-border bg-white hover:border-primary/50'
                 }`}
               >
-                <p className="text-xs font-light tracking-widest text-foreground">RETRAIT BOUTIQUE</p>
-                <p className="mt-1 text-[11px] text-muted-foreground">Gratuit</p>
+                <p className="text-sm font-semibold text-foreground">Retrait en boutique</p>
+                <p className="mt-1 text-sm font-medium text-primary">Gratuit</p>
               </button>
             </div>
           </div>
@@ -201,27 +203,28 @@ export default function CheckoutPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="lg:col-span-2 space-y-6">
           <input type="hidden" {...register('orderType')} />
 
-          <div className="rounded-2xl border border-border bg-card p-6">
-            <p className="mb-5 text-[10px] font-light tracking-[0.3em] text-muted-foreground">VOS COORDONNEES</p>
-            <div className="space-y-4">
+          <div className="rounded-2xl border-2 border-primary/20 bg-card p-6">
+            <p className={storeSectionCls}>Vos coordonnees</p>
+            <div className="space-y-5">
               <div>
-                <label className="mb-1 block text-[10px] font-light tracking-widest text-muted-foreground">
-                  NOM COMPLET *
+                <label className={storeLabelCls}>
+                  Nom complet <span className="text-primary">*</span>
                 </label>
                 <input
                   type="text"
+                  placeholder="Ex: Fatma Ben Ali"
                   className={errors.customerName ? storeInputErrorCls : storeInputCls}
                   {...register('customerName')}
                 />
                 <StoreFieldError message={errors.customerName?.message} />
               </div>
               <div>
-                <label className="mb-1 block text-[10px] font-light tracking-widest text-muted-foreground">
-                  TELEPHONE *
+                <label className={storeLabelCls}>
+                  Numero de telephone <span className="text-primary">*</span>
                 </label>
                 <input
                   type="tel"
-                  placeholder="+216 XX XXX XXX"
+                  placeholder="Ex: 22 123 456"
                   className={errors.customerPhone ? storeInputErrorCls : storeInputCls}
                   {...register('customerPhone')}
                 />
@@ -230,8 +233,8 @@ export default function CheckoutPage() {
               {orderType === 'delivery' && (
                 <>
                   <div>
-                    <label className="mb-1 block text-[10px] font-light tracking-widest text-muted-foreground">
-                      GOUVERNORAT *
+                    <label className={storeLabelCls}>
+                      Gouvernorat <span className="text-primary">*</span>
                     </label>
                     <Controller
                       control={control}
@@ -241,7 +244,7 @@ export default function CheckoutPage() {
                           value={field.value}
                           onChange={field.onChange}
                           options={GOVERNORATE_SELECT_OPTIONS}
-                          placeholder="Choisir un gouvernorat"
+                          placeholder="Choisir votre gouvernorat"
                           hasError={!!errors.customerGovernorate}
                         />
                       )}
@@ -249,12 +252,12 @@ export default function CheckoutPage() {
                     <StoreFieldError message={errors.customerGovernorate?.message} />
                   </div>
                   <div>
-                    <label className="mb-1 block text-[10px] font-light tracking-widest text-muted-foreground">
-                      ADRESSE DE LIVRAISON *
+                    <label className={storeLabelCls}>
+                      Adresse de livraison <span className="text-primary">*</span>
                     </label>
                     <textarea
                       rows={3}
-                      placeholder="Rue, ville, code postal..."
+                      placeholder="Rue, ville, point de repere..."
                       className={`${errors.customerAddress ? storeInputErrorCls : storeInputCls} resize-none`}
                       {...register('customerAddress')}
                     />
@@ -263,11 +266,10 @@ export default function CheckoutPage() {
                 </>
               )}
               <div>
-                <label className="mb-1 block text-[10px] font-light tracking-widest text-muted-foreground">
-                  NOTES (OPTIONNEL)
-                </label>
+                <label className={storeLabelCls}>Notes (optionnel)</label>
                 <textarea
                   rows={2}
+                  placeholder="Instructions supplementaires..."
                   className={`${errors.notes ? storeInputErrorCls : storeInputCls} resize-none`}
                   {...register('notes')}
                 />
@@ -276,31 +278,33 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          <div className="space-y-3 rounded-2xl border border-border bg-card p-6">
-            <p className="text-[10px] font-light tracking-[0.3em] text-muted-foreground">RECAPITULATIF</p>
-            <div className="flex justify-between text-sm font-light text-muted-foreground">
+          <div className="space-y-3 rounded-2xl border-2 border-primary/20 bg-secondary/40 p-6">
+            <p className={storeSectionCls}>Recapitulatif</p>
+            <div className="flex justify-between text-base text-foreground">
               <span>Sous-total</span>
-              <span>{total.toFixed(3)} TND</span>
+              <span className="font-medium">{total.toFixed(3)} TND</span>
             </div>
-            <div className="flex justify-between text-sm font-light text-muted-foreground">
+            <div className="flex justify-between text-base text-foreground">
               <span>Livraison</span>
-              <span>
+              <span className="font-medium">
                 {appliedDeliveryFee === 0 ? 'Gratuit' : `${appliedDeliveryFee.toFixed(3)} TND`}
               </span>
             </div>
-            <div className="h-px bg-border" />
-            <div className="flex justify-between font-light text-foreground">
-              <span className="text-sm tracking-widest">TOTAL</span>
-              <span className="font-serif text-lg">{grandTotal.toFixed(3)} TND</span>
+            <div className="h-px bg-primary/20" />
+            <div className="flex justify-between items-center text-foreground">
+              <span className="text-base font-semibold">Total a payer</span>
+              <span className="font-serif text-2xl font-semibold text-primary">
+                {grandTotal.toFixed(3)} TND
+              </span>
             </div>
           </div>
 
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full rounded-full bg-primary py-4 text-xs font-light tracking-[0.3em] text-primary-foreground shadow-sm shadow-primary/20 transition-all hover:opacity-90 disabled:opacity-60"
+            className="w-full rounded-full bg-primary py-4 text-sm font-semibold tracking-wide text-primary-foreground shadow-md shadow-primary/30 transition-all hover:opacity-95 disabled:opacity-60"
           >
-            {isSubmitting ? 'TRAITEMENT...' : 'CONFIRMER LA COMMANDE'}
+            {isSubmitting ? 'Envoi en cours...' : 'Confirmer la commande'}
           </button>
         </form>
       </div>
