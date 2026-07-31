@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { href: '/admin/products', label: 'Produits' },
   { href: '/admin/orders', label: 'Commandes' },
   { href: '/admin/categories', label: 'Categories' },
+  { href: '/admin/carousel', label: 'Carousel' },
   { href: '/admin/settings', label: 'Livraison' },
 ]
 
