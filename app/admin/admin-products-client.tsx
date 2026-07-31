@@ -41,6 +41,7 @@ type Product = {
   sizes: string
   inStock: boolean
   featured: boolean
+  published: boolean
 }
 
 type Category = {
@@ -59,6 +60,7 @@ const EMPTY_FORM: ProductFormValues = {
   sizes: '',
   inStock: true,
   featured: false,
+  published: true,
 }
 
 export function AdminProductsClient({
@@ -127,6 +129,7 @@ export function AdminProductsClient({
       sizes: JSON.parse(product.sizes || '[]').join(', '),
       inStock: product.inStock,
       featured: product.featured,
+      published: product.published ?? true,
     })
     setShowForm(true)
   }
@@ -152,6 +155,7 @@ export function AdminProductsClient({
             sizes: sizesArr,
             inStock: form.inStock,
             featured: form.featured,
+            published: form.published,
           })
           setProducts((prev) =>
             prev.map((p) =>
@@ -163,6 +167,7 @@ export function AdminProductsClient({
                     images: serializedImages,
                     imageUrl: primaryImage,
                     sizes: JSON.stringify(sizesArr),
+                    published: form.published,
                   }
                 : p,
             ),
@@ -179,6 +184,7 @@ export function AdminProductsClient({
             sizes: sizesArr,
             inStock: form.inStock,
             featured: form.featured,
+            published: form.published,
           })
           toast.success('Produit ajoute avec succes.')
           window.location.reload()
@@ -235,7 +241,7 @@ export function AdminProductsClient({
         <AdminTable>
             <thead className="border-b border-slate-200 bg-slate-50">
               <tr>
-                {['Image', 'Nom', 'Marque', 'Categorie', 'Prix', 'Stock', 'Actions'].map((h) => (
+                {['Image', 'Nom', 'Marque', 'Categorie', 'Prix', 'Stock', 'Statut', 'Actions'].map((h) => (
                   <th key={h} className={adminTableHeadCls}>
                     {h}
                   </th>
@@ -275,6 +281,11 @@ export function AdminProductsClient({
                   <td className={adminTableCellCls}>
                     <AdminBadge tone={p.inStock ? 'success' : 'danger'}>
                       {p.inStock ? 'En stock' : 'Rupture'}
+                    </AdminBadge>
+                  </td>
+                  <td className={adminTableCellCls}>
+                    <AdminBadge tone={p.published !== false ? 'success' : 'warning'}>
+                      {p.published !== false ? 'Visible' : 'Masque'}
                     </AdminBadge>
                   </td>
                   <td className={adminTableCellCls}>
@@ -379,6 +390,27 @@ export function AdminProductsClient({
                 )}
               />
               <AdminFieldError message={errors.category?.message} />
+            </div>
+
+            <div>
+              <label className={adminLabelCls}>STATUT</label>
+              <Controller
+                control={control}
+                name="published"
+                render={({ field }) => (
+                  <AdminSelect
+                    value={field.value ? 'visible' : 'hidden'}
+                    onValueChange={(v) => field.onChange(v === 'visible')}
+                    items={[
+                      { value: 'visible', label: 'Visible en boutique' },
+                      { value: 'hidden', label: 'Masque' },
+                    ]}
+                  />
+                )}
+              />
+              <p className="mt-1 text-xs text-slate-500">
+                Les produits masques n&apos;apparaissent pas sur la boutique.
+              </p>
             </div>
 
             <div className="flex gap-6">

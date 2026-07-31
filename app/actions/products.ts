@@ -4,9 +4,9 @@ import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { products } from '@/lib/db/schema'
 import { getPrimaryImage, serializeProductImages } from '@/lib/product-images'
-import { desc, eq, ilike, or } from 'drizzle-orm'
+import { and, desc, eq, ilike, or } from 'drizzle-orm'
 import { headers } from 'next/headers'
-import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 
 async function getAdminId() {
   const session = await auth.api.getSession({ headers: await headers() })
@@ -28,59 +28,49 @@ function revalidateProductCaches(id?: number) {
   if (id) revalidateTag(`product-${id}`, 'max')
 }
 
-const getAllProductsCached = unstable_cache(
-  async () => db.select().from(products).orderBy(desc(products.createdAt)),
-  ['all-products'],
-  { revalidate: 60, tags: ['products'] },
-)
+function revalidateProductPage(id: number) {
+  revalidatePath(`/products/${id}`)
+}
 
-const getFeaturedProductsCached = unstable_cache(
-  async () => db.select().from(products).where(eq(products.featured, true)).limit(6),
-  ['featured-products'],
-  { revalidate: 60, tags: ['products'] },
-)
+export async function getAdminProducts() {
+  await getAdminId()
+  return db.select().from(products).orderBy(desc(products.createdAt))
+}
 
 export async function getProducts(search?: string, category?: string) {
-  if (!search && (!category || category === 'all')) {
-    return getAllProductsCached()
-  }
-
   let query = db.select().from(products).$dynamic()
+  const conditions = [eq(products.published, true)]
 
-  const conditions = []
   if (search) {
     conditions.push(
       or(
         ilike(products.name, `%${search}%`),
         ilike(products.brand, `%${search}%`),
-      )
+      )!,
     )
   }
   if (category && category !== 'all') {
     conditions.push(eq(products.category, category))
   }
 
-  if (conditions.length > 0) {
-    const { and } = await import('drizzle-orm')
-    query = query.where(and(...conditions))
-  }
-
-  return query.orderBy(desc(products.createdAt))
+  return query.where(and(...conditions)).orderBy(desc(products.createdAt))
 }
 
 export async function getFeaturedProducts() {
-  return getFeaturedProductsCached()
+  return db
+    .select()
+    .from(products)
+    .where(and(eq(products.featured, true), eq(products.published, true)))
+    .limit(6)
 }
 
 export async function getProductById(id: number) {
-  return unstable_cache(
-    async () => {
-      const result = await db.select().from(products).where(eq(products.id, id)).limit(1)
-      return result[0] ?? null
-    },
-    ['product-by-id', String(id)],
-    { revalidate: 60, tags: ['products', `product-${id}`] },
-  )()
+  const result = await db
+    .select()
+    .from(products)
+    .where(and(eq(products.id, id), eq(products.published, true)))
+    .limit(1)
+  return result[0] ?? null
 }
 
 export async function addProduct(data: {
@@ -93,6 +83,7 @@ export async function addProduct(data: {
   sizes: string[]
   inStock: boolean
   featured: boolean
+  published: boolean
 }) {
   await getAdminId()
   const imageData = normalizeProductImages(data.images)
@@ -108,10 +99,12 @@ export async function addProduct(data: {
     sizes: JSON.stringify(data.sizes),
     inStock: data.inStock,
     featured: data.featured,
+    published: data.published,
   })
   revalidatePath('/admin')
   revalidatePath('/admin/products')
   revalidatePath('/products')
+  revalidatePath('/')
   revalidateProductCaches()
 }
 
@@ -127,7 +120,8 @@ export async function updateProduct(
     sizes?: string[]
     inStock?: boolean
     featured?: boolean
-  }
+    published?: boolean
+  },
 ) {
   await getAdminId()
   const updateData: Record<string, unknown> = { ...data, updatedAt: new Date() }
@@ -143,7 +137,9 @@ export async function updateProduct(
   revalidatePath('/admin')
   revalidatePath('/admin/products')
   revalidatePath('/products')
+  revalidatePath('/')
   revalidateProductCaches(id)
+  revalidateProductPage(id)
 }
 
 export async function deleteProduct(id: number) {
@@ -152,5 +148,7 @@ export async function deleteProduct(id: number) {
   revalidatePath('/admin')
   revalidatePath('/admin/products')
   revalidatePath('/products')
+  revalidatePath('/')
   revalidateProductCaches(id)
+  revalidateProductPage(id)
 }

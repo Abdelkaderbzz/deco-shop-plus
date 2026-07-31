@@ -8,7 +8,7 @@ import { AddToCartButton } from './add-to-cart-button'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 
-export const revalidate = 60
+export const dynamic = 'force-dynamic'
 
 export default async function ProductDetailPage({
   params,
@@ -82,7 +82,7 @@ export default async function ProductDetailPage({
           )}
 
           <div className="border-t border-border pt-4 text-[11px] font-light tracking-wider text-muted-foreground space-y-2">
-            <p>Livraison disponible en Tunisie &mdash; {deliveryFee.toFixed(3)} TND</p>
+            <p>Livraison disponible en Tunisie, {deliveryFee.toFixed(3)} TND</p>
             <p>Retrait en boutique gratuit</p>
           </div>
         </div>

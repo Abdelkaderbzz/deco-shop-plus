@@ -1,10 +1,10 @@
-import { getProducts } from '@/app/actions/products'
+import { getAdminProducts } from '@/app/actions/products'
 import { getCategories } from '@/app/actions/categories'
 import { AdminProductsClient } from '../../admin-products-client'
 import { AdminPageHeader } from '../../admin-ui'
 
 export default async function AdminProductsPage() {
-  const [products, categories] = await Promise.all([getProducts(), getCategories()])
+  const [products, categories] = await Promise.all([getAdminProducts(), getCategories()])
 
   return (
     <div>
