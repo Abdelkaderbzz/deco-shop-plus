@@ -8,10 +8,29 @@ import { headers } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 import { getDeliveryFee } from './settings'
 
+export type OrderActionResult<T = undefined> =
+  | { success: true; data: T }
+  | { success: false; error: string }
+
+export type OrderWithItems = NonNullable<Awaited<ReturnType<typeof getOrderWithItemsData>>>
+
 async function getAdminId() {
   const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user) throw new Error('Unauthorized')
+  if (!session?.user) throw new Error('Session expiree. Reconnectez-vous.')
   return session.user.id
+}
+
+function mapOrderError(error: unknown, fallback: string) {
+  if (error instanceof Error && error.message.trim()) {
+    if (error.message === 'Order not found') return 'Commande introuvable.'
+    return error.message
+  }
+  return fallback
+}
+
+async function revalidateOrderPaths() {
+  revalidatePath('/admin')
+  revalidatePath('/admin/orders')
 }
 
 export type CartItem = {
@@ -62,8 +81,7 @@ export async function createOrder(data: {
     })),
   )
 
-  revalidatePath('/admin')
-  revalidatePath('/admin/orders')
+  await revalidateOrderPaths()
   return order.id
 }
 
@@ -72,19 +90,51 @@ export async function getAllOrders() {
   return db.select().from(orders).orderBy(desc(orders.createdAt))
 }
 
-export async function getOrderWithItems(id: number) {
-  await getAdminId()
+async function getOrderWithItemsData(id: number) {
   const [order] = await db.select().from(orders).where(eq(orders.id, id)).limit(1)
   if (!order) return null
   const items = await db.select().from(orderItems).where(eq(orderItems.orderId, id))
   return { ...order, items }
 }
 
-export async function updateOrderStatus(id: number, status: string) {
-  await getAdminId()
-  await db.update(orders).set({ status, updatedAt: new Date() }).where(eq(orders.id, id))
-  revalidatePath('/admin')
-  revalidatePath('/admin/orders')
+export async function getOrderWithItems(id: number): Promise<OrderActionResult<OrderWithItems>> {
+  try {
+    await getAdminId()
+    const order = await getOrderWithItemsData(id)
+    if (!order) {
+      return { success: false, error: 'Commande introuvable.' }
+    }
+    return { success: true, data: order }
+  } catch (error) {
+    return {
+      success: false,
+      error: mapOrderError(error, 'Impossible de charger la commande.'),
+    }
+  }
+}
+
+export async function updateOrderStatus(id: number, status: string): Promise<OrderActionResult> {
+  try {
+    await getAdminId()
+
+    const [updated] = await db
+      .update(orders)
+      .set({ status, updatedAt: new Date() })
+      .where(eq(orders.id, id))
+      .returning()
+
+    if (!updated) {
+      return { success: false, error: 'Commande introuvable.' }
+    }
+
+    await revalidateOrderPaths()
+    return { success: true, data: undefined }
+  } catch (error) {
+    return {
+      success: false,
+      error: mapOrderError(error, 'Impossible de mettre a jour le statut.'),
+    }
+  }
 }
 
 export async function updateOrder(
@@ -98,43 +148,75 @@ export async function updateOrder(
     status?: string
     notes?: string
   },
-) {
-  await getAdminId()
+): Promise<OrderActionResult<OrderWithItems>> {
+  try {
+    await getAdminId()
 
-  const [existing] = await db.select().from(orders).where(eq(orders.id, id)).limit(1)
-  if (!existing) throw new Error('Order not found')
+    const [existing] = await db.select().from(orders).where(eq(orders.id, id)).limit(1)
+    if (!existing) {
+      return { success: false, error: 'Commande introuvable.' }
+    }
 
-  const orderType = (data.orderType ?? existing.orderType) as 'delivery' | 'boutique'
-  const deliveryFeeValue =
-    orderType === 'delivery'
-      ? existing.orderType === 'delivery' && parseFloat(existing.deliveryFee) > 0
-        ? parseFloat(existing.deliveryFee)
-        : await getDeliveryFee()
-      : 0
+    const orderType = (data.orderType ?? existing.orderType) as 'delivery' | 'boutique'
+    const deliveryFeeValue =
+      orderType === 'delivery'
+        ? existing.orderType === 'delivery' && parseFloat(existing.deliveryFee) > 0
+          ? parseFloat(existing.deliveryFee)
+          : await getDeliveryFee()
+        : 0
 
-  const items = await db.select().from(orderItems).where(eq(orderItems.orderId, id))
-  const subtotal = items.reduce((acc, item) => acc + parseFloat(item.price) * item.quantity, 0)
-  const totalAmount = subtotal + deliveryFeeValue
+    const items = await db.select().from(orderItems).where(eq(orderItems.orderId, id))
+    const subtotal = items.reduce((acc, item) => acc + parseFloat(item.price) * item.quantity, 0)
+    const totalAmount = subtotal + deliveryFeeValue
 
-  await db
-    .update(orders)
-    .set({
-      ...data,
-      deliveryFee: deliveryFeeValue.toFixed(3),
-      totalAmount: totalAmount.toFixed(3),
-      updatedAt: new Date(),
-    })
-    .where(eq(orders.id, id))
+    const [updated] = await db
+      .update(orders)
+      .set({
+        ...data,
+        deliveryFee: deliveryFeeValue.toFixed(3),
+        totalAmount: totalAmount.toFixed(3),
+        updatedAt: new Date(),
+      })
+      .where(eq(orders.id, id))
+      .returning()
 
-  revalidatePath('/admin')
-  revalidatePath('/admin/orders')
+    if (!updated) {
+      return { success: false, error: 'Commande introuvable.' }
+    }
+
+    await revalidateOrderPaths()
+
+    const order = await getOrderWithItemsData(id)
+    if (!order) {
+      return { success: false, error: 'Commande introuvable.' }
+    }
+
+    return { success: true, data: order }
+  } catch (error) {
+    return {
+      success: false,
+      error: mapOrderError(error, 'Impossible de modifier la commande.'),
+    }
+  }
 }
 
-export async function deleteOrder(id: number) {
-  await getAdminId()
-  await db.delete(orders).where(eq(orders.id, id))
-  revalidatePath('/admin')
-  revalidatePath('/admin/orders')
+export async function deleteOrder(id: number): Promise<OrderActionResult> {
+  try {
+    await getAdminId()
+
+    const [deleted] = await db.delete(orders).where(eq(orders.id, id)).returning()
+    if (!deleted) {
+      return { success: false, error: 'Commande introuvable.' }
+    }
+
+    await revalidateOrderPaths()
+    return { success: true, data: undefined }
+  } catch (error) {
+    return {
+      success: false,
+      error: mapOrderError(error, 'Impossible de supprimer la commande.'),
+    }
+  }
 }
 
 export async function getDashboardStats() {
