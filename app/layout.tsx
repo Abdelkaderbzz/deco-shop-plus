@@ -19,7 +19,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'Parfumerie Janna | Beaute feminine',
   description:
-    'Boutique feminine en Tunisie — parfums, maquillage, sacs et soins selectionnes avec amour pour sublimer votre elegance.',
+    'Boutique feminine en Tunisie. Parfums, maquillage, sacs et soins selectionnes avec amour pour sublimer votre elegance.',
   keywords: [
     'beaute',
     'parfum',
