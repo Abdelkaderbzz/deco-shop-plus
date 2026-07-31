@@ -6,15 +6,15 @@ import { useConfirm } from '@/components/confirm-provider'
 import { getErrorMessage } from '@/lib/get-error-message'
 import { categorySchema, type CategoryFormValues } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Eye, Pencil, Trash2 } from 'lucide-react'
+import { Pencil, Trash2 } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { CategoryBannerField } from './category-banner-field'
 import {
   AdminButton,
   AdminEmptyState,
   AdminFieldError,
   AdminIconButton,
-  AdminIconLink,
   AdminModal,
   AdminTable,
   adminInputWithError,
@@ -28,9 +28,10 @@ type Category = {
   id: number
   name: string
   slug: string
+  bannerUrl: string | null
 }
 
-const EMPTY_FORM: CategoryFormValues = { name: '', slug: '' }
+const EMPTY_FORM: CategoryFormValues = { name: '', slug: '', bannerUrl: '' }
 
 export function AdminCategoriesClient({ initialCategories }: { initialCategories: Category[] }) {
   const toast = useToast()
@@ -44,6 +45,7 @@ export function AdminCategoriesClient({ initialCategories }: { initialCategories
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
   } = useForm<CategoryFormValues>({
     resolver: zodResolver(categorySchema),
@@ -58,21 +60,40 @@ export function AdminCategoriesClient({ initialCategories }: { initialCategories
 
   function openEdit(category: Category) {
     setEditing(category)
-    reset({ name: category.name, slug: category.slug })
+    reset({
+      name: category.name,
+      slug: category.slug,
+      bannerUrl: category.bannerUrl ?? '',
+    })
     setShowForm(true)
   }
 
   function onSubmit(values: CategoryFormValues) {
+    const payload = {
+      name: values.name,
+      slug: values.slug,
+      bannerUrl: values.bannerUrl?.trim() || null,
+    }
+
     startTransition(async () => {
       try {
         if (editing) {
-          await updateCategory(editing.id, values)
+          await updateCategory(editing.id, payload)
           setCategories((prev) =>
-            prev.map((c) => (c.id === editing.id ? { ...c, ...values } : c)),
+            prev.map((category) =>
+              category.id === editing.id
+                ? {
+                    ...category,
+                    name: payload.name,
+                    slug: payload.slug || category.slug,
+                    bannerUrl: payload.bannerUrl,
+                  }
+                : category,
+            ),
           )
           toast.success('Categorie modifiee avec succes.')
         } else {
-          await addCategory(values)
+          await addCategory(payload)
           toast.success('Categorie ajoutee avec succes.')
           window.location.reload()
         }
@@ -95,7 +116,7 @@ export function AdminCategoriesClient({ initialCategories }: { initialCategories
     startTransition(async () => {
       try {
         await deleteCategory(id)
-        setCategories((prev) => prev.filter((c) => c.id !== id))
+        setCategories((prev) => prev.filter((category) => category.id !== id))
         toast.success('Categorie supprimee.')
       } catch (error) {
         toast.error(getErrorMessage(error, 'Impossible de supprimer la categorie.'))
@@ -115,37 +136,48 @@ export function AdminCategoriesClient({ initialCategories }: { initialCategories
         <AdminEmptyState message="Aucune categorie. Ajoutez-en une pour organiser vos produits." />
       ) : (
         <AdminTable>
-            <thead className="border-b border-slate-200 bg-slate-50">
-              <tr>
-                {['Nom', 'Slug', 'Actions'].map((h) => (
-                  <th key={h} className={adminTableHeadCls}>
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {categories.map((category) => (
-                <tr key={category.id} className="transition-colors hover:bg-slate-50">
-                  <td className={`${adminTableCellCls} font-medium`}>{category.name}</td>
-                  <td className={adminTableMutedCls}>{category.slug}</td>
-                  <td className={adminTableCellCls}>
-                    <div className="flex items-center gap-1">
-                      <AdminIconButton label="Modifier la categorie" onClick={() => openEdit(category)}>
-                        <Pencil className="size-4" />
-                      </AdminIconButton>
-                      <AdminIconButton
-                        label="Supprimer la categorie"
-                        variant="danger"
-                        onClick={() => handleDelete(category.id)}
-                      >
-                        <Trash2 className="size-4" />
-                      </AdminIconButton>
-                    </div>
-                  </td>
-                </tr>
+          <thead className="border-b border-slate-200 bg-slate-50">
+            <tr>
+              {['Banniere', 'Nom', 'Slug', 'Actions'].map((heading) => (
+                <th key={heading} className={adminTableHeadCls}>
+                  {heading}
+                </th>
               ))}
-            </tbody>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {categories.map((category) => (
+              <tr key={category.id} className="transition-colors hover:bg-slate-50">
+                <td className={adminTableCellCls}>
+                  {category.bannerUrl ? (
+                    <img
+                      src={category.bannerUrl}
+                      alt={category.name}
+                      className="h-14 w-24 rounded object-cover"
+                    />
+                  ) : (
+                    <span className="text-sm text-slate-400">Aucune</span>
+                  )}
+                </td>
+                <td className={`${adminTableCellCls} font-medium`}>{category.name}</td>
+                <td className={adminTableMutedCls}>{category.slug}</td>
+                <td className={adminTableCellCls}>
+                  <div className="flex items-center gap-1">
+                    <AdminIconButton label="Modifier la categorie" onClick={() => openEdit(category)}>
+                      <Pencil className="size-4" />
+                    </AdminIconButton>
+                    <AdminIconButton
+                      label="Supprimer la categorie"
+                      variant="danger"
+                      onClick={() => handleDelete(category.id)}
+                    >
+                      <Trash2 className="size-4" />
+                    </AdminIconButton>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
         </AdminTable>
       )}
 
@@ -159,7 +191,7 @@ export function AdminCategoriesClient({ initialCategories }: { initialCategories
               <label className={adminLabelCls}>NOM *</label>
               <input
                 className={adminInputWithError(!!errors.name)}
-                placeholder="Ex: Homme"
+                placeholder="Ex: Parfums"
                 {...register('name')}
               />
               <AdminFieldError message={errors.name?.message} />
@@ -176,6 +208,15 @@ export function AdminCategoriesClient({ initialCategories }: { initialCategories
                 Laissez vide pour generer automatiquement depuis le nom.
               </p>
             </div>
+
+            <Controller
+              name="bannerUrl"
+              control={control}
+              render={({ field }) => (
+                <CategoryBannerField value={field.value ?? ''} onChange={field.onChange} />
+              )}
+            />
+            <AdminFieldError message={errors.bannerUrl?.message} />
 
             <AdminButton type="submit" disabled={isPending} className="w-full">
               {isPending ? 'Enregistrement...' : editing ? 'Enregistrer' : 'Ajouter'}

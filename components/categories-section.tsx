@@ -1,7 +1,7 @@
 import { CategoryCard } from '@/components/category-card'
-import { STORE_CATEGORIES } from '@/lib/store-categories'
+import type { StoreCategory } from '@/lib/store-categories'
 
-export function CategoriesSection() {
+export function CategoriesSection({ categories }: { categories: StoreCategory[] }) {
   return (
     <section className="border-t border-border bg-secondary/20 py-20">
       <div className="mx-auto max-w-6xl px-4">
@@ -16,7 +16,7 @@ export function CategoriesSection() {
         </div>
 
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          {STORE_CATEGORIES.map((category) => (
+          {categories.map((category) => (
             <CategoryCard key={category.slug} category={category} />
           ))}
         </div>

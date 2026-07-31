@@ -10,7 +10,7 @@ export default async function AdminCategoriesPage() {
       <AdminPageHeader
         eyebrow="ORGANISATION"
         title="Categories"
-        description="Creez et organisez les categories utilisees pour filtrer les produits en boutique."
+        description="Creez les categories, televersez leurs bannieres et organisez les produits en boutique."
       />
       <AdminCategoriesClient initialCategories={categories} />
     </div>

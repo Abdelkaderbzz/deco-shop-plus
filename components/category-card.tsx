@@ -8,11 +8,13 @@ export function CategoryCard({ category }: { category: StoreCategory }) {
       className="group relative block overflow-hidden rounded-3xl border border-border/80 bg-card transition-all duration-500 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10"
     >
       <div className="relative aspect-[4/5] overflow-hidden bg-secondary">
-        <img
-          src={category.image}
-          alt={category.name}
-          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-        />
+        {category.image ? (
+          <img
+            src={category.image}
+            alt={category.name}
+            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+        ) : null}
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/75 via-foreground/20 to-transparent" />
         <div className="absolute inset-x-0 bottom-0 p-5 text-left">
           <p className="text-[10px] font-light tracking-[0.35em] text-primary-foreground/80">

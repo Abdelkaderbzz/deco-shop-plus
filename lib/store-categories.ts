@@ -75,6 +75,40 @@ export function getCategoryBySlug(slug: string) {
   return STORE_CATEGORIES.find((c) => c.slug === slug)
 }
 
+export type DbCategory = {
+  slug: string
+  name: string
+  bannerUrl?: string | null
+}
+
+export function mergeStoreCategories(dbCategories: DbCategory[]): StoreCategory[] {
+  const dbBySlug = new Map(dbCategories.map((category) => [category.slug, category]))
+
+  const fromDefaults = STORE_CATEGORIES.map((category) => {
+    const fromDb = dbBySlug.get(category.slug)
+    return {
+      ...category,
+      name: fromDb?.name ?? category.name,
+      image: fromDb?.bannerUrl ?? category.image,
+    }
+  })
+
+  const extras = dbCategories
+    .filter((category) => !STORE_CATEGORIES.some((item) => item.slug === category.slug))
+    .map((category) => ({
+      slug: category.slug,
+      name: category.name,
+      tagline: category.name,
+      image: category.bannerUrl ?? '',
+    }))
+
+  return [...fromDefaults, ...extras]
+}
+
+export function getMergedCategoryBySlug(slug: string, dbCategories: DbCategory[]) {
+  return mergeStoreCategories(dbCategories).find((category) => category.slug === slug)
+}
+
 export function getCategoryLabel(slug: string, categories?: { slug: string; name: string }[]) {
   const fromDb = categories?.find((c) => c.slug === slug)
   if (fromDb) return fromDb.name

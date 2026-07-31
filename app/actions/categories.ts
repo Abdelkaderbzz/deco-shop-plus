@@ -5,7 +5,8 @@ import { db } from '@/lib/db'
 import { categories, products } from '@/lib/db/schema'
 import { asc, eq, sql } from 'drizzle-orm'
 import { headers } from 'next/headers'
-import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
+import { revalidatePath } from 'next/cache'
+import { cache } from 'react'
 
 async function getAdminId() {
   const session = await auth.api.getSession({ headers: await headers() })
@@ -22,32 +23,29 @@ function slugify(name: string) {
     .replace(/(^-|-$)/g, '')
 }
 
-const getCategoriesCached = unstable_cache(
-  async () => db.select().from(categories).orderBy(asc(categories.name)),
-  ['all-categories'],
-  { revalidate: 300, tags: ['categories'] },
-)
+export const getCategories = cache(async () => {
+  return db.select().from(categories).orderBy(asc(categories.name))
+})
 
-export async function getCategories() {
-  return getCategoriesCached()
-}
-
-export async function addCategory(data: { name: string; slug?: string }) {
+export async function addCategory(data: { name: string; slug?: string; bannerUrl?: string | null }) {
   await getAdminId()
   const slug = data.slug?.trim() || slugify(data.name)
   if (!slug) throw new Error('Invalid category name')
 
-  await db.insert(categories).values({ name: data.name.trim(), slug })
+  await db.insert(categories).values({
+    name: data.name.trim(),
+    slug,
+    bannerUrl: data.bannerUrl?.trim() || null,
+  })
   revalidatePath('/admin/categories')
   revalidatePath('/admin/products')
   revalidatePath('/products')
-  revalidateTag('categories', 'max')
-  revalidateTag('products', 'max')
+  revalidatePath('/')
 }
 
 export async function updateCategory(
   id: number,
-  data: { name?: string; slug?: string },
+  data: { name?: string; slug?: string; bannerUrl?: string | null },
 ) {
   await getAdminId()
 
@@ -57,6 +55,9 @@ export async function updateCategory(
   const updateData: Record<string, unknown> = { updatedAt: new Date() }
   if (data.name) updateData.name = data.name.trim()
   if (data.slug) updateData.slug = data.slug.trim()
+  if (data.bannerUrl !== undefined) {
+    updateData.bannerUrl = data.bannerUrl?.trim() || null
+  }
 
   const [updated] = await db
     .update(categories)
@@ -74,8 +75,7 @@ export async function updateCategory(
   revalidatePath('/admin/categories')
   revalidatePath('/admin/products')
   revalidatePath('/products')
-  revalidateTag('categories', 'max')
-  revalidateTag('products', 'max')
+  revalidatePath('/')
 }
 
 export async function deleteCategory(id: number) {
@@ -96,6 +96,5 @@ export async function deleteCategory(id: number) {
   revalidatePath('/admin/categories')
   revalidatePath('/admin/products')
   revalidatePath('/products')
-  revalidateTag('categories', 'max')
-  revalidateTag('products', 'max')
+  revalidatePath('/')
 }

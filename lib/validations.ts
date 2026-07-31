@@ -28,6 +28,7 @@ export const productSchema = z.object({
   sizes: z.string(),
   inStock: z.boolean(),
   featured: z.boolean(),
+  published: z.boolean(),
 })
 
 export type ProductFormValues = z.infer<typeof productSchema>
@@ -40,9 +41,21 @@ export const categorySchema = z.object({
     .refine((value) => value === '' || /^[a-z0-9-]+$/.test(value), {
       message: 'Slug invalide (lettres minuscules, chiffres et tirets uniquement)',
     }),
+  bannerUrl: z.string().url('URL invalide').or(z.literal('')).optional(),
 })
 
 export type CategoryFormValues = z.infer<typeof categorySchema>
+
+export const carouselVideoSchema = z.object({
+  url: z
+    .string()
+    .min(1, 'Lien requis')
+    .refine((value) => /instagram\.com\/reel\//i.test(value.trim()), {
+      message: 'Utilisez un lien Instagram reel (ex: https://www.instagram.com/reel/...)',
+    }),
+})
+
+export type CarouselVideoFormValues = z.infer<typeof carouselVideoSchema>
 
 export const deliveryFeeSchema = z.object({
   deliveryFee: z
