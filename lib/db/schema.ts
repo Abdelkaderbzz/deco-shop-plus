@@ -54,6 +54,7 @@ export const categories = pgTable('categories', {
   id: serial('id').primaryKey(),
   name: text('name').notNull(),
   slug: text('slug').notNull().unique(),
+  bannerUrl: text('bannerUrl'),
   createdAt: timestamp('createdAt').notNull().defaultNow(),
   updatedAt: timestamp('updatedAt').notNull().defaultNow(),
 })
@@ -61,6 +62,14 @@ export const categories = pgTable('categories', {
 export const settings = pgTable('settings', {
   id: integer('id').primaryKey().default(1),
   deliveryFee: numeric('deliveryFee', { precision: 10, scale: 3 }).notNull().default('7.000'),
+  updatedAt: timestamp('updatedAt').notNull().defaultNow(),
+})
+
+export const carouselVideos = pgTable('carousel_videos', {
+  id: serial('id').primaryKey(),
+  url: text('url').notNull().unique(),
+  sortOrder: integer('sortOrder').notNull().default(0),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
   updatedAt: timestamp('updatedAt').notNull().defaultNow(),
 })
 
@@ -76,6 +85,7 @@ export const products = pgTable('products', {
   sizes: text('sizes').notNull().default('[]'),
   inStock: boolean('inStock').notNull().default(true),
   featured: boolean('featured').notNull().default(false),
+  published: boolean('published').notNull().default(true),
   createdAt: timestamp('createdAt').notNull().defaultNow(),
   updatedAt: timestamp('updatedAt').notNull().defaultNow(),
 })

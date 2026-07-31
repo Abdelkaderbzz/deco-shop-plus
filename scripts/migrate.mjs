@@ -116,12 +116,27 @@ const statements = [
    ON CONFLICT ("slug") DO NOTHING`,
   `DELETE FROM "categories" WHERE "slug" IN ('homme', 'femme', 'unisex', 'tous')`,
   `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "images" text NOT NULL DEFAULT '[]'`,
+  `ALTER TABLE "categories" ADD COLUMN IF NOT EXISTS "bannerUrl" text`,
+  `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "published" boolean NOT NULL DEFAULT true`,
   `ALTER TABLE "orders" ADD COLUMN IF NOT EXISTS "customerGovernorate" text`,
   `UPDATE "products"
    SET "images" = json_build_array("imageUrl")::text
    WHERE "imageUrl" IS NOT NULL
      AND "imageUrl" != ''
      AND ("images" IS NULL OR "images" = '[]')`,
+  `CREATE TABLE IF NOT EXISTS "carousel_videos" (
+    "id" serial PRIMARY KEY,
+    "url" text NOT NULL UNIQUE,
+    "sortOrder" integer NOT NULL DEFAULT 0,
+    "createdAt" timestamp NOT NULL DEFAULT now(),
+    "updatedAt" timestamp NOT NULL DEFAULT now()
+  )`,
+  `INSERT INTO "carousel_videos" ("url", "sortOrder") VALUES
+    ('https://www.instagram.com/reel/DZ3XNGpsShF/', 0),
+    ('https://www.instagram.com/reel/DYdIM1eMPri/', 1),
+    ('https://www.instagram.com/reel/DaTQO_4RzjP/', 2),
+    ('https://www.instagram.com/reel/DZvMI4OsOJd/', 3)
+   ON CONFLICT ("url") DO NOTHING`,
 ]
 
 try {
