@@ -1,9 +1,9 @@
 'use client'
 
-import { ProductCard } from '@/components/product-card'
 import { CategoryPhotos } from '@/components/category-photos'
-import { getCategoryBySlug } from '@/lib/store-categories'
-import { usePathname } from 'next/navigation'
+import { ProductCard } from '@/components/product-card'
+import type { StoreCategory } from '@/lib/store-categories'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 
 type Product = {
@@ -16,58 +16,37 @@ type Product = {
   inStock: boolean
 }
 
-type Category = {
-  slug: string
-  name: string
-}
-
-function readFiltersFromUrl() {
-  if (typeof window === 'undefined') {
-    return { search: '', category: 'all' }
-  }
-
-  const params = new URLSearchParams(window.location.search)
-  return {
-    search: params.get('search') ?? '',
-    category: params.get('category') ?? 'all',
-  }
-}
-
 export function ProductsClient({
   products,
-  initialSearch,
-  initialCategory,
-  categories,
+  storeCategories,
 }: {
   products: Product[]
-  initialSearch: string
-  initialCategory: string
-  categories: Category[]
+  storeCategories: StoreCategory[]
 }) {
   const pathname = usePathname()
-  const [search, setSearch] = useState(initialSearch)
-  const [category, setCategory] = useState(initialCategory)
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const category = searchParams.get('category') ?? 'all'
+  const urlSearch = searchParams.get('search') ?? ''
+  const [search, setSearch] = useState(urlSearch)
 
   useEffect(() => {
-    function syncFromUrl() {
-      const next = readFiltersFromUrl()
-      setSearch(next.search)
-      setCategory(next.category)
-    }
+    setSearch(urlSearch)
+  }, [urlSearch])
 
-    window.addEventListener('popstate', syncFromUrl)
-    return () => window.removeEventListener('popstate', syncFromUrl)
-  }, [])
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [category])
 
   const allCategories = useMemo(
     () => [
       { value: 'all', label: 'TOUS' },
-      ...categories.map((c) => ({
-        value: c.slug,
-        label: c.name.toUpperCase(),
+      ...storeCategories.map((category) => ({
+        value: category.slug,
+        label: category.name.toUpperCase(),
       })),
     ],
-    [categories],
+    [storeCategories],
   )
 
   const filteredProducts = useMemo(() => {
@@ -90,18 +69,17 @@ export function ProductsClient({
 
     const query = params.toString()
     const url = query ? `${pathname}?${query}` : pathname
-    window.history.replaceState(window.history.state, '', url)
+    router.push(url)
   }
 
   function selectCategory(value: string) {
     if (value === category) return
-    setCategory(value)
     syncUrl(search, value)
   }
 
   return (
     <>
-      <CategoryPhotos category={category} />
+      <CategoryPhotos category={category} categories={storeCategories} />
 
       <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-start lg:gap-6">
         <div className="relative w-full lg:w-72 lg:shrink-0">
@@ -151,7 +129,7 @@ export function ProductsClient({
 
       <div className="min-h-[30vh]">
         {filteredProducts.length === 0 ? (
-          category !== 'all' && getCategoryBySlug(category) ? (
+          category !== 'all' && storeCategories.some((item) => item.slug === category) ? (
             <p className="py-8 text-center text-sm font-light tracking-widest text-muted-foreground">
               Produits bientot disponibles dans cette categorie
             </p>
@@ -163,7 +141,11 @@ export function ProductsClient({
         ) : (
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
             {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} categories={categories} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                categories={storeCategories.map((item) => ({ slug: item.slug, name: item.name }))}
+              />
             ))}
           </div>
         )}
