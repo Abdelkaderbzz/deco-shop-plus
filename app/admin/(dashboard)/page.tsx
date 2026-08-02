@@ -6,6 +6,7 @@ import {
   AdminBadge,
   AdminCard,
 } from '../admin-ui'
+import { orderStatusMeta } from '../order-status'
 import { AdminRoutePrefetch } from '../admin-route-prefetch'
 import Link from 'next/link'
 
@@ -90,8 +91,8 @@ export default async function AdminDashboardPage() {
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <AdminBadge tone={order.status === 'pending' ? 'warning' : 'default'}>
-                    {order.status}
+                  <AdminBadge tone={orderStatusMeta(order.status).tone}>
+                    {orderStatusMeta(order.status).label}
                   </AdminBadge>
                   <span className="text-sm font-bold text-slate-900">
                     {parseFloat(order.totalAmount).toFixed(3)} TND

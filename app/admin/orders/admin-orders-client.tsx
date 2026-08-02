@@ -36,6 +36,11 @@ import {
 } from '../admin-ui'
 import { AdminSelect } from '../admin-select'
 import { ADMIN_PAGE_SIZE, AdminPagination } from '../admin-pagination'
+import {
+  ORDER_STATUS_OPTIONS,
+  ORDER_STATUS_SELECT_CLS,
+  orderStatusMeta,
+} from '../order-status'
 
 type Order = {
   id: number
@@ -51,13 +56,7 @@ type Order = {
   createdAt: Date
 }
 
-const STATUS_OPTIONS = [
-  { value: 'pending', label: 'En attente', tone: 'warning' as const },
-  { value: 'confirmed', label: 'Confirme', tone: 'info' as const },
-  { value: 'shipped', label: 'Expedie', tone: 'default' as const },
-  { value: 'delivered', label: 'Livre', tone: 'success' as const },
-  { value: 'cancelled', label: 'Annule', tone: 'danger' as const },
-]
+const STATUS_OPTIONS = ORDER_STATUS_OPTIONS
 
 const ORDER_TYPE_OPTIONS = [
   { value: 'delivery', label: 'Livraison' },
@@ -68,14 +67,6 @@ const STATUS_SELECT_OPTIONS = STATUS_OPTIONS.map((status) => ({
   value: status.value,
   label: status.label,
 }))
-
-function statusMeta(status: string) {
-  return STATUS_OPTIONS.find((option) => option.value === status) ?? {
-    value: status,
-    label: status.toUpperCase(),
-    tone: 'default' as const,
-  }
-}
 
 function buildOrdersUrl(search: string, status: string, page: number) {
   const params = new URLSearchParams()
@@ -411,7 +402,7 @@ export function AdminOrdersClient({
                     onValueChange={(status) => handleStatusChange(order.id, status)}
                     items={STATUS_SELECT_OPTIONS}
                     disabled={isBusy}
-                    className="!py-1.5 text-sm"
+                    className={`!py-1.5 text-sm ${ORDER_STATUS_SELECT_CLS[orderStatusMeta(order.status).tone]}`}
                   />
                 </td>
                 <td className={`${adminTableMutedCls} whitespace-nowrap text-xs`}>
@@ -488,8 +479,8 @@ export function AdminOrdersClient({
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Statut</p>
                 <div className="mt-1">
-                  <AdminBadge tone={statusMeta(selectedOrder.status).tone}>
-                    {statusMeta(selectedOrder.status).label}
+                  <AdminBadge tone={orderStatusMeta(selectedOrder.status).tone}>
+                    {orderStatusMeta(selectedOrder.status).label}
                   </AdminBadge>
                 </div>
               </div>
@@ -637,6 +628,7 @@ export function AdminOrdersClient({
                     items={STATUS_SELECT_OPTIONS}
                     error={!!errors.status}
                     disabled={isPending}
+                    className={ORDER_STATUS_SELECT_CLS[orderStatusMeta(field.value).tone]}
                   />
                 )}
               />

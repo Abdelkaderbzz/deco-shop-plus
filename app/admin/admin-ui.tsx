@@ -55,7 +55,7 @@ export function AdminStatCard({
   label: string
   value: string | number
   hint?: string
-  tone?: 'default' | 'warning' | 'success' | 'accent' | 'info' | 'danger'
+  tone?: 'default' | 'warning' | 'success' | 'accent' | 'info' | 'danger' | 'violet'
 }) {
   const toneClasses = {
     default: 'text-slate-900',
@@ -64,6 +64,7 @@ export function AdminStatCard({
     accent: 'text-amber-800',
     info: 'text-blue-700',
     danger: 'text-red-600',
+    violet: 'text-violet-700',
   }
 
   return (
@@ -158,7 +159,7 @@ export function AdminBadge({
   tone = 'default',
 }: {
   children: ReactNode
-  tone?: 'default' | 'success' | 'warning' | 'danger' | 'info'
+  tone?: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'violet'
 }) {
   const tones = {
     default: 'bg-slate-100 text-slate-700',
@@ -166,6 +167,7 @@ export function AdminBadge({
     warning: 'bg-amber-100 text-amber-800',
     danger: 'bg-red-100 text-red-700',
     info: 'bg-blue-100 text-blue-800',
+    violet: 'bg-violet-100 text-violet-800',
   }
 
   return (
