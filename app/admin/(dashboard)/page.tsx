@@ -42,7 +42,7 @@ export default async function AdminDashboardPage() {
         />
       </div>
 
-      <div className="mb-8 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mb-8 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
         <AdminQuickLink
           href="/admin/products"
           title="Gerer les produits"
@@ -57,6 +57,11 @@ export default async function AdminDashboardPage() {
           href="/admin/categories"
           title="Gerer les categories"
           description="Organiser parfums, maquillage, sacs, soins et plus."
+        />
+        <AdminQuickLink
+          href="/admin/hero"
+          title="Images hero"
+          description="Modifier les 4 photos du collage d accueil."
         />
         <AdminQuickLink
           href="/admin/settings"
