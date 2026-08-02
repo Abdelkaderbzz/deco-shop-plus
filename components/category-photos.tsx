@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import type { StoreCategory } from '@/lib/store-categories'
 
@@ -27,12 +28,14 @@ export function CategoryPhotos({
               href={`/products?category=${cat.slug}`}
               className="group overflow-hidden rounded-2xl border border-border/60 transition-all hover:border-primary/30 hover:shadow-md hover:shadow-primary/10"
             >
-              <div className="aspect-square overflow-hidden bg-secondary">
+              <div className="relative aspect-square overflow-hidden bg-secondary">
                 {cat.image ? (
-                  <img
+                  <Image
                     src={cat.image}
                     alt={cat.name}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    fill
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 ) : null}
               </div>
@@ -54,7 +57,14 @@ export function CategoryPhotos({
       <div className="overflow-hidden rounded-3xl border border-border/60 bg-card">
         <div className="relative aspect-[21/9] overflow-hidden bg-secondary md:aspect-[3/1]">
           {storeCategory.image ? (
-            <img src={storeCategory.image} alt={storeCategory.name} className="h-full w-full object-cover" />
+            <Image
+              src={storeCategory.image}
+              alt={storeCategory.name}
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
+            />
           ) : null}
           <div className="absolute inset-0 bg-gradient-to-r from-foreground/60 via-foreground/25 to-transparent" />
           <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-10">

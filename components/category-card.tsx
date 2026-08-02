@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import type { StoreCategory } from '@/lib/store-categories'
 
@@ -9,10 +10,12 @@ export function CategoryCard({ category }: { category: StoreCategory }) {
     >
       <div className="relative aspect-[4/5] overflow-hidden bg-secondary">
         {category.image ? (
-          <img
+          <Image
             src={category.image}
             alt={category.name}
-            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+            fill
+            sizes="(max-width: 768px) 50vw, 25vw"
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
           />
         ) : null}
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/75 via-foreground/20 to-transparent" />

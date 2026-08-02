@@ -7,9 +7,10 @@ import { ProductCard } from '@/components/product-card'
 import { InstagramCarousel, InstagramFollowButton, InstagramSectionHeader } from '@/components/instagram-embed'
 import { TestimonialsSection } from '@/components/testimonials-section'
 import { HERO_IMAGES, mergeStoreCategories } from '@/lib/store-categories'
+import Image from 'next/image'
 import Link from 'next/link'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 120
 
 export default async function HomePage() {
   const [featured, categories, carouselReels] = await Promise.all([
@@ -30,7 +31,7 @@ export default async function HomePage() {
 
         <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 md:grid-cols-2 md:gap-12 md:py-24">
           <div className="flex flex-col items-center text-center md:items-start md:text-left">
-            <Logo size="lg" className="md:h-36 md:w-36" />
+            <Logo size="lg" className="md:h-36 md:w-36" priority />
             <div className="mt-6">
               <h1 className="font-serif text-4xl font-light tracking-wide text-foreground md:text-5xl">
                 Beaute feminine
@@ -62,19 +63,45 @@ export default async function HomePage() {
 
           <div className="grid grid-cols-2 gap-3 md:gap-4">
             <div className="space-y-3 md:space-y-4">
-              <div className="overflow-hidden rounded-3xl border border-border/60 shadow-sm shadow-primary/10">
-                <img src={HERO_IMAGES[0].src} alt={HERO_IMAGES[0].alt} className="aspect-[3/4] w-full object-cover" />
+              <div className="relative aspect-[3/4] overflow-hidden rounded-3xl border border-border/60 shadow-sm shadow-primary/10">
+                <Image
+                  src={HERO_IMAGES[0].src}
+                  alt={HERO_IMAGES[0].alt}
+                  fill
+                  priority
+                  sizes="(max-width: 768px) 45vw, 280px"
+                  className="object-cover"
+                />
               </div>
-              <div className="overflow-hidden rounded-3xl border border-border/60 shadow-sm shadow-primary/10">
-                <img src={HERO_IMAGES[3].src} alt={HERO_IMAGES[3].alt} className="aspect-square w-full object-cover" />
+              <div className="relative aspect-square overflow-hidden rounded-3xl border border-border/60 shadow-sm shadow-primary/10">
+                <Image
+                  src={HERO_IMAGES[3].src}
+                  alt={HERO_IMAGES[3].alt}
+                  fill
+                  sizes="(max-width: 768px) 45vw, 280px"
+                  className="object-cover"
+                />
               </div>
             </div>
             <div className="space-y-3 pt-8 md:space-y-4 md:pt-12">
-              <div className="overflow-hidden rounded-3xl border border-border/60 shadow-sm shadow-primary/10">
-                <img src={HERO_IMAGES[1].src} alt={HERO_IMAGES[1].alt} className="aspect-square w-full object-cover" />
+              <div className="relative aspect-square overflow-hidden rounded-3xl border border-border/60 shadow-sm shadow-primary/10">
+                <Image
+                  src={HERO_IMAGES[1].src}
+                  alt={HERO_IMAGES[1].alt}
+                  fill
+                  priority
+                  sizes="(max-width: 768px) 45vw, 280px"
+                  className="object-cover"
+                />
               </div>
-              <div className="overflow-hidden rounded-3xl border border-border/60 shadow-sm shadow-primary/10">
-                <img src={HERO_IMAGES[4].src} alt={HERO_IMAGES[4].alt} className="aspect-[3/4] w-full object-cover" />
+              <div className="relative aspect-[3/4] overflow-hidden rounded-3xl border border-border/60 shadow-sm shadow-primary/10">
+                <Image
+                  src={HERO_IMAGES[4].src}
+                  alt={HERO_IMAGES[4].alt}
+                  fill
+                  sizes="(max-width: 768px) 45vw, 280px"
+                  className="object-cover"
+                />
               </div>
             </div>
           </div>
