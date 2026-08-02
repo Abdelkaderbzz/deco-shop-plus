@@ -12,9 +12,9 @@ import { useConfirm } from '@/components/confirm-provider'
 import { GOVERNORATE_SELECT_OPTIONS, getGovernorateLabel } from '@/lib/tunisia-governorates'
 import { orderEditSchema, type OrderEditFormValues } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouteTransition } from '@/lib/use-route-transition'
 import { Eye, Pencil, Trash2 } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { useEffect, useMemo, useState, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import {
   AdminBadge,
@@ -24,6 +24,7 @@ import {
   AdminFieldError,
   AdminIconButton,
   AdminModal,
+  AdminSpinner,
   AdminStatCard,
   AdminTable,
   adminInputCls,
@@ -34,7 +35,7 @@ import {
   adminTableMutedCls,
 } from '../admin-ui'
 import { AdminSelect } from '../admin-select'
-import { ADMIN_PAGE_SIZE, AdminPagination, paginateItems } from '../admin-pagination'
+import { ADMIN_PAGE_SIZE, AdminPagination } from '../admin-pagination'
 
 type Order = {
   id: number
@@ -76,52 +77,63 @@ function statusMeta(status: string) {
   }
 }
 
-function matchesSearch(order: Order, query: string) {
-  const trimmed = query.trim().toLowerCase()
-  if (!trimmed) return true
-
-  const normalized = trimmed.replace(/^#/, '')
-  const governorate = order.customerGovernorate
-    ? (getGovernorateLabel(order.customerGovernorate) ?? '').toLowerCase()
-    : ''
-
-  return (
-    order.id.toString().includes(normalized) ||
-    order.customerName.toLowerCase().includes(trimmed) ||
-    order.customerPhone.toLowerCase().includes(trimmed) ||
-    (order.customerAddress ?? '').toLowerCase().includes(trimmed) ||
-    governorate.includes(trimmed) ||
-    (order.notes ?? '').toLowerCase().includes(trimmed)
-  )
+function buildOrdersUrl(search: string, status: string, page: number) {
+  const params = new URLSearchParams()
+  if (search.trim()) params.set('search', search.trim())
+  if (status !== 'all') params.set('status', status)
+  if (page > 1) params.set('page', String(page))
+  const query = params.toString()
+  return query ? `/admin/orders?${query}` : '/admin/orders'
 }
 
-function toListOrder(order: OrderWithItems): Order {
+function adjustStatusCounts(
+  counts: Record<string, number>,
+  fromStatus: string | undefined,
+  toStatus: string,
+) {
+  if (!fromStatus || fromStatus === toStatus) return counts
   return {
-    id: order.id,
-    customerName: order.customerName,
-    customerPhone: order.customerPhone,
-    customerGovernorate: order.customerGovernorate,
-    customerAddress: order.customerAddress,
-    orderType: order.orderType,
-    status: order.status,
-    totalAmount: order.totalAmount,
-    deliveryFee: order.deliveryFee,
-    notes: order.notes,
-    createdAt: order.createdAt,
+    ...counts,
+    [fromStatus]: Math.max(0, (counts[fromStatus] ?? 0) - 1),
+    [toStatus]: (counts[toStatus] ?? 0) + 1,
   }
 }
 
-export function AdminOrdersClient({ initialOrders }: { initialOrders: Order[] }) {
-  const router = useRouter()
+export function AdminOrdersClient({
+  orders: initialOrders,
+  total,
+  page,
+  search: initialSearch,
+  status: initialStatus,
+  statusCounts: initialStatusCounts,
+}: {
+  orders: Order[]
+  total: number
+  page: number
+  search: string
+  status: string
+  statusCounts: Record<string, number>
+}) {
+  const { isPending: isNavigating, push, refresh } = useRouteTransition()
   const toast = useToast()
   const { confirm } = useConfirm()
   const [orders, setOrders] = useState(initialOrders)
+  const [statusCounts, setStatusCounts] = useState(initialStatusCounts)
   const [selectedOrder, setSelectedOrder] = useState<OrderWithItems | null>(null)
+  const [loadingOrderId, setLoadingOrderId] = useState<number | null>(null)
   const [editingOrder, setEditingOrder] = useState<Order | null>(null)
-  const [filter, setFilter] = useState('all')
-  const [search, setSearch] = useState('')
-  const [page, setPage] = useState(1)
+  const [searchInput, setSearchInput] = useState(initialSearch)
   const [isPending, startTransition] = useTransition()
+
+  useEffect(() => {
+    setSearchInput(initialSearch)
+    setOrders(initialOrders)
+    setStatusCounts(initialStatusCounts)
+  }, [initialOrders, initialSearch, initialStatusCounts])
+
+  function navigate(nextSearch: string, nextStatus: string, nextPage: number) {
+    push(buildOrdersUrl(nextSearch, nextStatus, nextPage))
+  }
 
   const {
     register,
@@ -145,29 +157,19 @@ export function AdminOrdersClient({ initialOrders }: { initialOrders: Order[] })
 
   const orderType = watch('orderType')
 
-  const filtered = useMemo(
-    () =>
-      orders.filter((order) => {
-        const matchesStatus = filter === 'all' || order.status === filter
-        return matchesStatus && matchesSearch(order, search)
-      }),
-    [orders, filter, search],
-  )
-
-  const paginated = paginateItems(filtered, page, ADMIN_PAGE_SIZE)
-
-  useEffect(() => {
-    setPage(1)
-  }, [filter, search])
-
   async function openOrder(id: number) {
+    setLoadingOrderId(id)
     startTransition(async () => {
-      const result = await getOrderWithItems(id)
-      if (!result.success) {
-        toast.error(result.error)
-        return
+      try {
+        const result = await getOrderWithItems(id)
+        if (!result.success) {
+          toast.error(result.error)
+          return
+        }
+        setSelectedOrder(result.data)
+      } finally {
+        setLoadingOrderId(null)
       }
-      setSelectedOrder(result.data)
     })
   }
 
@@ -186,18 +188,28 @@ export function AdminOrdersClient({ initialOrders }: { initialOrders: Order[] })
 
   function handleStatusChange(id: number, status: string) {
     startTransition(async () => {
+      const previousStatus = orders.find((order) => order.id === id)?.status
+      setOrders((current) =>
+        current.map((order) => (order.id === id ? { ...order, status } : order)),
+      )
+      setStatusCounts((current) => adjustStatusCounts(current, previousStatus, status))
+
       const result = await updateOrderStatus(id, status)
       if (!result.success) {
+        if (previousStatus) {
+          setOrders((current) =>
+            current.map((order) => (order.id === id ? { ...order, status: previousStatus } : order)),
+          )
+          setStatusCounts((current) => adjustStatusCounts(current, status, previousStatus))
+        }
         toast.error(result.error)
         return
       }
 
-      setOrders((prev) => prev.map((order) => (order.id === id ? { ...order, status } : order)))
       if (selectedOrder?.id === id) {
         setSelectedOrder((prev) => (prev ? { ...prev, status } : prev))
       }
       toast.success('Statut de la commande mis a jour.')
-      router.refresh()
     })
   }
 
@@ -205,6 +217,7 @@ export function AdminOrdersClient({ initialOrders }: { initialOrders: Order[] })
     if (!editingOrder) return
 
     startTransition(async () => {
+      const previousStatus = editingOrder.status
       const result = await updateOrder(editingOrder.id, {
         customerName: values.customerName,
         customerPhone: values.customerPhone,
@@ -221,16 +234,31 @@ export function AdminOrdersClient({ initialOrders }: { initialOrders: Order[] })
       }
 
       const refreshed = result.data
-      setOrders((prev) =>
-        prev.map((order) => (order.id === editingOrder.id ? toListOrder(refreshed) : order)),
+      setOrders((current) =>
+        current.map((order) =>
+          order.id === editingOrder.id
+            ? {
+                ...order,
+                customerName: refreshed.customerName,
+                customerPhone: refreshed.customerPhone,
+                customerGovernorate: refreshed.customerGovernorate,
+                customerAddress: refreshed.customerAddress,
+                orderType: refreshed.orderType,
+                status: refreshed.status,
+                totalAmount: refreshed.totalAmount,
+                notes: refreshed.notes,
+              }
+            : order,
+        ),
       )
+      setStatusCounts((current) => adjustStatusCounts(current, previousStatus, refreshed.status))
+
       if (selectedOrder?.id === editingOrder.id) {
         setSelectedOrder(refreshed)
       }
 
       setEditingOrder(null)
       toast.success('Commande modifiee avec succes.')
-      router.refresh()
     })
   }
 
@@ -250,28 +278,35 @@ export function AdminOrdersClient({ initialOrders }: { initialOrders: Order[] })
         return
       }
 
-      setOrders((prev) => prev.filter((order) => order.id !== id))
       if (selectedOrder?.id === id) setSelectedOrder(null)
       if (editingOrder?.id === id) setEditingOrder(null)
       toast.success('Commande supprimee.')
-      router.refresh()
+      refresh()
     })
   }
 
   const emptyMessage =
-    search.trim().length > 0
+    searchInput.trim().length > 0
       ? 'Aucune commande ne correspond a votre recherche.'
-      : filter === 'all'
+      : initialStatus === 'all'
         ? 'Aucune commande pour le moment.'
         : 'Aucune commande pour ce filtre.'
+
+  const isBusy = isPending || isNavigating
 
   return (
     <div>
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {STATUS_OPTIONS.slice(0, 4).map((status) => {
-          const count = orders.filter((order) => order.status === status.value).length
+          const count = statusCounts[status.value] ?? 0
           return (
-            <button key={status.value} onClick={() => setFilter(status.value)} className="text-left">
+            <button
+              key={status.value}
+              type="button"
+              onClick={() => navigate(searchInput, status.value, 1)}
+              disabled={isNavigating}
+              className="text-left disabled:opacity-60"
+            >
               <AdminStatCard label={status.label} value={count} tone={status.tone} />
             </button>
           )
@@ -280,14 +315,19 @@ export function AdminOrdersClient({ initialOrders }: { initialOrders: Order[] })
 
       <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-wrap gap-2">
-          <AdminButton variant={filter === 'all' ? 'primary' : 'outline'} onClick={() => setFilter('all')}>
+          <AdminButton
+            variant={initialStatus === 'all' ? 'primary' : 'outline'}
+            onClick={() => navigate(searchInput, 'all', 1)}
+            disabled={isNavigating}
+          >
             Toutes
           </AdminButton>
           {STATUS_OPTIONS.map((status) => (
             <AdminButton
               key={status.value}
-              variant={filter === status.value ? 'primary' : 'outline'}
-              onClick={() => setFilter(status.value)}
+              variant={initialStatus === status.value ? 'primary' : 'outline'}
+              onClick={() => navigate(searchInput, status.value, 1)}
+              disabled={isNavigating}
             >
               {status.label}
             </AdminButton>
@@ -296,34 +336,51 @@ export function AdminOrdersClient({ initialOrders }: { initialOrders: Order[] })
 
         <input
           type="search"
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
+          value={searchInput}
+          onChange={(event) => setSearchInput(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' && !event.nativeEvent.isComposing) {
+              navigate(searchInput, initialStatus, 1)
+            }
+          }}
           placeholder="Rechercher par #, client, tel, adresse..."
           className={`${adminInputCls} lg:max-w-sm`}
+          disabled={isNavigating}
         />
       </div>
 
-      {filtered.length === 0 ? (
+      {total === 0 ? (
         <AdminEmptyState message={emptyMessage} />
       ) : (
-        <AdminTable>
-          <thead className="border-b border-slate-200 bg-slate-50">
+        <AdminTable
+          className="table-fixed min-w-[980px]"
+          loading={isNavigating}
+          loadingLabel="Chargement des commandes..."
+        >
+          <thead className="sticky top-0 z-[1] border-b border-slate-200 bg-slate-50">
             <tr>
-              {['#', 'Client', 'Tel', 'Gouvernorat', 'Adresse', 'Type', 'Total', 'Statut', 'Date', 'Actions'].map(
-                (heading) => (
-                  <th key={heading} className={adminTableHeadCls}>
-                    {heading}
-                  </th>
-                ),
-              )}
+              <th className={`${adminTableHeadCls} w-[72px]`}>#</th>
+              <th className={`${adminTableHeadCls} w-[140px]`}>Client</th>
+              <th className={`${adminTableHeadCls} w-[128px]`}>Tel</th>
+              <th className={`${adminTableHeadCls} w-[150px]`}>Gouvernorat</th>
+              <th className={`${adminTableHeadCls} w-[220px]`}>Adresse</th>
+              <th className={`${adminTableHeadCls} w-[108px]`}>Type</th>
+              <th className={`${adminTableHeadCls} w-[112px] text-right`}>Total</th>
+              <th className={`${adminTableHeadCls} w-[156px]`}>Statut</th>
+              <th className={`${adminTableHeadCls} w-[104px]`}>Date</th>
+              <th className={`${adminTableHeadCls} w-[116px] text-center`}>Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {paginated.map((order) => (
-              <tr key={order.id} className="transition-colors hover:bg-slate-50">
-                <td className={`${adminTableMutedCls} font-mono`}>#{order.id}</td>
-                <td className={`${adminTableCellCls} font-medium`}>{order.customerName}</td>
-                <td className={adminTableMutedCls}>{order.customerPhone}</td>
+            {orders.map((order) => (
+              <tr key={order.id} className="transition-colors hover:bg-slate-50/80">
+                <td className={`${adminTableMutedCls} font-mono text-xs`}>#{order.id}</td>
+                <td className={`${adminTableCellCls} font-medium`}>
+                  <AdminCellEllipsis text={order.customerName} maxWidthClass="max-w-[140px]" />
+                </td>
+                <td className={`${adminTableMutedCls} whitespace-nowrap font-mono text-xs`} dir="ltr">
+                  {order.customerPhone}
+                </td>
                 <td className={adminTableCellCls}>
                   <AdminCellEllipsis
                     text={
@@ -331,46 +388,48 @@ export function AdminOrdersClient({ initialOrders }: { initialOrders: Order[] })
                         ? getGovernorateLabel(order.customerGovernorate)
                         : '—'
                     }
-                    maxWidthClass="max-w-[140px]"
-                  />
-                </td>
-                <td className={`${adminTableCellCls} max-w-[200px]`}>
-                  <AdminCellEllipsis
-                    text={order.orderType === 'delivery' ? order.customerAddress : 'Retrait boutique'}
-                    maxWidthClass="max-w-[200px]"
+                    maxWidthClass="max-w-[150px]"
                   />
                 </td>
                 <td className={adminTableCellCls}>
-                  <AdminBadge>{order.orderType === 'delivery' ? 'Livraison' : 'Boutique'}</AdminBadge>
+                  <AdminCellEllipsis
+                    text={order.orderType === 'delivery' ? order.customerAddress : 'Retrait boutique'}
+                    maxWidthClass="max-w-[220px]"
+                  />
                 </td>
-                <td className={`${adminTableCellCls} font-semibold`}>
+                <td className={adminTableCellCls}>
+                  <AdminBadge tone={order.orderType === 'delivery' ? 'info' : 'default'}>
+                    {order.orderType === 'delivery' ? 'Livraison' : 'Boutique'}
+                  </AdminBadge>
+                </td>
+                <td className={`${adminTableCellCls} text-right font-semibold tabular-nums whitespace-nowrap`}>
                   {parseFloat(order.totalAmount).toFixed(3)} TND
                 </td>
-                <td className={`${adminTableCellCls} min-w-[160px]`}>
+                <td className={`${adminTableCellCls} min-w-0`}>
                   <AdminSelect
                     value={order.status}
                     onValueChange={(status) => handleStatusChange(order.id, status)}
                     items={STATUS_SELECT_OPTIONS}
-                    disabled={isPending}
+                    disabled={isBusy}
                     className="!py-1.5 text-sm"
                   />
                 </td>
-                <td className={adminTableMutedCls}>
+                <td className={`${adminTableMutedCls} whitespace-nowrap text-xs`}>
                   {new Date(order.createdAt).toLocaleDateString('fr-TN')}
                 </td>
                 <td className={adminTableCellCls}>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center justify-center gap-0.5">
                     <AdminIconButton
                       label="Voir les details"
                       onClick={() => openOrder(order.id)}
-                      disabled={isPending}
+                      disabled={isBusy}
                     >
                       <Eye className="size-4" />
                     </AdminIconButton>
                     <AdminIconButton
                       label="Modifier la commande"
                       onClick={() => openEdit(order)}
-                      disabled={isPending}
+                      disabled={isBusy}
                     >
                       <Pencil className="size-4" />
                     </AdminIconButton>
@@ -378,7 +437,7 @@ export function AdminOrdersClient({ initialOrders }: { initialOrders: Order[] })
                       label="Supprimer la commande"
                       variant="danger"
                       onClick={() => handleDelete(order.id)}
-                      disabled={isPending}
+                      disabled={isBusy}
                     >
                       <Trash2 className="size-4" />
                     </AdminIconButton>
@@ -390,12 +449,24 @@ export function AdminOrdersClient({ initialOrders }: { initialOrders: Order[] })
         </AdminTable>
       )}
 
-      <AdminPagination
-        page={page}
-        pageSize={ADMIN_PAGE_SIZE}
-        totalItems={filtered.length}
-        onPageChange={setPage}
-      />
+      {total > 0 && (
+        <AdminPagination
+          page={page}
+          pageSize={ADMIN_PAGE_SIZE}
+          totalItems={total}
+          loading={isNavigating}
+          onPageChange={(nextPage) => navigate(searchInput, initialStatus, nextPage)}
+        />
+      )}
+
+      {loadingOrderId !== null && !selectedOrder && (
+        <AdminModal title="Chargement..." onClose={() => setLoadingOrderId(null)}>
+          <div className="flex items-center justify-center gap-3 py-10 text-sm text-slate-600">
+            <AdminSpinner />
+            Chargement de la commande...
+          </div>
+        </AdminModal>
+      )}
 
       {selectedOrder && (
         <AdminModal title={`Commande #${selectedOrder.id}`} onClose={() => setSelectedOrder(null)}>

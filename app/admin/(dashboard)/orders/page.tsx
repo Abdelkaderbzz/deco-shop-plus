@@ -1,11 +1,22 @@
-import { getAllOrders } from '@/app/actions/orders'
+import { getOrderStatusCounts, getOrdersPaginated } from '@/app/actions/orders'
+import { ADMIN_PAGE_SIZE, normalizePage } from '@/lib/pagination'
 import { AdminOrdersClient } from '../../orders/admin-orders-client'
 import { AdminPageHeader } from '../../admin-ui'
 
-export const dynamic = 'force-dynamic'
+export default async function AdminOrdersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string; search?: string; status?: string }>
+}) {
+  const params = await searchParams
+  const page = normalizePage(params.page)
+  const search = params.search?.trim() ?? ''
+  const status = params.status?.trim() || 'all'
 
-export default async function AdminOrdersPage() {
-  const orders = await getAllOrders()
+  const [orderPage, statusCounts] = await Promise.all([
+    getOrdersPaginated({ page, pageSize: ADMIN_PAGE_SIZE, search, status }),
+    getOrderStatusCounts(),
+  ])
 
   return (
     <div>
@@ -14,7 +25,14 @@ export default async function AdminOrdersPage() {
         title="Commandes"
         description="Consultez, modifiez le statut, editez les informations client ou supprimez des commandes."
       />
-      <AdminOrdersClient initialOrders={orders} />
+      <AdminOrdersClient
+        orders={orderPage.items}
+        total={orderPage.total}
+        page={orderPage.page}
+        search={search}
+        status={status}
+        statusCounts={statusCounts}
+      />
     </div>
   )
 }

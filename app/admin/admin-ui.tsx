@@ -187,7 +187,8 @@ export function AdminQuickLink({
   return (
     <Link
       href={href}
-      className="group cursor-pointer rounded-lg border border-slate-200 bg-white p-5 shadow-sm transition-all hover:border-amber-400 hover:shadow-md"
+      prefetch
+      className="group cursor-pointer rounded-lg border border-slate-200 bg-white p-5 shadow-sm transition-[border-color,box-shadow] duration-200 hover:border-amber-400 hover:shadow-md"
     >
       <p className="text-sm font-semibold text-slate-900 group-hover:text-amber-800">{title}</p>
       <p className="mt-2 text-sm text-slate-500">{description}</p>
@@ -203,11 +204,107 @@ export function AdminEmptyState({ message }: { message: string }) {
   )
 }
 
-export function AdminTable({ children }: { children: ReactNode }) {
+export function AdminSpinner({ className }: { className?: string }) {
   return (
-    <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm">
-      <table className="w-full text-left">{children}</table>
+    <span
+      className={cn(
+        'inline-block size-4 animate-spin rounded-full border-2 border-slate-200 border-t-amber-700',
+        className,
+      )}
+    />
+  )
+}
+
+export function AdminTable({
+  children,
+  className,
+  loading = false,
+  loadingLabel = 'Chargement...',
+}: {
+  children: ReactNode
+  className?: string
+  loading?: boolean
+  loadingLabel?: string
+}) {
+  return (
+    <div className="relative overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm">
+      {loading && <AdminTableLoadingOverlay label={loadingLabel} />}
+      <table className={cn('w-full text-left', className)}>{children}</table>
     </div>
+  )
+}
+
+export function AdminTableLoadingOverlay({ label = 'Chargement...' }: { label?: string }) {
+  return (
+    <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-white/75 backdrop-blur-[1px]">
+      <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm">
+        <AdminSpinner />
+        {label}
+      </div>
+    </div>
+  )
+}
+
+export function AdminPageSkeleton({
+  eyebrow,
+  title,
+  description,
+  stats = 0,
+  rows = 8,
+  columns = 6,
+}: {
+  eyebrow: string
+  title: string
+  description?: string
+  stats?: number
+  rows?: number
+  columns?: number
+}) {
+  return (
+    <div>
+      <AdminPageHeader eyebrow={eyebrow} title={title} description={description} />
+      {stats > 0 && (
+        <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {Array.from({ length: stats }).map((_, index) => (
+            <div
+              key={index}
+              className="h-[88px] animate-pulse rounded-lg border border-slate-200 bg-white shadow-sm"
+            />
+          ))}
+        </div>
+      )}
+      <AdminTableSkeleton rows={rows} columns={columns} />
+    </div>
+  )
+}
+
+export function AdminTableSkeleton({ rows = 5, columns = 10 }: { rows?: number; columns?: number }) {
+  return (
+    <AdminTable>
+      <thead className="border-b border-slate-200 bg-slate-50">
+        <tr>
+          {Array.from({ length: columns }).map((_, index) => (
+            <th key={index} className={adminTableHeadCls}>
+              <span className="inline-block h-3 w-12 animate-pulse rounded bg-slate-200" />
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody className="divide-y divide-slate-100">
+        {Array.from({ length: rows }).map((_, rowIndex) => (
+          <tr key={rowIndex}>
+            {Array.from({ length: columns }).map((_, colIndex) => (
+              <td key={colIndex} className="px-4 py-3">
+                <span
+                  className="inline-block h-4 animate-pulse rounded bg-slate-100"
+                  style={{ width: `${48 + ((rowIndex + colIndex) % 4) * 16}px` }}
+                />
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </AdminTable>
   )
 }
 

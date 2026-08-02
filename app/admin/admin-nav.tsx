@@ -82,6 +82,7 @@ export function AdminNav({ userEmail }: { userEmail: string }) {
             <Link
               key={item.href}
               href={item.href}
+              prefetch
               className={`whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                 isActive(pathname, item.href)
                   ? 'bg-amber-100 text-amber-900'
@@ -107,6 +108,7 @@ export function AdminNav({ userEmail }: { userEmail: string }) {
             <Link
               key={item.href}
               href={item.href}
+              prefetch
               className={`flex items-center rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
                 isActive(pathname, item.href)
                   ? 'bg-amber-100 text-amber-900'

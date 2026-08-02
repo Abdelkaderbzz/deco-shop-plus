@@ -142,7 +142,7 @@ export function AdminCarouselClient({ initialVideos }: { initialVideos: Carousel
       {videos.length === 0 ? (
         <AdminEmptyState message="Aucune video dans le carousel. Ajoutez des liens Instagram reel." />
       ) : (
-        <AdminTable>
+        <AdminTable loading={isPending} loadingLabel="Mise a jour du carousel...">
           <thead className="border-b border-slate-200 bg-slate-50">
             <tr>
               {['Ordre', 'Lien', 'Reel ID', 'Actions'].map((heading) => (

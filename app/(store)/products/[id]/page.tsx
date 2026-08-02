@@ -8,7 +8,7 @@ import { AddToCartButton } from './add-to-cart-button'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 120
 
 export default async function ProductDetailPage({
   params,

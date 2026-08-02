@@ -2,8 +2,6 @@ import { getCarouselVideos } from '@/app/actions/carousel'
 import { AdminCarouselClient } from '../../admin-carousel-client'
 import { AdminPageHeader } from '../../admin-ui'
 
-export const dynamic = 'force-dynamic'
-
 export default async function AdminCarouselPage() {
   const videos = await getCarouselVideos()
 

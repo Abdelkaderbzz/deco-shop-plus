@@ -1,9 +1,9 @@
 'use client'
 
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { AdminButton } from './admin-ui'
+import { AdminButton, AdminSpinner } from './admin-ui'
 
-export const ADMIN_PAGE_SIZE = 10
+export { ADMIN_PAGE_SIZE } from '@/lib/pagination'
 
 export function paginateItems<T>(items: T[], page: number, pageSize: number): T[] {
   const start = (page - 1) * pageSize
@@ -15,11 +15,13 @@ export function AdminPagination({
   pageSize,
   totalItems,
   onPageChange,
+  loading = false,
 }: {
   page: number
   pageSize: number
   totalItems: number
   onPageChange: (page: number) => void
+  loading?: boolean
 }) {
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize))
   const start = totalItems === 0 ? 0 : (page - 1) * pageSize + 1
@@ -41,19 +43,20 @@ export function AdminPagination({
       <div className="flex items-center gap-2">
         <AdminButton
           variant="outline"
-          disabled={page <= 1}
+          disabled={page <= 1 || loading}
           onClick={() => onPageChange(page - 1)}
           aria-label="Page precedente"
           className="!px-2.5"
         >
           <ChevronLeft className="size-4" />
         </AdminButton>
-        <span className="min-w-[7rem] text-center text-sm text-slate-600">
+        <span className="flex min-w-[7rem] items-center justify-center gap-2 text-center text-sm text-slate-600">
+          {loading && <AdminSpinner className="size-3.5" />}
           Page {page} / {totalPages}
         </span>
         <AdminButton
           variant="outline"
-          disabled={page >= totalPages}
+          disabled={page >= totalPages || loading}
           onClick={() => onPageChange(page + 1)}
           aria-label="Page suivante"
           className="!px-2.5"

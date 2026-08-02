@@ -78,7 +78,11 @@ export function AdminCategoriesClient({ initialCategories }: { initialCategories
     startTransition(async () => {
       try {
         if (editing) {
-          await updateCategory(editing.id, payload)
+          const result = await updateCategory(editing.id, payload)
+          if (!result.success) {
+            toast.error(result.error)
+            return
+          }
           setCategories((prev) =>
             prev.map((category) =>
               category.id === editing.id
@@ -93,9 +97,17 @@ export function AdminCategoriesClient({ initialCategories }: { initialCategories
           )
           toast.success('Categorie modifiee avec succes.')
         } else {
-          await addCategory(payload)
+          const result = await addCategory(payload)
+          if (!result.success) {
+            toast.error(result.error)
+            return
+          }
+          if (result.category) {
+            setCategories((prev) =>
+              [...prev, result.category!].sort((a, b) => a.name.localeCompare(b.name)),
+            )
+          }
           toast.success('Categorie ajoutee avec succes.')
-          window.location.reload()
         }
         setShowForm(false)
       } catch (error) {
@@ -107,7 +119,8 @@ export function AdminCategoriesClient({ initialCategories }: { initialCategories
   async function handleDelete(id: number) {
     const ok = await confirm({
       title: 'Supprimer cette categorie ?',
-      description: 'Les produits lies ne seront pas supprimes.',
+      description:
+        'Impossible si des produits utilisent encore cette categorie. Les produits ne seront pas supprimes.',
       confirmLabel: 'Supprimer',
       variant: 'destructive',
     })
@@ -115,7 +128,11 @@ export function AdminCategoriesClient({ initialCategories }: { initialCategories
 
     startTransition(async () => {
       try {
-        await deleteCategory(id)
+        const result = await deleteCategory(id)
+        if (!result.success) {
+          toast.error(result.error)
+          return
+        }
         setCategories((prev) => prev.filter((category) => category.id !== id))
         toast.success('Categorie supprimee.')
       } catch (error) {
@@ -127,7 +144,7 @@ export function AdminCategoriesClient({ initialCategories }: { initialCategories
   return (
     <div>
       <div className="mb-6 flex justify-end">
-        <AdminButton variant="outline" onClick={openAdd}>
+        <AdminButton variant="outline" onClick={openAdd} disabled={isPending}>
           + Ajouter une categorie
         </AdminButton>
       </div>
@@ -135,7 +152,7 @@ export function AdminCategoriesClient({ initialCategories }: { initialCategories
       {categories.length === 0 ? (
         <AdminEmptyState message="Aucune categorie. Ajoutez-en une pour organiser vos produits." />
       ) : (
-        <AdminTable>
+        <AdminTable loading={isPending} loadingLabel="Mise a jour des categories...">
           <thead className="border-b border-slate-200 bg-slate-50">
             <tr>
               {['Banniere', 'Nom', 'Slug', 'Actions'].map((heading) => (
@@ -163,13 +180,18 @@ export function AdminCategoriesClient({ initialCategories }: { initialCategories
                 <td className={adminTableMutedCls}>{category.slug}</td>
                 <td className={adminTableCellCls}>
                   <div className="flex items-center gap-1">
-                    <AdminIconButton label="Modifier la categorie" onClick={() => openEdit(category)}>
+                    <AdminIconButton
+                      label="Modifier la categorie"
+                      onClick={() => openEdit(category)}
+                      disabled={isPending}
+                    >
                       <Pencil className="size-4" />
                     </AdminIconButton>
                     <AdminIconButton
                       label="Supprimer la categorie"
                       variant="danger"
                       onClick={() => handleDelete(category.id)}
+                      disabled={isPending}
                     >
                       <Trash2 className="size-4" />
                     </AdminIconButton>
@@ -184,7 +206,7 @@ export function AdminCategoriesClient({ initialCategories }: { initialCategories
       {showForm && (
         <AdminModal
           title={editing ? 'Modifier la categorie' : 'Nouvelle categorie'}
-          onClose={() => setShowForm(false)}
+          onClose={() => !isPending && setShowForm(false)}
         >
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
@@ -192,6 +214,7 @@ export function AdminCategoriesClient({ initialCategories }: { initialCategories
               <input
                 className={adminInputWithError(!!errors.name)}
                 placeholder="Ex: Parfums"
+                disabled={isPending}
                 {...register('name')}
               />
               <AdminFieldError message={errors.name?.message} />
@@ -201,6 +224,7 @@ export function AdminCategoriesClient({ initialCategories }: { initialCategories
               <input
                 className={adminInputWithError(!!errors.slug)}
                 placeholder="Ex: parfums"
+                disabled={isPending}
                 {...register('slug')}
               />
               <AdminFieldError message={errors.slug?.message} />

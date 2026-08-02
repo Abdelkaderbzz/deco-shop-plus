@@ -2,8 +2,10 @@
 
 import { CategoryPhotos } from '@/components/category-photos'
 import { ProductCard } from '@/components/product-card'
+import { useRouteTransition } from '@/lib/use-route-transition'
 import type { StoreCategory } from '@/lib/store-categories'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { usePathname } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 
 type Product = {
@@ -18,63 +20,57 @@ type Product = {
 
 export function ProductsClient({
   products,
+  total,
+  page,
+  totalPages,
+  search: initialSearch,
+  category,
   storeCategories,
 }: {
   products: Product[]
+  total: number
+  page: number
+  totalPages: number
+  search: string
+  category: string
   storeCategories: StoreCategory[]
 }) {
   const pathname = usePathname()
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const category = searchParams.get('category') ?? 'all'
-  const urlSearch = searchParams.get('search') ?? ''
-  const [search, setSearch] = useState(urlSearch)
+  const { isPending, push } = useRouteTransition()
+  const [search, setSearch] = useState(initialSearch)
 
   useEffect(() => {
-    setSearch(urlSearch)
-  }, [urlSearch])
+    setSearch(initialSearch)
+  }, [initialSearch])
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
-  }, [category])
+  }, [category, page])
 
   const allCategories = useMemo(
     () => [
       { value: 'all', label: 'TOUS' },
-      ...storeCategories.map((category) => ({
-        value: category.slug,
-        label: category.name.toUpperCase(),
+      ...storeCategories.map((item) => ({
+        value: item.slug,
+        label: item.name.toUpperCase(),
       })),
     ],
     [storeCategories],
   )
 
-  const filteredProducts = useMemo(() => {
-    const query = search.trim().toLowerCase()
-
-    return products.filter((product) => {
-      if (category !== 'all' && product.category !== category) return false
-      if (!query) return true
-      return (
-        product.name.toLowerCase().includes(query) ||
-        product.brand.toLowerCase().includes(query)
-      )
-    })
-  }, [products, category, search])
-
-  function syncUrl(newSearch: string, newCategory: string) {
+  function syncUrl(newSearch: string, newCategory: string, newPage = 1) {
     const params = new URLSearchParams()
     if (newSearch.trim()) params.set('search', newSearch.trim())
     if (newCategory !== 'all') params.set('category', newCategory)
+    if (newPage > 1) params.set('page', String(newPage))
 
     const query = params.toString()
-    const url = query ? `${pathname}?${query}` : pathname
-    router.push(url)
+    push(query ? `${pathname}?${query}` : pathname)
   }
 
   function selectCategory(value: string) {
-    if (value === category) return
-    syncUrl(search, value)
+    if (value === category || isPending) return
+    syncUrl(search, value, 1)
   }
 
   return (
@@ -102,10 +98,11 @@ export function ProductsClient({
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
-                syncUrl(search, category)
+                syncUrl(search, category, 1)
               }
             }}
-            className="w-full rounded-xl border border-border bg-input py-2.5 pl-9 pr-4 text-sm font-light text-foreground placeholder:text-muted-foreground outline-none transition-colors focus:border-primary/50 focus:ring-2 focus:ring-primary/10"
+            disabled={isPending}
+            className="w-full rounded-xl border border-border bg-input py-2.5 pl-9 pr-4 text-sm font-light text-foreground placeholder:text-muted-foreground outline-none transition-colors focus:border-primary/50 focus:ring-2 focus:ring-primary/10 disabled:opacity-60"
           />
         </div>
 
@@ -115,7 +112,8 @@ export function ProductsClient({
               key={cat.value}
               type="button"
               onClick={() => selectCategory(cat.value)}
-              className={`rounded-full border px-3 py-2 text-center text-[10px] font-light tracking-[0.2em] transition-colors ${
+              disabled={isPending}
+              className={`rounded-full border px-3 py-2 text-center text-[10px] font-light tracking-[0.2em] transition-colors disabled:opacity-60 ${
                 category === cat.value
                   ? 'border-primary bg-primary text-primary-foreground shadow-sm shadow-primary/20'
                   : 'border-border text-muted-foreground hover:border-primary/40 hover:bg-primary/5 hover:text-primary'
@@ -127,8 +125,17 @@ export function ProductsClient({
         </div>
       </div>
 
-      <div className="min-h-[30vh]">
-        {filteredProducts.length === 0 ? (
+      <div className="relative min-h-[30vh]">
+        {isPending && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-background/60 backdrop-blur-[1px]">
+            <div className="flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm text-muted-foreground shadow-sm">
+              <span className="size-4 animate-spin rounded-full border-2 border-border border-t-primary" />
+              Chargement...
+            </div>
+          </div>
+        )}
+
+        {total === 0 ? (
           category !== 'all' && storeCategories.some((item) => item.slug === category) ? (
             <p className="py-8 text-center text-sm font-light tracking-widest text-muted-foreground">
               Produits bientot disponibles dans cette categorie
@@ -139,15 +146,45 @@ export function ProductsClient({
             </div>
           )
         ) : (
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-            {filteredProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                categories={storeCategories.map((item) => ({ slug: item.slug, name: item.name }))}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+              {products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  categories={storeCategories.map((item) => ({ slug: item.slug, name: item.name }))}
+                />
+              ))}
+            </div>
+
+            {totalPages > 1 && (
+              <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
+                <p className="text-sm font-light text-muted-foreground">
+                  Page {page} / {totalPages} · {total} produit{total > 1 ? 's' : ''}
+                </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    disabled={page <= 1 || isPending}
+                    onClick={() => syncUrl(search, category, page - 1)}
+                    className="inline-flex items-center gap-1 rounded-full border border-border px-4 py-2 text-xs font-light tracking-widest text-muted-foreground transition-colors hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    <ChevronLeft className="size-4" />
+                    Precedent
+                  </button>
+                  <button
+                    type="button"
+                    disabled={page >= totalPages || isPending}
+                    onClick={() => syncUrl(search, category, page + 1)}
+                    className="inline-flex items-center gap-1 rounded-full border border-border px-4 py-2 text-xs font-light tracking-widest text-muted-foreground transition-colors hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    Suivant
+                    <ChevronRight className="size-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </>

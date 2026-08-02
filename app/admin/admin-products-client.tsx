@@ -4,9 +4,10 @@ import { addProduct, deleteProduct, updateProduct } from '@/app/actions/products
 import { useToast } from '@/components/toast-provider'
 import { useConfirm } from '@/components/confirm-provider'
 import { getErrorMessage } from '@/lib/get-error-message'
-import { getPrimaryImage, parseProductImages, serializeProductImages } from '@/lib/product-images'
+import { getPrimaryImage, parseProductImages } from '@/lib/product-images'
 import { productSchema, type ProductFormValues } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouteTransition } from '@/lib/use-route-transition'
 import { ExternalLink, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -27,7 +28,7 @@ import {
 } from './admin-ui'
 import { AdminSelect } from './admin-select'
 import { ProductImagesField } from './product-images-field'
-import { ADMIN_PAGE_SIZE, AdminPagination, paginateItems } from './admin-pagination'
+import { ADMIN_PAGE_SIZE, AdminPagination } from './admin-pagination'
 
 type Product = {
   id: number
@@ -64,22 +65,40 @@ const EMPTY_FORM: ProductFormValues = {
 }
 
 export function AdminProductsClient({
-  initialProducts,
+  products,
+  total,
+  page,
+  search: initialSearch,
   categories,
 }: {
-  initialProducts: Product[]
+  products: Product[]
+  total: number
+  page: number
+  search: string
   categories: Category[]
 }) {
+  const { isPending: isNavigating, push, refresh } = useRouteTransition()
   const toast = useToast()
   const { confirm } = useConfirm()
-  const [products, setProducts] = useState(initialProducts)
-  const [search, setSearch] = useState('')
-  const [page, setPage] = useState(1)
+  const [searchInput, setSearchInput] = useState(initialSearch)
   const [showForm, setShowForm] = useState(false)
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [isPending, startTransition] = useTransition()
+  const isBusy = isPending || isNavigating
 
   const defaultCategory = categories[0]?.slug ?? 'parfums'
+
+  useEffect(() => {
+    setSearchInput(initialSearch)
+  }, [initialSearch])
+
+  function navigate(nextSearch: string, nextPage: number) {
+    const params = new URLSearchParams()
+    if (nextSearch.trim()) params.set('search', nextSearch.trim())
+    if (nextPage > 1) params.set('page', String(nextPage))
+    const query = params.toString()
+    push(query ? `/admin/products?${query}` : '/admin/products')
+  }
 
   const {
     register,
@@ -95,21 +114,6 @@ export function AdminProductsClient({
   })
 
   const images = watch('images')
-
-  const filtered = products.filter((p) => {
-    const q = search.toLowerCase()
-    return (
-      p.name.toLowerCase().includes(q) ||
-      p.brand.toLowerCase().includes(q) ||
-      p.category.toLowerCase().includes(q)
-    )
-  })
-
-  const paginated = paginateItems(filtered, page, ADMIN_PAGE_SIZE)
-
-  useEffect(() => {
-    setPage(1)
-  }, [search])
 
   function openAdd() {
     setEditingProduct(null)
@@ -139,8 +143,6 @@ export function AdminProductsClient({
       .split(',')
       .map((s) => s.trim())
       .filter(Boolean)
-    const serializedImages = serializeProductImages(form.images)
-    const primaryImage = getPrimaryImage({ images: serializedImages })
 
     startTransition(async () => {
       try {
@@ -157,21 +159,6 @@ export function AdminProductsClient({
             featured: form.featured,
             published: form.published,
           })
-          setProducts((prev) =>
-            prev.map((p) =>
-              p.id === editingProduct.id
-                ? {
-                    ...p,
-                    ...form,
-                    description: form.description || null,
-                    images: serializedImages,
-                    imageUrl: primaryImage,
-                    sizes: JSON.stringify(sizesArr),
-                    published: form.published,
-                  }
-                : p,
-            ),
-          )
           toast.success('Produit modifie avec succes.')
         } else {
           await addProduct({
@@ -187,9 +174,9 @@ export function AdminProductsClient({
             published: form.published,
           })
           toast.success('Produit ajoute avec succes.')
-          window.location.reload()
         }
         setShowForm(false)
+        refresh()
       } catch (error) {
         toast.error(getErrorMessage(error, "Impossible d'enregistrer le produit."))
       }
@@ -208,8 +195,8 @@ export function AdminProductsClient({
     startTransition(async () => {
       try {
         await deleteProduct(id)
-        setProducts((prev) => prev.filter((p) => p.id !== id))
         toast.success('Produit supprime.')
+        refresh()
       } catch (error) {
         toast.error(getErrorMessage(error, 'Impossible de supprimer le produit.'))
       }
@@ -226,19 +213,25 @@ export function AdminProductsClient({
         <input
           type="text"
           placeholder="Rechercher un produit..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
+              navigate(searchInput, 1)
+            }
+          }}
           className={`${adminInputWithError(false)} max-w-sm`}
+          disabled={isNavigating}
         />
-        <AdminButton variant="outline" onClick={openAdd}>
+        <AdminButton variant="outline" onClick={openAdd} disabled={isBusy}>
           + Ajouter un produit
         </AdminButton>
       </div>
 
-      {filtered.length === 0 ? (
+      {total === 0 ? (
         <AdminEmptyState message="Aucun produit trouve." />
       ) : (
-        <AdminTable>
+        <AdminTable loading={isBusy} loadingLabel={isNavigating ? 'Chargement des produits...' : 'Mise a jour...'}>
             <thead className="border-b border-slate-200 bg-slate-50">
               <tr>
                 {['Image', 'Nom', 'Marque', 'Categorie', 'Prix', 'Stock', 'Statut', 'Actions'].map((h) => (
@@ -249,7 +242,7 @@ export function AdminProductsClient({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {paginated.map((p) => {
+              {products.map((p) => {
                 const primaryImage = getPrimaryImage(p)
                 const imageCount = parseProductImages(p).length
 
@@ -298,13 +291,14 @@ export function AdminProductsClient({
                       >
                         <ExternalLink className="size-4" />
                       </AdminIconLink>
-                      <AdminIconButton label="Modifier le produit" onClick={() => openEdit(p)}>
+                      <AdminIconButton label="Modifier le produit" onClick={() => openEdit(p)} disabled={isBusy}>
                         <Pencil className="size-4" />
                       </AdminIconButton>
                       <AdminIconButton
                         label="Supprimer le produit"
                         variant="danger"
                         onClick={() => handleDelete(p.id)}
+                        disabled={isBusy}
                       >
                         <Trash2 className="size-4" />
                       </AdminIconButton>
@@ -316,19 +310,20 @@ export function AdminProductsClient({
         </AdminTable>
       )}
 
-      {filtered.length > 0 && (
+      {total > 0 && (
         <AdminPagination
           page={page}
           pageSize={ADMIN_PAGE_SIZE}
-          totalItems={filtered.length}
-          onPageChange={setPage}
+          totalItems={total}
+          loading={isNavigating}
+          onPageChange={(nextPage) => navigate(searchInput, nextPage)}
         />
       )}
 
       {showForm && (
         <AdminModal
           title={editingProduct ? 'Modifier le produit' : 'Nouveau produit'}
-          onClose={() => setShowForm(false)}
+          onClose={() => !isPending && setShowForm(false)}
         >
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>

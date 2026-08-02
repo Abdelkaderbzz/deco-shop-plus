@@ -1,5 +1,4 @@
-import { getDashboardStats } from '@/app/actions/orders'
-import { getAllOrders } from '@/app/actions/orders'
+import { getDashboardStats, getRecentOrders } from '@/app/actions/orders'
 import {
   AdminPageHeader,
   AdminQuickLink,
@@ -7,18 +6,17 @@ import {
   AdminBadge,
   AdminCard,
 } from '../admin-ui'
+import { AdminRoutePrefetch } from '../admin-route-prefetch'
 import Link from 'next/link'
 
 export default async function AdminDashboardPage() {
-  const [stats, recentOrders] = await Promise.all([
-    getDashboardStats(),
-    getAllOrders(),
-  ])
+  const [stats, recentOrders] = await Promise.all([getDashboardStats(), getRecentOrders(5)])
 
-  const latest = recentOrders.slice(0, 5)
+  const latest = recentOrders
 
   return (
     <div>
+      <AdminRoutePrefetch />
       <AdminPageHeader
         eyebrow="ADMINISTRATION"
         title="Tableau de bord"
@@ -98,6 +96,7 @@ export default async function AdminDashboardPage() {
             ))}
             <Link
               href="/admin/orders"
+              prefetch
               className="inline-block text-sm font-semibold text-amber-800 hover:underline"
             >
               Voir toutes les commandes
