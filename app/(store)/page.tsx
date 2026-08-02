@@ -1,24 +1,27 @@
 import { getCarouselVideoUrls } from '@/app/actions/carousel'
-import { getFeaturedProducts } from '@/app/actions/products'
 import { getCategories } from '@/app/actions/categories'
+import { getHeroImages } from '@/app/actions/hero'
+import { getFeaturedProducts } from '@/app/actions/products'
 import { CategoriesSection } from '@/components/categories-section'
 import { Logo } from '@/components/logo'
 import { ProductCard } from '@/components/product-card'
 import { InstagramCarousel, InstagramFollowButton, InstagramSectionHeader } from '@/components/instagram-embed'
 import { TestimonialsSection } from '@/components/testimonials-section'
-import { HERO_IMAGES, mergeStoreCategories } from '@/lib/store-categories'
+import { mergeStoreCategories } from '@/lib/store-categories'
 import Image from 'next/image'
 import Link from 'next/link'
 
 export const revalidate = 120
 
 export default async function HomePage() {
-  const [featured, categories, carouselReels] = await Promise.all([
+  const [featured, categories, carouselReels, heroImages] = await Promise.all([
     getFeaturedProducts(),
     getCategories(),
     getCarouselVideoUrls(),
+    getHeroImages(),
   ])
   const storeCategories = mergeStoreCategories(categories)
+  const [heroTopLeft, heroTopRight, heroBottomLeft, heroBottomRight] = heroImages
 
   return (
     <div>
@@ -65,8 +68,8 @@ export default async function HomePage() {
             <div className="space-y-3 md:space-y-4">
               <div className="relative aspect-[3/4] overflow-hidden rounded-3xl border border-border/60 shadow-sm shadow-primary/10">
                 <Image
-                  src={HERO_IMAGES[0].src}
-                  alt={HERO_IMAGES[0].alt}
+                  src={heroTopLeft.imageUrl}
+                  alt={heroTopLeft.alt}
                   fill
                   priority
                   sizes="(max-width: 768px) 45vw, 280px"
@@ -75,8 +78,8 @@ export default async function HomePage() {
               </div>
               <div className="relative aspect-square overflow-hidden rounded-3xl border border-border/60 shadow-sm shadow-primary/10">
                 <Image
-                  src={HERO_IMAGES[3].src}
-                  alt={HERO_IMAGES[3].alt}
+                  src={heroBottomLeft.imageUrl}
+                  alt={heroBottomLeft.alt}
                   fill
                   sizes="(max-width: 768px) 45vw, 280px"
                   className="object-cover"
@@ -86,8 +89,8 @@ export default async function HomePage() {
             <div className="space-y-3 pt-8 md:space-y-4 md:pt-12">
               <div className="relative aspect-square overflow-hidden rounded-3xl border border-border/60 shadow-sm shadow-primary/10">
                 <Image
-                  src={HERO_IMAGES[1].src}
-                  alt={HERO_IMAGES[1].alt}
+                  src={heroTopRight.imageUrl}
+                  alt={heroTopRight.alt}
                   fill
                   priority
                   sizes="(max-width: 768px) 45vw, 280px"
@@ -96,8 +99,8 @@ export default async function HomePage() {
               </div>
               <div className="relative aspect-[3/4] overflow-hidden rounded-3xl border border-border/60 shadow-sm shadow-primary/10">
                 <Image
-                  src={HERO_IMAGES[4].src}
-                  alt={HERO_IMAGES[4].alt}
+                  src={heroBottomRight.imageUrl}
+                  alt={heroBottomRight.alt}
                   fill
                   sizes="(max-width: 768px) 45vw, 280px"
                   className="object-cover"

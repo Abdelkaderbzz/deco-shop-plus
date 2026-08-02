@@ -32,6 +32,7 @@ export const STORE_CATEGORIES: StoreCategory[] = [
   },
 ]
 
+/** @deprecated Prefer getHeroImages() from app/actions/hero — kept for showcase gallery refs. */
 export const HERO_IMAGES = [
   { src: '/hero/perfume-1.webp', alt: 'Parfums feminins' },
   { src: '/hero/makeup-1.webp', alt: 'Maquillage luxe' },
