@@ -23,7 +23,7 @@ export function Navbar({ storeCategories }: { storeCategories: StoreCategory[] }
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/80 bg-card/95 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3.5">
-        <Link href="/" className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-3" aria-label="Parfumerie Janna — Accueil">
           <Logo size="sm" />
         </Link>
 
@@ -58,15 +58,17 @@ export function Navbar({ storeCategories }: { storeCategories: StoreCategory[] }
         <div className="flex items-center gap-4">
           <Link
             href="/checkout"
-            className="relative flex items-center gap-2 text-sm font-light tracking-widest text-foreground transition-colors hover:text-primary"
+            aria-label={count > 0 ? `Panier, ${count} article${count > 1 ? 's' : ''}` : 'Panier'}
+            className="relative flex min-h-11 min-w-11 items-center justify-center gap-2 text-sm font-light tracking-widest text-foreground transition-colors hover:text-primary"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
               <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
               <line x1="3" y1="6" x2="21" y2="6" />
               <path d="M16 10a4 4 0 01-8 0" />
             </svg>
+            <span className="sr-only">Panier</span>
             {count > 0 && (
-              <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
+              <span className="absolute right-0 top-0 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-medium text-primary-foreground">
                 {count}
               </span>
             )}
