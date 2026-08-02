@@ -1,10 +1,11 @@
 // Run with: node scripts/seed-products.mjs
 import { Pool } from 'pg'
+import { resolveDatabaseUrl } from './db-url.mjs'
 import { loadEnv } from './load-env.mjs'
 
 loadEnv()
 
-const DATABASE_URL = process.env.DATABASE_URL
+const DATABASE_URL = resolveDatabaseUrl()
 if (!DATABASE_URL) {
   console.error('DATABASE_URL not set in .env')
   process.exit(1)

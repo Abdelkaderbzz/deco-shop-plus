@@ -1,10 +1,11 @@
 // Run with: node scripts/migrate.mjs
 import { Pool } from 'pg'
+import { resolveDatabaseUrl } from './db-url.mjs'
 import { loadEnv } from './load-env.mjs'
 
 loadEnv()
 
-const DATABASE_URL = process.env.DATABASE_URL
+const DATABASE_URL = resolveDatabaseUrl()
 if (!DATABASE_URL) {
   console.error('DATABASE_URL not set.')
   process.exit(1)
@@ -137,6 +138,9 @@ const statements = [
     ('https://www.instagram.com/reel/DaTQO_4RzjP/', 2),
     ('https://www.instagram.com/reel/DZvMI4OsOJd/', 3)
    ON CONFLICT ("url") DO NOTHING`,
+  `CREATE INDEX IF NOT EXISTS "orders_created_at_idx" ON "orders" ("createdAt" DESC)`,
+  `CREATE INDEX IF NOT EXISTS "orders_status_idx" ON "orders" ("status")`,
+  `CREATE INDEX IF NOT EXISTS "order_items_order_id_idx" ON "order_items" ("orderId")`,
 ]
 
 try {

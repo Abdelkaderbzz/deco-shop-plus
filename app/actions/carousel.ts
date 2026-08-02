@@ -1,12 +1,11 @@
 'use server'
 
-import { auth } from '@/lib/auth'
+import { requireAdminId } from '@/lib/admin-auth'
 import { DEFAULT_CAROUSEL_REELS, normalizeInstagramReelUrl } from '@/lib/carousel-videos'
 import { db } from '@/lib/db'
 import { carouselVideos } from '@/lib/db/schema'
 import { asc, eq } from 'drizzle-orm'
-import { headers } from 'next/headers'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
 
 export type CarouselVideoRow = {
   id: number
@@ -20,12 +19,6 @@ export type CarouselActionResult =
   | { success: true; video?: CarouselVideoRow; videos?: CarouselVideoRow[] }
   | { success: false; error: string }
 
-async function getAdminId() {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user) throw new Error('Session expiree. Reconnectez-vous.')
-  return session.user.id
-}
-
 async function listCarouselVideos() {
   return db
     .select()
@@ -33,14 +26,28 @@ async function listCarouselVideos() {
     .orderBy(asc(carouselVideos.sortOrder), asc(carouselVideos.id))
 }
 
+async function revalidateCarouselPaths() {
+  revalidateTag('carousel', 'max')
+  revalidatePath('/admin/carousel')
+  revalidatePath('/')
+}
+
+const getCarouselUrlsCached = unstable_cache(
+  async () => {
+    const rows = await listCarouselVideos()
+    if (rows.length === 0) return DEFAULT_CAROUSEL_REELS
+    return rows.map((row) => row.url)
+  },
+  ['carousel-urls'],
+  { revalidate: 300, tags: ['carousel'] },
+)
+
 export async function getCarouselVideos() {
   return listCarouselVideos()
 }
 
 export async function getCarouselVideoUrls() {
-  const rows = await listCarouselVideos()
-  if (rows.length === 0) return DEFAULT_CAROUSEL_REELS
-  return rows.map((row) => row.url)
+  return getCarouselUrlsCached()
 }
 
 function mapCarouselError(error: unknown, fallback: string) {
@@ -54,25 +61,23 @@ function mapCarouselError(error: unknown, fallback: string) {
   return fallback
 }
 
-async function revalidateCarouselPaths() {
-  revalidatePath('/admin/carousel')
-  revalidatePath('/')
-}
-
 async function persistSortOrder(ids: number[]) {
+  const now = new Date()
   await db.transaction(async (tx) => {
-    for (let index = 0; index < ids.length; index += 1) {
-      await tx
-        .update(carouselVideos)
-        .set({ sortOrder: index, updatedAt: new Date() })
-        .where(eq(carouselVideos.id, ids[index]))
-    }
+    await Promise.all(
+      ids.map((id, index) =>
+        tx
+          .update(carouselVideos)
+          .set({ sortOrder: index, updatedAt: now })
+          .where(eq(carouselVideos.id, id)),
+      ),
+    )
   })
 }
 
 export async function addCarouselVideo(url: string): Promise<CarouselActionResult> {
   try {
-    await getAdminId()
+    await requireAdminId()
 
     const normalized = normalizeInstagramReelUrl(url)
     if (!normalized) {
@@ -104,7 +109,7 @@ export async function addCarouselVideo(url: string): Promise<CarouselActionResul
 
 export async function updateCarouselVideo(id: number, url: string): Promise<CarouselActionResult> {
   try {
-    await getAdminId()
+    await requireAdminId()
 
     const normalized = normalizeInstagramReelUrl(url)
     if (!normalized) {
@@ -139,7 +144,7 @@ export async function updateCarouselVideo(id: number, url: string): Promise<Caro
 
 export async function deleteCarouselVideo(id: number): Promise<CarouselActionResult> {
   try {
-    await getAdminId()
+    await requireAdminId()
 
     const rows = await listCarouselVideos()
     const remainingIds = rows.filter((row) => row.id !== id).map((row) => row.id)
@@ -166,7 +171,7 @@ export async function moveCarouselVideo(
   direction: 'up' | 'down',
 ): Promise<CarouselActionResult> {
   try {
-    await getAdminId()
+    await requireAdminId()
 
     const rows = await listCarouselVideos()
     const index = rows.findIndex((row) => row.id === id)

@@ -1,11 +1,12 @@
 // Run with: node scripts/verify-published.mjs
 import { Pool } from 'pg'
+import { resolveDatabaseUrl } from './db-url.mjs'
 import { loadEnv } from './load-env.mjs'
 
 loadEnv()
 
 const BASE = process.env.VERIFY_BASE_URL ?? 'http://localhost:3000'
-const pool = new Pool({ connectionString: process.env.DATABASE_URL })
+const pool = new Pool({ connectionString: resolveDatabaseUrl() })
 
 async function fetchText(path) {
   const res = await fetch(`${BASE}${path}`, { cache: 'no-store' })

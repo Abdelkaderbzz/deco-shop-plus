@@ -1,5 +1,5 @@
 import { betterAuth } from 'better-auth'
-import { Pool } from 'pg'
+import { pool } from '@/lib/db'
 
 const localDevUrl = 'http://localhost:3000'
 
@@ -31,9 +31,16 @@ const trustedOrigins = [
 export const auth = betterAuth({
   baseURL,
   trustedOrigins,
-  database: new Pool({ connectionString: process.env.DATABASE_URL }),
+  database: pool,
   emailAndPassword: {
     enabled: true,
+  },
+  session: {
+    // Avoid a Neon round-trip on every getSession (admin actions / pagination).
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60,
+    },
   },
   ...(process.env.NODE_ENV === 'development' &&
     baseURL.startsWith('https://') && {

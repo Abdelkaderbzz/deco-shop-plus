@@ -1,16 +1,14 @@
 'use server'
 
-import { auth } from '@/lib/auth'
+import { requireAdminId } from '@/lib/admin-auth'
 import { getCloudinary, getCloudinaryConfig, isCloudinaryConfigured } from '@/lib/cloudinary'
 import { MAX_PRODUCT_IMAGES } from '@/lib/product-images'
-import { headers } from 'next/headers'
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024
 const ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
 
 async function requireAdmin() {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user) throw new Error('Non autorise')
+  await requireAdminId()
 }
 
 function validateFile(file: File): string | null {
@@ -109,16 +107,18 @@ export async function uploadProductImages(formData: FormData): Promise<UploadIma
       return { success: false, error: `Maximum ${MAX_PRODUCT_IMAGES} images par produit.` }
     }
 
-    const urls: string[] = []
-
     for (const file of files) {
       const validationError = validateFile(file)
       if (validationError) return { success: false, error: validationError }
-
-      const buffer = Buffer.from(await file.arrayBuffer())
-      const result = await uploadBuffer(buffer)
-      urls.push(result.secure_url)
     }
+
+    const urls = await Promise.all(
+      files.map(async (file) => {
+        const buffer = Buffer.from(await file.arrayBuffer())
+        const result = await uploadBuffer(buffer)
+        return result.secure_url
+      }),
+    )
 
     return { success: true, urls }
   } catch (error) {

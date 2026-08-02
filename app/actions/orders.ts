@@ -1,24 +1,25 @@
 'use server'
 
-import { auth } from '@/lib/auth'
+import { requireAdminId } from '@/lib/admin-auth'
 import { db } from '@/lib/db'
 import { orderItems, orders, products } from '@/lib/db/schema'
-import { desc, eq, sql } from 'drizzle-orm'
-import { headers } from 'next/headers'
+import { and, desc, eq, ilike, or, sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { getDeliveryFee } from './settings'
+import {
+  ADMIN_PAGE_SIZE,
+  buildPaginatedResult,
+  normalizePage,
+  normalizePageSize,
+  paginationOffset,
+  type PaginatedResult,
+} from '@/lib/pagination'
 
 export type OrderActionResult<T = undefined> =
   | { success: true; data: T }
   | { success: false; error: string }
 
 export type OrderWithItems = NonNullable<Awaited<ReturnType<typeof getOrderWithItemsData>>>
-
-async function getAdminId() {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user) throw new Error('Session expiree. Reconnectez-vous.')
-  return session.user.id
-}
 
 function mapOrderError(error: unknown, fallback: string) {
   if (error instanceof Error && error.message.trim()) {
@@ -86,20 +87,112 @@ export async function createOrder(data: {
 }
 
 export async function getAllOrders() {
-  await getAdminId()
-  return db.select().from(orders).orderBy(desc(orders.createdAt))
+  const result = await getOrdersPaginated({ page: 1, pageSize: 500 })
+  return result.items
+}
+
+function buildOrderSearchCondition(search: string) {
+  const trimmed = search.trim()
+  if (!trimmed) return undefined
+
+  const term = `%${trimmed}%`
+  const idTerm = `%${trimmed.replace(/^#/, '')}%`
+
+  return or(
+    ilike(orders.customerName, term),
+    ilike(orders.customerPhone, term),
+    ilike(orders.customerAddress, term),
+    ilike(orders.notes, term),
+    sql`cast(${orders.id} as text) like ${idTerm}`,
+  )
+}
+
+export async function getOrdersPaginated(options: {
+  page?: number
+  pageSize?: number
+  search?: string
+  status?: string
+} = {}): Promise<PaginatedResult<typeof orders.$inferSelect>> {
+  await requireAdminId()
+
+  const page = normalizePage(options.page)
+  const pageSize = normalizePageSize(options.pageSize, ADMIN_PAGE_SIZE)
+  const offset = paginationOffset(page, pageSize)
+  const conditions = []
+
+  const status = options.status?.trim()
+  if (status && status !== 'all') {
+    conditions.push(eq(orders.status, status))
+  }
+
+  const searchCondition = buildOrderSearchCondition(options.search ?? '')
+  if (searchCondition) {
+    conditions.push(searchCondition)
+  }
+
+  const whereClause = conditions.length > 0 ? and(...conditions) : undefined
+
+  const [countRow, items] = await Promise.all([
+    db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(orders)
+      .where(whereClause)
+      .then((rows) => rows[0]),
+    db
+      .select()
+      .from(orders)
+      .where(whereClause)
+      .orderBy(desc(orders.createdAt))
+      .limit(pageSize)
+      .offset(offset),
+  ])
+
+  return buildPaginatedResult(items, countRow?.count ?? 0, page, pageSize)
+}
+
+export async function getOrderStatusCounts() {
+  await requireAdminId()
+
+  const rows = await db
+    .select({
+      status: orders.status,
+      count: sql<number>`count(*)::int`,
+    })
+    .from(orders)
+    .groupBy(orders.status)
+
+  const counts: Record<string, number> = {
+    pending: 0,
+    confirmed: 0,
+    shipped: 0,
+    delivered: 0,
+    cancelled: 0,
+  }
+
+  for (const row of rows) {
+    counts[row.status] = row.count
+  }
+
+  return counts
+}
+
+export async function getRecentOrders(limit = 5) {
+  await requireAdminId()
+  return db.select().from(orders).orderBy(desc(orders.createdAt)).limit(limit)
 }
 
 async function getOrderWithItemsData(id: number) {
-  const [order] = await db.select().from(orders).where(eq(orders.id, id)).limit(1)
+  const [[order], items] = await Promise.all([
+    db.select().from(orders).where(eq(orders.id, id)).limit(1),
+    db.select().from(orderItems).where(eq(orderItems.orderId, id)),
+  ])
   if (!order) return null
-  const items = await db.select().from(orderItems).where(eq(orderItems.orderId, id))
   return { ...order, items }
 }
 
 export async function getOrderWithItems(id: number): Promise<OrderActionResult<OrderWithItems>> {
   try {
-    await getAdminId()
+    await requireAdminId()
     const order = await getOrderWithItemsData(id)
     if (!order) {
       return { success: false, error: 'Commande introuvable.' }
@@ -115,13 +208,13 @@ export async function getOrderWithItems(id: number): Promise<OrderActionResult<O
 
 export async function updateOrderStatus(id: number, status: string): Promise<OrderActionResult> {
   try {
-    await getAdminId()
+    await requireAdminId()
 
     const [updated] = await db
       .update(orders)
       .set({ status, updatedAt: new Date() })
       .where(eq(orders.id, id))
-      .returning()
+      .returning({ id: orders.id })
 
     if (!updated) {
       return { success: false, error: 'Commande introuvable.' }
@@ -150,9 +243,13 @@ export async function updateOrder(
   },
 ): Promise<OrderActionResult<OrderWithItems>> {
   try {
-    await getAdminId()
+    await requireAdminId()
 
-    const [existing] = await db.select().from(orders).where(eq(orders.id, id)).limit(1)
+    const [[existing], items] = await Promise.all([
+      db.select().from(orders).where(eq(orders.id, id)).limit(1),
+      db.select().from(orderItems).where(eq(orderItems.orderId, id)),
+    ])
+
     if (!existing) {
       return { success: false, error: 'Commande introuvable.' }
     }
@@ -165,7 +262,6 @@ export async function updateOrder(
           : await getDeliveryFee()
         : 0
 
-    const items = await db.select().from(orderItems).where(eq(orderItems.orderId, id))
     const subtotal = items.reduce((acc, item) => acc + parseFloat(item.price) * item.quantity, 0)
     const totalAmount = subtotal + deliveryFeeValue
 
@@ -186,12 +282,7 @@ export async function updateOrder(
 
     await revalidateOrderPaths()
 
-    const order = await getOrderWithItemsData(id)
-    if (!order) {
-      return { success: false, error: 'Commande introuvable.' }
-    }
-
-    return { success: true, data: order }
+    return { success: true, data: { ...updated, items } }
   } catch (error) {
     return {
       success: false,
@@ -202,9 +293,9 @@ export async function updateOrder(
 
 export async function deleteOrder(id: number): Promise<OrderActionResult> {
   try {
-    await getAdminId()
+    await requireAdminId()
 
-    const [deleted] = await db.delete(orders).where(eq(orders.id, id)).returning()
+    const [deleted] = await db.delete(orders).where(eq(orders.id, id)).returning({ id: orders.id })
     if (!deleted) {
       return { success: false, error: 'Commande introuvable.' }
     }
@@ -220,24 +311,24 @@ export async function deleteOrder(id: number): Promise<OrderActionResult> {
 }
 
 export async function getDashboardStats() {
-  await getAdminId()
+  await requireAdminId()
 
-  const [orderStats] = await db
-    .select({
-      totalOrders: sql<number>`count(*)::int`,
-      pendingOrders: sql<number>`count(*) filter (where ${orders.status} = 'pending')::int`,
-      revenue: sql<string>`coalesce(sum(${orders.totalAmount}), 0)`,
-    })
-    .from(orders)
-
-  const [productStats] = await db
-    .select({
-      totalProducts: sql<number>`count(*)::int`,
-      inStock: sql<number>`count(*) filter (where ${products.inStock} = true)::int`,
-    })
-    .from(products)
-
-  const deliveryFee = await getDeliveryFee()
+  const [[orderStats], [productStats], deliveryFee] = await Promise.all([
+    db
+      .select({
+        totalOrders: sql<number>`count(*)::int`,
+        pendingOrders: sql<number>`count(*) filter (where ${orders.status} = 'pending')::int`,
+        revenue: sql<string>`coalesce(sum(${orders.totalAmount}), 0)`,
+      })
+      .from(orders),
+    db
+      .select({
+        totalProducts: sql<number>`count(*)::int`,
+        inStock: sql<number>`count(*) filter (where ${products.inStock} = true)::int`,
+      })
+      .from(products),
+    getDeliveryFee(),
+  ])
 
   return {
     totalOrders: orderStats?.totalOrders ?? 0,
