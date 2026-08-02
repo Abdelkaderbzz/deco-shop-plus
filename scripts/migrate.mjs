@@ -141,6 +141,18 @@ const statements = [
   `CREATE INDEX IF NOT EXISTS "orders_created_at_idx" ON "orders" ("createdAt" DESC)`,
   `CREATE INDEX IF NOT EXISTS "orders_status_idx" ON "orders" ("status")`,
   `CREATE INDEX IF NOT EXISTS "order_items_order_id_idx" ON "order_items" ("orderId")`,
+  `CREATE TABLE IF NOT EXISTS "hero_images" (
+    "slot" integer PRIMARY KEY,
+    "imageUrl" text NOT NULL,
+    "alt" text NOT NULL DEFAULT '',
+    "updatedAt" timestamp NOT NULL DEFAULT now()
+  )`,
+  `INSERT INTO "hero_images" ("slot", "imageUrl", "alt") VALUES
+    (0, '/hero/perfume-1.webp', 'Parfums feminins'),
+    (1, '/hero/makeup-1.webp', 'Maquillage luxe'),
+    (2, '/hero/bag-1.webp', 'Sacs a main'),
+    (3, '/hero/makeup-2.webp', 'Maquillage')
+   ON CONFLICT ("slot") DO NOTHING`,
 ]
 
 try {
