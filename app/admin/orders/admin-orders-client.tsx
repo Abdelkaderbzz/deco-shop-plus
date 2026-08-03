@@ -13,7 +13,7 @@ import { GOVERNORATE_SELECT_OPTIONS, getGovernorateLabel } from '@/lib/tunisia-g
 import { orderEditSchema, type OrderEditFormValues } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouteTransition } from '@/lib/use-route-transition'
-import { Eye, Pencil, Trash2 } from 'lucide-react'
+import { Eye, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import {
@@ -41,6 +41,10 @@ import {
   ORDER_STATUS_SELECT_CLS,
   orderStatusMeta,
 } from '../order-status'
+import {
+  AdminOrderCreateModal,
+  type CreateOrderProduct,
+} from './admin-order-create-modal'
 
 type Order = {
   id: number
@@ -97,6 +101,8 @@ export function AdminOrdersClient({
   search: initialSearch,
   status: initialStatus,
   statusCounts: initialStatusCounts,
+  products,
+  deliveryFee,
 }: {
   orders: Order[]
   total: number
@@ -104,6 +110,8 @@ export function AdminOrdersClient({
   search: string
   status: string
   statusCounts: Record<string, number>
+  products: CreateOrderProduct[]
+  deliveryFee: number
 }) {
   const { isPending: isNavigating, push, refresh } = useRouteTransition()
   const toast = useToast()
@@ -113,6 +121,7 @@ export function AdminOrdersClient({
   const [selectedOrder, setSelectedOrder] = useState<OrderWithItems | null>(null)
   const [loadingOrderId, setLoadingOrderId] = useState<number | null>(null)
   const [editingOrder, setEditingOrder] = useState<Order | null>(null)
+  const [creating, setCreating] = useState(false)
   const [searchInput, setSearchInput] = useState(initialSearch)
   const [isPending, startTransition] = useTransition()
 
@@ -307,6 +316,14 @@ export function AdminOrdersClient({
       <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-wrap gap-2">
           <AdminButton
+            onClick={() => setCreating(true)}
+            disabled={isBusy}
+            className="inline-flex items-center gap-1.5"
+          >
+            <Plus className="size-4" />
+            Nouvelle commande
+          </AdminButton>
+          <AdminButton
             variant={initialStatus === 'all' ? 'primary' : 'outline'}
             onClick={() => navigate(searchInput, 'all', 1)}
             disabled={isNavigating}
@@ -447,6 +464,18 @@ export function AdminOrdersClient({
           totalItems={total}
           loading={isNavigating}
           onPageChange={(nextPage) => navigate(searchInput, initialStatus, nextPage)}
+        />
+      )}
+
+      {creating && (
+        <AdminOrderCreateModal
+          products={products}
+          deliveryFee={deliveryFee}
+          onClose={() => setCreating(false)}
+          onCreated={() => {
+            setCreating(false)
+            refresh()
+          }}
         />
       )}
 
