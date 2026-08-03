@@ -43,15 +43,22 @@ export type CartItem = {
   price: number
 }
 
-export async function createOrder(data: {
+type CreateOrderInput = {
   customerName: string
   customerPhone: string
   customerGovernorate?: string
   customerAddress?: string
   orderType: 'delivery' | 'boutique'
+  status?: string
   notes?: string
   items: CartItem[]
-}) {
+}
+
+async function insertOrderWithItems(data: CreateOrderInput) {
+  if (!data.items.length) {
+    throw new Error('Ajoutez au moins un article.')
+  }
+
   const deliveryFeeValue = data.orderType === 'delivery' ? await getDeliveryFee() : 0
   const subtotal = data.items.reduce((acc, item) => acc + item.price * item.quantity, 0)
   const totalAmount = subtotal + deliveryFeeValue
@@ -61,12 +68,13 @@ export async function createOrder(data: {
     .values({
       customerName: data.customerName,
       customerPhone: data.customerPhone,
-      customerGovernorate: data.customerGovernorate,
-      customerAddress: data.customerAddress,
+      customerGovernorate: data.customerGovernorate || null,
+      customerAddress: data.customerAddress || null,
       orderType: data.orderType,
+      status: data.status || 'pending',
       totalAmount: totalAmount.toFixed(3),
       deliveryFee: deliveryFeeValue.toFixed(3),
-      notes: data.notes,
+      notes: data.notes || null,
     })
     .returning()
 
@@ -83,7 +91,29 @@ export async function createOrder(data: {
   )
 
   await revalidateOrderPaths()
+  return order
+}
+
+/** Public store checkout — no auth. */
+export async function createOrder(data: Omit<CreateOrderInput, 'status'>) {
+  const order = await insertOrderWithItems(data)
   return order.id
+}
+
+/** Admin-created order (phone / boutique). */
+export async function adminCreateOrder(
+  data: CreateOrderInput,
+): Promise<OrderActionResult<{ id: number }>> {
+  try {
+    await requireAdminId()
+    const order = await insertOrderWithItems(data)
+    return { success: true, data: { id: order.id } }
+  } catch (error) {
+    return {
+      success: false,
+      error: mapOrderError(error, 'Impossible de creer la commande.'),
+    }
+  }
 }
 
 export async function getAllOrders() {

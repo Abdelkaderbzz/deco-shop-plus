@@ -109,6 +109,57 @@ export const orderEditSchema = z
 
 export type OrderEditFormValues = z.infer<typeof orderEditSchema>
 
+export const orderCreateItemSchema = z.object({
+  productId: z.number().int().positive(),
+  productName: z.string().min(1),
+  productBrand: z.string().min(1),
+  size: z.string().min(1, 'Taille requise'),
+  quantity: z.number().int().min(1, 'Quantite invalide').max(99, 'Quantite trop elevee'),
+  price: z.number().positive('Prix invalide'),
+})
+
+export const orderCreateSchema = z
+  .object({
+    customerName: z.string().min(1, 'Nom requis').max(200, 'Nom trop long'),
+    customerPhone: z
+      .string()
+      .min(1, 'Telephone requis')
+      .min(8, 'Telephone invalide (8 chiffres minimum)'),
+    customerGovernorate: z.string(),
+    customerAddress: z.string(),
+    orderType: z.enum(['delivery', 'boutique']),
+    status: z.string().min(1, 'Statut requis'),
+    notes: z.string().max(500, 'Notes trop longues'),
+    items: z.array(orderCreateItemSchema).min(1, 'Ajoutez au moins un article'),
+  })
+  .superRefine((data, ctx) => {
+    if (data.orderType === 'delivery') {
+      if (!data.customerGovernorate) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Gouvernorat requis pour la livraison',
+          path: ['customerGovernorate'],
+        })
+      } else if (!GOVERNORATE_SLUGS.includes(data.customerGovernorate)) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Gouvernorat invalide',
+          path: ['customerGovernorate'],
+        })
+      }
+
+      if (!data.customerAddress.trim()) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Adresse requise pour la livraison',
+          path: ['customerAddress'],
+        })
+      }
+    }
+  })
+
+export type OrderCreateFormValues = z.infer<typeof orderCreateSchema>
+
 export const checkoutSchema = z
   .object({
     orderType: z.enum(['delivery', 'boutique']),
