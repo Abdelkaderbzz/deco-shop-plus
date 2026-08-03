@@ -102,14 +102,21 @@ export function AdminModal({
   title,
   onClose,
   children,
+  className,
 }: {
   title: string
   onClose: () => void
   children: ReactNode
+  className?: string
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm">
-      <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-lg border border-slate-200 bg-white p-6 shadow-2xl">
+      <div
+        className={cn(
+          'max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-lg border border-slate-200 bg-white p-6 shadow-2xl',
+          className,
+        )}
+      >
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-lg font-bold text-slate-900">{title}</h2>
           <button
