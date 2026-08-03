@@ -1,7 +1,6 @@
 import { getCategories } from '@/app/actions/categories'
 import { CartProvider } from '@/components/cart-context'
-import { INSTAGRAM_URL } from '@/components/instagram-embed'
-import { TIKTOK_URL } from '@/lib/social-links'
+import { INSTAGRAM_URL, TIKTOK_URL } from '@/lib/social-links'
 import { Logo } from '@/components/logo'
 import { Navbar } from '@/components/navbar'
 import { mergeStoreCategories } from '@/lib/store-categories'

@@ -1,19 +1,20 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Cormorant_Garamond, Inter } from 'next/font/google'
-import { ConfirmProvider } from '@/components/confirm-provider'
 import { ToastProvider } from '@/components/toast-provider'
 import './globals.css'
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
+  weight: ['300', '400', '600'],
   variable: '--font-serif',
+  display: 'swap',
 })
 
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-sans',
+  display: 'swap',
 })
 
 export const metadata: Metadata = {
@@ -30,14 +31,6 @@ export const metadata: Metadata = {
     'Parfumerie Janna',
     'femme',
   ],
-  icons: {
-    icon: [
-      { url: '/logo.png', type: 'image/png', sizes: '32x32' },
-      { url: '/logo.png', type: 'image/png', sizes: '192x192' },
-    ],
-    apple: [{ url: '/logo.png', type: 'image/png', sizes: '180x180' }],
-    shortcut: '/logo.png',
-  },
 }
 
 export const viewport: Viewport = {
@@ -53,9 +46,7 @@ export default function RootLayout({
   return (
     <html lang="fr" className={`bg-background ${cormorant.variable} ${inter.variable}`}>
       <body className="font-sans antialiased">
-        <ToastProvider>
-          <ConfirmProvider>{children}</ConfirmProvider>
-        </ToastProvider>
+        <ToastProvider>{children}</ToastProvider>
         {process.env.VERCEL === '1' && <Analytics />}
       </body>
     </html>

@@ -2,8 +2,7 @@
 
 import { Logo } from '@/components/logo'
 import { useCart } from '@/components/cart-context'
-import { INSTAGRAM_URL } from '@/components/instagram-embed'
-import { TIKTOK_URL } from '@/lib/social-links'
+import { INSTAGRAM_URL, TIKTOK_URL } from '@/lib/social-links'
 import type { StoreCategory } from '@/lib/store-categories'
 import Link from 'next/link'
 import { useState } from 'react'

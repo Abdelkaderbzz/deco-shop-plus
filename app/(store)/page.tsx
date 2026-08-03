@@ -5,11 +5,30 @@ import { getFeaturedProducts } from '@/app/actions/products'
 import { CategoriesSection } from '@/components/categories-section'
 import { Logo } from '@/components/logo'
 import { ProductCard } from '@/components/product-card'
-import { InstagramCarousel, InstagramFollowButton, InstagramSectionHeader } from '@/components/instagram-embed'
-import { TestimonialsSection } from '@/components/testimonials-section'
+import {
+  InstagramFollowButton,
+  InstagramSectionHeader,
+} from '@/components/instagram-section-static'
 import { mergeStoreCategories } from '@/lib/store-categories'
+import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import Link from 'next/link'
+
+const TestimonialsSection = dynamic(
+  () => import('@/components/testimonials-section').then((m) => m.TestimonialsSection),
+  {
+    loading: () => <div className="border-t border-border bg-secondary/50 py-20" aria-hidden />,
+  },
+)
+
+const InstagramCarousel = dynamic(
+  () => import('@/components/instagram-embed').then((m) => m.InstagramCarousel),
+  {
+    loading: () => (
+      <div className="mx-auto h-[490px] w-full max-w-5xl rounded-2xl bg-secondary/40" aria-hidden />
+    ),
+  },
+)
 
 export const revalidate = 120
 
