@@ -48,24 +48,16 @@ export type ShowcaseImage = {
 }
 
 export const SHOWCASE_GALLERY: ShowcaseImage[] = [
-  { src: '/showcase/perfume-3.webp', alt: 'Collection parfums MATCH', category: 'parfums' },
-  { src: '/showcase/perfume-4.webp', alt: 'Parfum Kayali', category: 'parfums' },
-  { src: '/showcase/perfume-5.webp', alt: 'Coffret parfums', category: 'parfums' },
-  { src: '/showcase/perfume-6.webp', alt: 'Eau de parfum feminin', category: 'parfums' },
-  { src: '/showcase/perfume-7.webp', alt: 'Fragrance de luxe', category: 'parfums' },
-  { src: '/showcase/perfume-8.webp', alt: 'Parfum signature', category: 'parfums' },
+  { src: '/showcase/perfume-4.png', alt: 'Lattafa Yara', category: 'parfums' },
   { src: '/categories/parfums.webp', alt: 'Coffret Lattafa Yara', category: 'parfums' },
-  { src: '/showcase/makeup-3.webp', alt: 'Palette maquillage', category: 'maquillage' },
-  { src: '/categories/maquillage.webp', alt: 'Blush Dior Rosy Glow', category: 'maquillage' },
-  { src: '/hero/makeup-1.webp', alt: 'Rouge a levres Dior', category: 'maquillage' },
-  { src: '/hero/makeup-2.webp', alt: 'Gloss KIKO Milano', category: 'maquillage' },
-  { src: '/categories/sacs.webp', alt: 'Sac Dior', category: 'sacs' },
+  { src: '/categories/maquillage.webp', alt: 'Maquillage', category: 'maquillage' },
+  { src: '/hero/makeup-1.webp', alt: 'Rouge a levres', category: 'maquillage' },
+  { src: '/hero/makeup-2.webp', alt: 'Gloss', category: 'maquillage' },
+  { src: '/categories/sacs.webp', alt: 'Sacs', category: 'sacs' },
   { src: '/hero/bag-1.webp', alt: 'Sac a main luxe', category: 'sacs' },
-  { src: '/categories/soins.webp', alt: 'Set Victoria Secret Bare Vanilla', category: 'soins' },
-  { src: '/showcase/soins-2.webp', alt: 'Soins corps', category: 'soins' },
-  { src: '/showcase/soins-3.webp', alt: 'Coffret soins Enchanteur', category: 'soins' },
-  { src: '/hero/perfume-1.webp', alt: 'Parfum IBRAQ', category: 'parfums' },
-  { src: '/hero/perfume-2.webp', alt: 'Kayali Vanilla Candy', category: 'parfums' },
+  { src: '/categories/soins.webp', alt: 'Soins', category: 'soins' },
+  { src: '/hero/perfume-1.webp', alt: 'Parfum', category: 'parfums' },
+  { src: '/hero/perfume-2.webp', alt: 'Fragrance', category: 'parfums' },
 ]
 
 export function getShowcaseByCategory(category: string) {

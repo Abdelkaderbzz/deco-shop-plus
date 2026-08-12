@@ -33,12 +33,13 @@ const GOVERNORATES = [
 
 const CATEGORY_SLUGS = ['parfums', 'maquillage', 'sacs', 'soins']
 const PLACEHOLDER_IMAGES = [
-  '/categories/parfums.png',
-  '/categories/maquillage.png',
-  '/categories/sacs.png',
-  '/categories/soins.png',
-  '/hero/perfume-1.png',
-  '/hero/makeup-1.png',
+  '/categories/parfums.webp',
+  '/categories/maquillage.webp',
+  '/categories/sacs.webp',
+  '/categories/soins.webp',
+  '/hero/perfume-1.webp',
+  '/hero/makeup-1.webp',
+  '/showcase/perfume-4.png',
 ]
 
 const EXTRA_CATEGORIES = [
