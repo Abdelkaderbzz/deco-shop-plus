@@ -62,9 +62,9 @@ export default async function ProductDetailPage({
 
           <div className="h-px w-16 bg-primary/30" />
 
-          <p className="font-serif text-2xl font-light text-foreground">
+          <p className="text-2xl font-medium tabular-nums tracking-normal text-foreground">
             {parseFloat(product.price).toFixed(3)}{' '}
-            <span className="text-sm text-muted-foreground">TND</span>
+            <span className="text-sm font-normal text-muted-foreground">TND</span>
           </p>
 
           {product.description && (
@@ -81,9 +81,8 @@ export default async function ProductDetailPage({
             <AddToCartButton product={product} sizes={sizes} />
           )}
 
-          <div className="border-t border-border pt-4 text-[11px] font-light tracking-wider text-muted-foreground space-y-2">
+          <div className="border-t border-border pt-4 text-[11px] font-light tracking-wider text-muted-foreground">
             <p>Livraison disponible en Tunisie, {deliveryFee.toFixed(3)} TND</p>
-            <p>Retrait en boutique gratuit</p>
           </div>
         </div>
       </div>
