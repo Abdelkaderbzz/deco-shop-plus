@@ -18,7 +18,7 @@ const TESTIMONIALS: Testimonial[] = [
     id: '1',
     platform: 'instagram',
     username: 'fedi.alaya',
-    message: 'Famam Fi Sousse hedhom ?',
+    message: 'Produit original w qualité top, merci Jannah 🔥',
     time: '7 sem',
     avatar: 'FA',
     delay: 0,
@@ -27,7 +27,7 @@ const TESTIMONIALS: Testimonial[] = [
     id: '2',
     platform: 'whatsapp',
     username: 'beyahaw',
-    message: 'نجم ناخذ وتو توصلي للدار عن طريق ليفرور',
+    message: 'التوصيل للدار سريع برشا، الريحة روعة ❤️',
     time: '14:32',
     avatar: 'BY',
     delay: 120,
@@ -46,7 +46,7 @@ const TESTIMONIALS: Testimonial[] = [
     id: '4',
     platform: 'facebook',
     username: 'Zizou Ben Ali',
-    message: 'Parfums De Marly Althaïr walla esmha la camorra 🥴',
+    message: 'Parfums De Marly Althaïr يفوح تحفة، ننصح بيه بشدة 👌',
     time: '29 sem',
     avatar: 'ZB',
     delay: 360,
@@ -226,6 +226,30 @@ function WhatsAppCard({ item, visible }: { item: Testimonial; visible: boolean }
   )
 }
 
+function FacebookLikeIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true">
+      <circle cx="8" cy="8" r="8" fill="#2078F4" />
+      <path
+        fill="#fff"
+        d="M4.25 6.75h1.1v5.5H3.9a.65.65 0 0 1-.65-.65v-4.2c0-.36.29-.65.65-.65h.35zm7.45-.2c-.14-.12-.33-.2-.53-.2H8.9V4.4c0-.78-.55-1.4-1.3-1.4h-.18c-.18 0-.3.17-.24.34.28.62.1 1.28-.42 1.72L5.9 5.85H5.75v5.4h4.2c.38 0 .71-.25.8-.61l.85-3.35c.08-.32-.05-.64-.35-.84-.08-.05-.16-.1-.25-.1h-.05c.07 0 .13.01.2.04.08.03.15.07.22.12.2.14.34.37.38.64l-.85 3.35c-.03.12-.14.22-.26.22H6.85V6.75h.95l.72-.58c.72-.58 1.15-1.5 1.15-2.48V3.6c.35 0 .63.28.63.63v2.12h2.05c.08 0 .15.02.21.07.1.08.14.22.11.35l-.02.08z"
+      />
+    </svg>
+  )
+}
+
+function FacebookLoveIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true">
+      <circle cx="8" cy="8" r="8" fill="#F33E58" />
+      <path
+        fill="#fff"
+        d="M8 12.55c-.1 0-.2-.04-.28-.11-2.05-1.75-3.6-3.25-4.3-4.4C2.7 6.9 2.65 5.85 3.25 4.95c.55-.85 1.5-1.35 2.55-1.35.95 0 1.8.4 2.4 1.1.6-.7 1.45-1.1 2.4-1.1 1.05 0 2 .5 2.55 1.35.6.9.55 1.95-.17 3.09-.7 1.15-2.25 2.65-4.3 4.4-.08.07-.18.11-.28.11z"
+      />
+    </svg>
+  )
+}
+
 function FacebookCard({ item, visible }: { item: Testimonial; visible: boolean }) {
   return (
     <div
@@ -254,12 +278,16 @@ function FacebookCard({ item, visible }: { item: Testimonial; visible: boolean }
             <button type="button">J&apos;aime</button>
             <button type="button">Repondre</button>
           </div>
-          <div className="mt-2 flex items-center gap-1.5">
-            <div className="flex -space-x-1">
-              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-blue-500 text-[8px]">👍</span>
-              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[8px]">❤️</span>
+          <div className="mt-2 inline-flex items-center gap-1">
+            <div className="flex items-center">
+              <span className="relative z-[1] rounded-full shadow-sm ring-[1.5px] ring-[#242526]">
+                <FacebookLikeIcon />
+              </span>
+              <span className="relative -ml-1.5 rounded-full shadow-sm ring-[1.5px] ring-[#242526]">
+                <FacebookLoveIcon />
+              </span>
             </div>
-            <span className="text-[11px] text-[#b0b3b8]">12</span>
+            <span className="pl-0.5 text-[12px] text-[#b0b3b8]">12</span>
           </div>
         </div>
       </div>
