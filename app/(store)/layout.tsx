@@ -1,5 +1,6 @@
 import { getCategories } from '@/app/actions/categories'
 import { CartProvider } from '@/components/cart-context'
+import { WhatsAppButton } from '@/components/whatsapp-button'
 import { INSTAGRAM_URL, TIKTOK_URL } from '@/lib/social-links'
 import { Logo } from '@/components/logo'
 import { Navbar } from '@/components/navbar'
@@ -45,6 +46,7 @@ export default async function StoreLayout({ children }: { children: React.ReactN
           </p>
         </div>
       </footer>
+      <WhatsAppButton />
     </CartProvider>
   )
 }
