@@ -35,8 +35,6 @@ export default function CheckoutPage() {
   const {
     register,
     handleSubmit,
-    setValue,
-    watch,
     control,
     formState: { errors, isSubmitting },
   } = useForm<CheckoutFormValues>({
@@ -51,14 +49,11 @@ export default function CheckoutPage() {
     },
   })
 
-  const orderType = watch('orderType')
-
   useEffect(() => {
     getDeliveryFee().then(setDeliveryFee).catch(() => setDeliveryFee(7))
   }, [])
 
-  const appliedDeliveryFee = orderType === 'delivery' ? deliveryFee : 0
-  const grandTotal = total + appliedDeliveryFee
+  const grandTotal = total + deliveryFee
 
   async function onSubmit(values: CheckoutFormValues) {
     if (items.length === 0) {
@@ -170,32 +165,10 @@ export default function CheckoutPage() {
           ))}
 
           <div className="mt-6 rounded-2xl border-2 border-primary/20 bg-card p-6">
-            <p className={storeSectionCls}>Comment recevoir votre commande ?</p>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <button
-                type="button"
-                onClick={() => setValue('orderType', 'delivery', { shouldValidate: true })}
-                className={`rounded-xl border-2 p-4 text-left transition-all ${
-                  orderType === 'delivery'
-                    ? 'border-primary bg-primary/15 ring-2 ring-primary/25'
-                    : 'border-border bg-white hover:border-primary/50'
-                }`}
-              >
-                <p className="text-sm font-semibold text-foreground">Livraison a domicile</p>
-                <p className="mt-1 text-sm font-medium text-primary">{deliveryFee.toFixed(3)} TND</p>
-              </button>
-              <button
-                type="button"
-                onClick={() => setValue('orderType', 'boutique', { shouldValidate: true })}
-                className={`rounded-xl border-2 p-4 text-left transition-all ${
-                  orderType === 'boutique'
-                    ? 'border-primary bg-primary/15 ring-2 ring-primary/25'
-                    : 'border-border bg-white hover:border-primary/50'
-                }`}
-              >
-                <p className="text-sm font-semibold text-foreground">Retrait en boutique</p>
-                <p className="mt-1 text-sm font-medium text-primary">Gratuit</p>
-              </button>
+            <p className={storeSectionCls}>Livraison</p>
+            <div className="rounded-xl border-2 border-primary bg-primary/15 p-4 ring-2 ring-primary/25">
+              <p className="text-sm font-semibold text-foreground">Livraison a domicile</p>
+              <p className="mt-1 text-sm font-medium text-primary">{deliveryFee.toFixed(3)} TND</p>
             </div>
           </div>
         </div>
@@ -230,41 +203,37 @@ export default function CheckoutPage() {
                 />
                 <StoreFieldError message={errors.customerPhone?.message} />
               </div>
-              {orderType === 'delivery' && (
-                <>
-                  <div>
-                    <label className={storeLabelCls}>
-                      Gouvernorat <span className="text-primary">*</span>
-                    </label>
-                    <Controller
-                      control={control}
-                      name="customerGovernorate"
-                      render={({ field }) => (
-                        <StoreSelect
-                          value={field.value}
-                          onChange={field.onChange}
-                          options={GOVERNORATE_SELECT_OPTIONS}
-                          placeholder="Choisir votre gouvernorat"
-                          hasError={!!errors.customerGovernorate}
-                        />
-                      )}
+              <div>
+                <label className={storeLabelCls}>
+                  Gouvernorat <span className="text-primary">*</span>
+                </label>
+                <Controller
+                  control={control}
+                  name="customerGovernorate"
+                  render={({ field }) => (
+                    <StoreSelect
+                      value={field.value}
+                      onChange={field.onChange}
+                      options={GOVERNORATE_SELECT_OPTIONS}
+                      placeholder="Choisir votre gouvernorat"
+                      hasError={!!errors.customerGovernorate}
                     />
-                    <StoreFieldError message={errors.customerGovernorate?.message} />
-                  </div>
-                  <div>
-                    <label className={storeLabelCls}>
-                      Adresse de livraison <span className="text-primary">*</span>
-                    </label>
-                    <textarea
-                      rows={3}
-                      placeholder="Rue, ville, point de repere..."
-                      className={`${errors.customerAddress ? storeInputErrorCls : storeInputCls} resize-none`}
-                      {...register('customerAddress')}
-                    />
-                    <StoreFieldError message={errors.customerAddress?.message} />
-                  </div>
-                </>
-              )}
+                  )}
+                />
+                <StoreFieldError message={errors.customerGovernorate?.message} />
+              </div>
+              <div>
+                <label className={storeLabelCls}>
+                  Adresse de livraison <span className="text-primary">*</span>
+                </label>
+                <textarea
+                  rows={3}
+                  placeholder="Rue, ville, point de repere..."
+                  className={`${errors.customerAddress ? storeInputErrorCls : storeInputCls} resize-none`}
+                  {...register('customerAddress')}
+                />
+                <StoreFieldError message={errors.customerAddress?.message} />
+              </div>
               <div>
                 <label className={storeLabelCls}>Notes (optionnel)</label>
                 <textarea
@@ -286,14 +255,12 @@ export default function CheckoutPage() {
             </div>
             <div className="flex justify-between text-base text-foreground">
               <span>Livraison</span>
-              <span className="font-medium">
-                {appliedDeliveryFee === 0 ? 'Gratuit' : `${appliedDeliveryFee.toFixed(3)} TND`}
-              </span>
+              <span className="font-medium">{deliveryFee.toFixed(3)} TND</span>
             </div>
             <div className="h-px bg-primary/20" />
             <div className="flex justify-between items-center text-foreground">
               <span className="text-base font-semibold">Total a payer</span>
-              <span className="font-serif text-2xl font-semibold text-primary">
+              <span className="text-2xl font-semibold tabular-nums text-primary">
                 {grandTotal.toFixed(3)} TND
               </span>
             </div>
