@@ -13,23 +13,44 @@ export const loginSchema = z.object({
 
 export type LoginFormValues = z.infer<typeof loginSchema>
 
-export const productSchema = z.object({
-  name: z.string().min(1, 'Nom requis').max(200, 'Nom trop long'),
-  brand: z.string().min(1, 'Marque requise').max(100, 'Marque trop longue'),
-  description: z.string().max(2000, 'Description trop longue'),
-  price: z
-    .string()
-    .min(1, 'Prix requis')
-    .refine((value) => !Number.isNaN(parseFloat(value)) && parseFloat(value) > 0, {
-      message: 'Prix invalide',
-    }),
-  category: z.string().min(1, 'Categorie requise'),
-  images: z.array(z.string().url('URL invalide')).max(5, 'Maximum 5 images par produit'),
-  sizes: z.string(),
-  inStock: z.boolean(),
-  featured: z.boolean(),
-  published: z.boolean(),
-})
+export const productSchema = z
+  .object({
+    name: z.string().min(1, 'Nom requis').max(200, 'Nom trop long'),
+    brand: z.string().min(1, 'Marque requise').max(100, 'Marque trop longue'),
+    description: z.string().max(2000, 'Description trop longue'),
+    price: z
+      .string()
+      .min(1, 'Prix requis')
+      .refine((value) => !Number.isNaN(parseFloat(value)) && parseFloat(value) > 0, {
+        message: 'Prix invalide',
+      }),
+    compareAtPrice: z
+      .string()
+      .refine(
+        (value) =>
+          value === '' || (!Number.isNaN(parseFloat(value)) && parseFloat(value) > 0),
+        { message: 'Ancien prix invalide' },
+      ),
+    category: z.string().min(1, 'Categorie requise'),
+    images: z.array(z.string().url('URL invalide')).max(5, 'Maximum 5 images par produit'),
+    sizes: z.string(),
+    inStock: z.boolean(),
+    featured: z.boolean(),
+    published: z.boolean(),
+  })
+  .superRefine((data, ctx) => {
+    if (!data.compareAtPrice || data.compareAtPrice === '') return
+    const price = parseFloat(data.price)
+    const compareAt = parseFloat(data.compareAtPrice)
+    if (Number.isNaN(price) || Number.isNaN(compareAt)) return
+    if (compareAt <= price) {
+      ctx.addIssue({
+        code: 'custom',
+        message: "L'ancien prix doit etre superieur au prix actuel",
+        path: ['compareAtPrice'],
+      })
+    }
+  })
 
 export type ProductFormValues = z.infer<typeof productSchema>
 

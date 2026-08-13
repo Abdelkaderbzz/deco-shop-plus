@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { ProductPrice } from '@/components/product-price'
 import { getCategoryLabel } from '@/lib/store-categories'
 
 type Product = {
@@ -7,6 +8,7 @@ type Product = {
   name: string
   brand: string
   price: string
+  compareAtPrice?: string | null
   imageUrl: string | null
   category: string
   inStock: boolean
@@ -55,10 +57,11 @@ export function ProductCard({
         <div className="p-4">
           <p className="text-[10px] font-light tracking-widest text-primary">{product.brand.toUpperCase()}</p>
           <h3 className="mt-1 font-serif text-base font-light tracking-wide text-foreground leading-tight">{product.name}</h3>
-          <p className="mt-3 text-sm font-light text-foreground">
-            {parseFloat(product.price).toFixed(3)}{' '}
-            <span className="text-[10px] text-muted-foreground">TND</span>
-          </p>
+          <ProductPrice
+            price={product.price}
+            compareAtPrice={product.compareAtPrice}
+            className="mt-3"
+          />
         </div>
       </div>
     </Link>

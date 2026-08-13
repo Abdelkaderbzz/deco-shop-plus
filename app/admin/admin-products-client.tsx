@@ -5,6 +5,7 @@ import { useToast } from '@/components/toast-provider'
 import { useConfirm } from '@/components/confirm-provider'
 import { getErrorMessage } from '@/lib/get-error-message'
 import { getPrimaryImage, parseProductImages } from '@/lib/product-images'
+import { formatPriceTnd, getDiscountPercent, parsePrice } from '@/lib/product-price'
 import { productSchema, type ProductFormValues } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouteTransition } from '@/lib/use-route-transition'
@@ -36,6 +37,7 @@ type Product = {
   brand: string
   description: string | null
   price: string
+  compareAtPrice: string | null
   category: string
   imageUrl: string | null
   images: string | null
@@ -56,6 +58,7 @@ const EMPTY_FORM: ProductFormValues = {
   brand: '',
   description: '',
   price: '',
+  compareAtPrice: '',
   category: 'parfums',
   images: [],
   sizes: '',
@@ -114,6 +117,9 @@ export function AdminProductsClient({
   })
 
   const images = watch('images')
+  const watchedPrice = watch('price')
+  const watchedCompareAt = watch('compareAtPrice')
+  const previewDiscount = getDiscountPercent(watchedPrice, watchedCompareAt)
 
   function openAdd() {
     setEditingProduct(null)
@@ -128,6 +134,7 @@ export function AdminProductsClient({
       brand: product.brand,
       description: product.description ?? '',
       price: product.price,
+      compareAtPrice: product.compareAtPrice ?? '',
       category: product.category,
       images: parseProductImages(product),
       sizes: JSON.parse(product.sizes || '[]').join(', '),
@@ -143,6 +150,7 @@ export function AdminProductsClient({
       .split(',')
       .map((s) => s.trim())
       .filter(Boolean)
+    const compareAtPrice = form.compareAtPrice?.trim() || null
 
     startTransition(async () => {
       try {
@@ -152,6 +160,7 @@ export function AdminProductsClient({
             brand: form.brand,
             description: form.description,
             price: form.price,
+            compareAtPrice,
             category: form.category,
             images: form.images,
             sizes: sizesArr,
@@ -166,6 +175,7 @@ export function AdminProductsClient({
             brand: form.brand,
             description: form.description,
             price: form.price,
+            compareAtPrice,
             category: form.category,
             images: form.images,
             sizes: sizesArr,
@@ -245,6 +255,8 @@ export function AdminProductsClient({
               {products.map((p) => {
                 const primaryImage = getPrimaryImage(p)
                 const imageCount = parseProductImages(p).length
+                const discount = getDiscountPercent(p.price, p.compareAtPrice)
+                const compareAt = parsePrice(p.compareAtPrice)
 
                 return (
                 <tr key={p.id} className="transition-colors hover:bg-slate-50">
@@ -268,8 +280,16 @@ export function AdminProductsClient({
                   </td>
                   <td className={adminTableMutedCls}>{p.brand}</td>
                   <td className={adminTableMutedCls}>{categoryLabel(p.category)}</td>
-                  <td className={`${adminTableCellCls} font-semibold`}>
-                    {parseFloat(p.price).toFixed(3)} TND
+                  <td className={adminTableCellCls}>
+                    <p className="font-semibold text-slate-900">
+                      {formatPriceTnd(parseFloat(p.price))} TND
+                    </p>
+                    {discount != null && compareAt != null && (
+                      <p className="mt-0.5 text-xs text-slate-500">
+                        <span className="line-through">{formatPriceTnd(compareAt)} TND</span>
+                        <span className="ml-1.5 font-medium text-emerald-700">-{discount}%</span>
+                      </p>
+                    )}
                   </td>
                   <td className={adminTableCellCls}>
                     <AdminBadge tone={p.inStock ? 'success' : 'danger'}>
@@ -336,15 +356,35 @@ export function AdminProductsClient({
               <input type="text" className={adminInputWithError(!!errors.brand)} {...register('brand')} />
               <AdminFieldError message={errors.brand?.message} />
             </div>
-            <div>
-              <label className={adminLabelCls}>PRIX (TND) *</label>
-              <input
-                type="number"
-                step="0.001"
-                className={adminInputWithError(!!errors.price)}
-                {...register('price')}
-              />
-              <AdminFieldError message={errors.price?.message} />
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label className={adminLabelCls}>PRIX ACTUEL (TND) *</label>
+                <input
+                  type="number"
+                  step="0.001"
+                  className={adminInputWithError(!!errors.price)}
+                  {...register('price')}
+                />
+                <AdminFieldError message={errors.price?.message} />
+              </div>
+              <div>
+                <label className={adminLabelCls}>ANCIEN PRIX (TND)</label>
+                <input
+                  type="number"
+                  step="0.001"
+                  placeholder="Optionnel — pour une promo"
+                  className={adminInputWithError(!!errors.compareAtPrice)}
+                  {...register('compareAtPrice', {
+                    setValueAs: (value) => (value == null || value === '' ? '' : String(value)),
+                  })}
+                />
+                <AdminFieldError message={errors.compareAtPrice?.message} />
+                {previewDiscount != null && (
+                  <p className="mt-1 text-xs font-medium text-emerald-700">
+                    Remise affichee : -{previewDiscount}%
+                  </p>
+                )}
+              </div>
             </div>
             <ProductImagesField
               value={images}

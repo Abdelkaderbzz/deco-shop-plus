@@ -163,6 +163,7 @@ export async function addProduct(data: {
   brand: string
   description: string
   price: string
+  compareAtPrice?: string | null
   category: string
   images: string[]
   sizes: string[]
@@ -172,12 +173,14 @@ export async function addProduct(data: {
 }) {
   await requireAdminId()
   const imageData = normalizeProductImages(data.images)
+  const compareAtPrice = data.compareAtPrice?.trim() || null
 
   await db.insert(products).values({
     name: data.name,
     brand: data.brand,
     description: data.description,
     price: data.price,
+    compareAtPrice,
     category: data.category,
     imageUrl: imageData.imageUrl,
     images: imageData.images,
@@ -200,6 +203,7 @@ export async function updateProduct(
     brand?: string
     description?: string
     price?: string
+    compareAtPrice?: string | null
     category?: string
     images?: string[]
     sizes?: string[]
@@ -216,6 +220,9 @@ export async function updateProduct(
     const imageData = normalizeProductImages(data.images)
     updateData.images = imageData.images
     updateData.imageUrl = imageData.imageUrl
+  }
+  if ('compareAtPrice' in data) {
+    updateData.compareAtPrice = data.compareAtPrice?.trim() || null
   }
 
   await db.update(products).set(updateData).where(eq(products.id, id))

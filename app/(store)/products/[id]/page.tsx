@@ -2,6 +2,7 @@ import { getProductById } from '@/app/actions/products'
 import { getCategories } from '@/app/actions/categories'
 import { getDeliveryFee } from '@/app/actions/settings'
 import { ProductGallery } from '@/components/product-gallery'
+import { ProductPrice } from '@/components/product-price'
 import { parseProductImages } from '@/lib/product-images'
 import { getCategoryLabel } from '@/lib/store-categories'
 import { AddToCartButton } from './add-to-cart-button'
@@ -62,10 +63,11 @@ export default async function ProductDetailPage({
 
           <div className="h-px w-16 bg-primary/30" />
 
-          <p className="text-2xl font-medium tabular-nums tracking-normal text-foreground">
-            {parseFloat(product.price).toFixed(3)}{' '}
-            <span className="text-sm font-normal text-muted-foreground">TND</span>
-          </p>
+          <ProductPrice
+            price={product.price}
+            compareAtPrice={product.compareAtPrice}
+            size="lg"
+          />
 
           {product.description && (
             <p className="text-sm font-light leading-relaxed text-muted-foreground">

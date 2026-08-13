@@ -87,6 +87,8 @@ export const products = pgTable('products', {
   brand: text('brand').notNull(),
   description: text('description'),
   price: numeric('price', { precision: 10, scale: 3 }).notNull(),
+  /** Old / compare-at price for strikethrough + discount %. Null = no discount. */
+  compareAtPrice: numeric('compareAtPrice', { precision: 10, scale: 3 }),
   category: text('category').notNull().default('unisex'),
   imageUrl: text('imageUrl'),
   images: text('images').notNull().default('[]'),

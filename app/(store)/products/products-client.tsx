@@ -12,6 +12,7 @@ type Product = {
   name: string
   brand: string
   price: string
+  compareAtPrice?: string | null
   imageUrl: string | null
   category: string
   inStock: boolean

@@ -75,6 +75,7 @@ const statements = [
     "brand" text NOT NULL,
     "description" text,
     "price" numeric(10, 3) NOT NULL,
+    "compareAtPrice" numeric(10, 3),
     "category" text NOT NULL DEFAULT 'unisex',
     "imageUrl" text,
     "images" text NOT NULL DEFAULT '[]',
@@ -119,6 +120,7 @@ const statements = [
   `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "images" text NOT NULL DEFAULT '[]'`,
   `ALTER TABLE "categories" ADD COLUMN IF NOT EXISTS "bannerUrl" text`,
   `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "published" boolean NOT NULL DEFAULT true`,
+  `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "compareAtPrice" numeric(10, 3)`,
   `ALTER TABLE "orders" ADD COLUMN IF NOT EXISTS "customerGovernorate" text`,
   `UPDATE "products"
    SET "images" = json_build_array("imageUrl")::text
