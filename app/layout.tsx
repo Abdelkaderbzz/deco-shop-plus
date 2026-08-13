@@ -17,10 +17,15 @@ const inter = Inter({
   display: 'swap',
 })
 
+const siteUrl = 'https://www.parfumeriejannah.com'
+const siteTitle = 'Parfumerie Janna | Beaute feminine'
+const siteDescription =
+  'Boutique feminine en Tunisie. Parfums, maquillage, sacs et soins selectionnes avec amour pour sublimer votre elegance.'
+
 export const metadata: Metadata = {
-  title: 'Parfumerie Janna | Beaute feminine',
-  description:
-    'Boutique feminine en Tunisie. Parfums, maquillage, sacs et soins selectionnes avec amour pour sublimer votre elegance.',
+  metadataBase: new URL(siteUrl),
+  title: siteTitle,
+  description: siteDescription,
   keywords: [
     'beaute',
     'parfum',
@@ -31,6 +36,22 @@ export const metadata: Metadata = {
     'Parfumerie Janna',
     'femme',
   ],
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'fr_TN',
+    url: siteUrl,
+    siteName: 'Parfumerie Janna',
+    title: siteTitle,
+    description: siteDescription,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: siteTitle,
+    description: siteDescription,
+  },
 }
 
 export const viewport: Viewport = {
