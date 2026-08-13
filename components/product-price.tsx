@@ -65,12 +65,11 @@ export function ProductPrice({
       </p>
       <p
         className={cn(
-          'tabular-nums text-muted-foreground line-through',
+          'tabular-nums text-muted-foreground line-through decoration-from-font',
           size === 'lg' ? 'text-base font-light' : 'text-xs font-light',
         )}
       >
-        {formatPriceTnd(compareAt)}{' '}
-        <span className={size === 'lg' ? 'text-xs' : 'text-[10px]'}>TND</span>
+        {formatPriceTnd(compareAt)} TND
       </p>
       <span
         className={cn(
