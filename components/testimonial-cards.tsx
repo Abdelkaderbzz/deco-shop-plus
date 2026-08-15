@@ -8,17 +8,19 @@ const AVATAR_GRADIENTS = {
 function Avatar({ item }: { item: TestimonialComment }) {
   const badge = (
     <div
-      className={`flex size-8 shrink-0 items-center justify-center rounded-full bg-linear-to-br ${AVATAR_GRADIENTS[item.source]} text-[10px] font-semibold text-white`}
+      className={`flex size-full items-center justify-center rounded-full bg-linear-to-br ${AVATAR_GRADIENTS[item.source]} text-[10px] font-semibold text-white`}
     >
       {item.avatar}
     </div>
   )
 
-  if (!item.storyRing) return badge
+  if (!item.storyRing) {
+    return <div className="size-8 shrink-0 self-start">{badge}</div>
+  }
 
   return (
-    <div className="shrink-0 rounded-full bg-linear-to-tr from-yellow-400 via-pink-500 to-purple-600 p-0.5">
-      <div className="rounded-full bg-[#121212] p-0.5">{badge}</div>
+    <div className="size-9 shrink-0 self-start rounded-full bg-linear-to-tr from-yellow-400 via-pink-500 to-purple-600 p-[2px]">
+      <div className="size-full overflow-hidden rounded-full bg-[#121212] p-[2px]">{badge}</div>
     </div>
   )
 }
