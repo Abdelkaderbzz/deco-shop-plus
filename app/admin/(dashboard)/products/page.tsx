@@ -1,4 +1,4 @@
-import { getAdminProductsPaginated } from '@/app/actions/products'
+import { getAdminProductsPaginated, getProductOptions } from '@/app/actions/products'
 import { getCategories } from '@/app/actions/categories'
 import { ADMIN_PAGE_SIZE, normalizePage } from '@/lib/pagination'
 import { AdminProductsClient } from '../../admin-products-client'
@@ -13,9 +13,10 @@ export default async function AdminProductsPage({
   const page = normalizePage(params.page)
   const search = params.search?.trim() ?? ''
 
-  const [productPage, categories] = await Promise.all([
+  const [productPage, categories, productOptions] = await Promise.all([
     getAdminProductsPaginated({ page, pageSize: ADMIN_PAGE_SIZE, search }),
     getCategories(),
+    getProductOptions(),
   ])
 
   return (
@@ -31,6 +32,7 @@ export default async function AdminProductsPage({
         page={productPage.page}
         search={search}
         categories={categories}
+        productOptions={productOptions}
       />
     </div>
   )

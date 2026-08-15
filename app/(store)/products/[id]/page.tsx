@@ -1,6 +1,7 @@
-import { getProductById } from '@/app/actions/products'
+import { getProductById, getRelatedProducts } from '@/app/actions/products'
 import { getCategories } from '@/app/actions/categories'
 import { getDeliveryFee } from '@/app/actions/settings'
+import { ProductCard } from '@/components/product-card'
 import { ProductGallery } from '@/components/product-gallery'
 import { ProductPrice } from '@/components/product-price'
 import { parseProductImages } from '@/lib/product-images'
@@ -17,10 +18,11 @@ export default async function ProductDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const [product, deliveryFee, categories] = await Promise.all([
+  const [product, deliveryFee, categories, relatedProducts] = await Promise.all([
     getProductById(Number(id)),
     getDeliveryFee(),
     getCategories(),
+    getRelatedProducts(Number(id)),
   ])
   if (!product) notFound()
 
@@ -88,6 +90,22 @@ export default async function ProductDetailPage({
           </div>
         </div>
       </div>
+
+      {relatedProducts.length > 0 && (
+        <section className="mt-20 border-t border-border pt-12">
+          <div className="mb-8 text-center">
+            <p className="text-[10px] font-light tracking-[0.4em] text-primary">SELECTION</p>
+            <h2 className="mt-2 font-serif text-2xl font-light tracking-widest text-foreground">
+              VOUS AIMEREZ AUSSI
+            </h2>
+          </div>
+          <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
+            {relatedProducts.map((related) => (
+              <ProductCard key={related.id} product={related} categories={categories} />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   )
 }

@@ -12,7 +12,12 @@ import {
   type PaginatedResult,
 } from '@/lib/pagination'
 import { getPrimaryImage, serializeProductImages } from '@/lib/product-images'
-import { and, desc, eq, ilike, or, sql } from 'drizzle-orm'
+import {
+  RELATED_PRODUCTS_SHOWN,
+  parseRelatedProductIds,
+  serializeRelatedProductIds,
+} from '@/lib/product-relations'
+import { and, asc, desc, eq, ilike, inArray, ne, notInArray, or, sql } from 'drizzle-orm'
 import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
 
 function normalizeProductImages(images: string[]) {
@@ -158,6 +163,71 @@ export async function getProductById(id: number) {
   )()
 }
 
+/** Lightweight catalogue used by the related-products picker in the admin. */
+export async function getProductOptions() {
+  await requireAdminId()
+  return db
+    .select({
+      id: products.id,
+      name: products.name,
+      brand: products.brand,
+      category: products.category,
+      published: products.published,
+    })
+    .from(products)
+    .orderBy(asc(products.brand), asc(products.name))
+}
+
+/** Admin picks come first, in the order they were chosen; anything missing is
+ *  filled with other products from the same category. */
+export async function getRelatedProducts(productId: number) {
+  return unstable_cache(
+    async () => {
+      const [product] = await db
+        .select()
+        .from(products)
+        .where(and(eq(products.id, productId), eq(products.published, true)))
+        .limit(1)
+      if (!product) return []
+
+      const curatedIds = parseRelatedProductIds(product).filter((id) => id !== productId)
+
+      const curatedRows = curatedIds.length
+        ? await db
+            .select()
+            .from(products)
+            .where(and(inArray(products.id, curatedIds), eq(products.published, true)))
+        : []
+
+      const curated = curatedIds
+        .map((id) => curatedRows.find((row) => row.id === id))
+        .filter((row): row is typeof products.$inferSelect => Boolean(row))
+        .slice(0, RELATED_PRODUCTS_SHOWN)
+
+      const missing = RELATED_PRODUCTS_SHOWN - curated.length
+      if (missing <= 0) return curated
+
+      const excluded = [productId, ...curated.map((row) => row.id)]
+      const fallback = await db
+        .select()
+        .from(products)
+        .where(
+          and(
+            eq(products.published, true),
+            eq(products.category, product.category),
+            excluded.length > 1 ? notInArray(products.id, excluded) : ne(products.id, productId),
+          ),
+        )
+        .orderBy(desc(products.featured), desc(products.createdAt))
+        .limit(missing)
+
+      return [...curated, ...fallback]
+    },
+    ['related-products', String(productId)],
+    { revalidate: 120, tags: ['products', `product-${productId}`] },
+  )()
+}
+
 export async function addProduct(data: {
   name: string
   brand: string
@@ -167,6 +237,7 @@ export async function addProduct(data: {
   category: string
   images: string[]
   sizes: string[]
+  relatedProductIds?: number[]
   inStock: boolean
   featured: boolean
   published: boolean
@@ -185,6 +256,7 @@ export async function addProduct(data: {
     imageUrl: imageData.imageUrl,
     images: imageData.images,
     sizes: JSON.stringify(data.sizes),
+    relatedProductIds: serializeRelatedProductIds(data.relatedProductIds ?? []),
     inStock: data.inStock,
     featured: data.featured,
     published: data.published,
@@ -207,6 +279,7 @@ export async function updateProduct(
     category?: string
     images?: string[]
     sizes?: string[]
+    relatedProductIds?: number[]
     inStock?: boolean
     featured?: boolean
     published?: boolean
@@ -216,6 +289,9 @@ export async function updateProduct(
   const updateData: Record<string, unknown> = { ...data, updatedAt: new Date() }
 
   if (data.sizes) updateData.sizes = JSON.stringify(data.sizes)
+  if (data.relatedProductIds) {
+    updateData.relatedProductIds = serializeRelatedProductIds(data.relatedProductIds)
+  }
   if (data.images) {
     const imageData = normalizeProductImages(data.images)
     updateData.images = imageData.images

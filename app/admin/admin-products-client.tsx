@@ -5,6 +5,7 @@ import { useToast } from '@/components/toast-provider'
 import { useConfirm } from '@/components/confirm-provider'
 import { getErrorMessage } from '@/lib/get-error-message'
 import { getPrimaryImage, parseProductImages } from '@/lib/product-images'
+import { parseRelatedProductIds } from '@/lib/product-relations'
 import { formatPriceTnd, getDiscountPercent, parsePrice } from '@/lib/product-price'
 import { productSchema, type ProductFormValues } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -29,6 +30,7 @@ import {
 } from './admin-ui'
 import { AdminSelect } from './admin-select'
 import { ProductImagesField } from './product-images-field'
+import { RelatedProductsField, type ProductOption } from './related-products-field'
 import { ADMIN_PAGE_SIZE, AdminPagination } from './admin-pagination'
 
 type Product = {
@@ -42,6 +44,7 @@ type Product = {
   imageUrl: string | null
   images: string | null
   sizes: string
+  relatedProductIds: string
   inStock: boolean
   featured: boolean
   published: boolean
@@ -59,9 +62,10 @@ const EMPTY_FORM: ProductFormValues = {
   description: '',
   price: '',
   compareAtPrice: '',
-  category: 'parfums',
+  category: 'femme',
   images: [],
   sizes: '',
+  relatedProductIds: [],
   inStock: true,
   featured: false,
   published: true,
@@ -73,12 +77,14 @@ export function AdminProductsClient({
   page,
   search: initialSearch,
   categories,
+  productOptions,
 }: {
   products: Product[]
   total: number
   page: number
   search: string
   categories: Category[]
+  productOptions: ProductOption[]
 }) {
   const { isPending: isNavigating, push, refresh } = useRouteTransition()
   const toast = useToast()
@@ -89,7 +95,7 @@ export function AdminProductsClient({
   const [isPending, startTransition] = useTransition()
   const isBusy = isPending || isNavigating
 
-  const defaultCategory = categories[0]?.slug ?? 'parfums'
+  const defaultCategory = categories[0]?.slug ?? 'femme'
 
   useEffect(() => {
     setSearchInput(initialSearch)
@@ -117,6 +123,7 @@ export function AdminProductsClient({
   })
 
   const images = watch('images')
+  const relatedProductIds = watch('relatedProductIds')
   const watchedPrice = watch('price')
   const watchedCompareAt = watch('compareAtPrice')
   const previewDiscount = getDiscountPercent(watchedPrice, watchedCompareAt)
@@ -138,6 +145,7 @@ export function AdminProductsClient({
       category: product.category,
       images: parseProductImages(product),
       sizes: JSON.parse(product.sizes || '[]').join(', '),
+      relatedProductIds: parseRelatedProductIds(product),
       inStock: product.inStock,
       featured: product.featured,
       published: product.published ?? true,
@@ -164,6 +172,7 @@ export function AdminProductsClient({
             category: form.category,
             images: form.images,
             sizes: sizesArr,
+            relatedProductIds: form.relatedProductIds,
             inStock: form.inStock,
             featured: form.featured,
             published: form.published,
@@ -179,6 +188,7 @@ export function AdminProductsClient({
             category: form.category,
             images: form.images,
             sizes: sizesArr,
+            relatedProductIds: form.relatedProductIds,
             inStock: form.inStock,
             featured: form.featured,
             published: form.published,
@@ -426,6 +436,14 @@ export function AdminProductsClient({
               />
               <AdminFieldError message={errors.category?.message} />
             </div>
+
+            <RelatedProductsField
+              value={relatedProductIds}
+              onChange={(ids) => setValue('relatedProductIds', ids, { shouldValidate: true })}
+              options={productOptions}
+              excludeId={editingProduct?.id}
+              error={errors.relatedProductIds?.message}
+            />
 
             <div>
               <label className={adminLabelCls}>STATUT</label>
