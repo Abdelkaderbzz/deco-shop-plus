@@ -5,6 +5,7 @@ import { ProductCard } from '@/components/product-card'
 import { ProductGallery } from '@/components/product-gallery'
 import { ProductPrice } from '@/components/product-price'
 import { parseProductImages } from '@/lib/product-images'
+import { formatPriceTnd } from '@/lib/product-price'
 import { getCategoryLabel } from '@/lib/store-categories'
 import { AddToCartButton } from './add-to-cart-button'
 import { notFound } from 'next/navigation'
@@ -86,7 +87,7 @@ export default async function ProductDetailPage({
           )}
 
           <div className="border-t border-border pt-4 text-[11px] font-light tracking-wider text-muted-foreground">
-            <p>Livraison disponible en Tunisie, {deliveryFee.toFixed(3)} TND</p>
+            <p>Livraison disponible en Tunisie, {formatPriceTnd(deliveryFee)} TND</p>
           </div>
         </div>
       </div>

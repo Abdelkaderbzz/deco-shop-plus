@@ -8,6 +8,7 @@ import { useCart } from '@/components/cart-context'
 import { useToast } from '@/components/toast-provider'
 import { boutiqueLabel, phoneHref, type PickupBoutique } from '@/lib/boutiques'
 import { getErrorMessage } from '@/lib/get-error-message'
+import { formatPriceTnd } from '@/lib/product-price'
 import { GOVERNORATE_SELECT_OPTIONS } from '@/lib/tunisia-governorates'
 import { checkoutSchema, type CheckoutFormValues } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -177,7 +178,7 @@ export default function CheckoutPage() {
                     </button>
                   </div>
                   <p className="text-sm font-light text-foreground">
-                    {(item.price * item.quantity).toFixed(3)} TND
+                    {formatPriceTnd(item.price * item.quantity)} TND
                   </p>
                 </div>
               </div>
@@ -200,7 +201,7 @@ export default function CheckoutPage() {
               <button type="button" onClick={() => chooseOrderType('delivery')} className={modeCardCls(!isPickup)}>
                 <span className="text-sm font-semibold text-foreground">Livraison a domicile</span>
                 <span className="mt-1 block text-sm font-medium text-primary">
-                  {deliveryFee.toFixed(3)} TND
+                  {formatPriceTnd(deliveryFee)} TND
                 </span>
                 <span className="mt-1 block text-xs text-muted-foreground">
                   Partout en Tunisie, paiement a la livraison.
@@ -377,19 +378,19 @@ export default function CheckoutPage() {
             <p className={storeSectionCls}>Recapitulatif</p>
             <div className="flex justify-between text-base text-foreground">
               <span>Sous-total</span>
-              <span className="font-medium">{total.toFixed(3)} TND</span>
+              <span className="font-medium">{formatPriceTnd(total)} TND</span>
             </div>
             <div className="flex justify-between text-base text-foreground">
               <span>{isPickup ? 'Retrait en boutique' : 'Livraison'}</span>
               <span className="font-medium">
-                {isPickup ? 'Gratuit' : `${deliveryFee.toFixed(3)} TND`}
+                {isPickup ? 'Gratuit' : `${formatPriceTnd(deliveryFee)} TND`}
               </span>
             </div>
             <div className="h-px bg-primary/20" />
             <div className="flex justify-between items-center text-foreground">
               <span className="text-base font-semibold">Total a payer</span>
               <span className="text-2xl font-semibold tabular-nums text-primary">
-                {grandTotal.toFixed(3)} TND
+                {formatPriceTnd(grandTotal)} TND
               </span>
             </div>
           </div>

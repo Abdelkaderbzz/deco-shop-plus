@@ -6,6 +6,8 @@ import {
   AdminBadge,
   AdminCard,
 } from '../admin-ui'
+import { formatDateFr } from '@/lib/locale'
+import { formatPriceTnd } from '@/lib/product-price'
 import { orderStatusMeta } from '../order-status'
 import { AdminRoutePrefetch } from '../admin-route-prefetch'
 import Link from 'next/link'
@@ -33,7 +35,7 @@ export default async function AdminDashboardPage() {
         />
         <AdminStatCard
           label="CHIFFRE D'AFFAIRES"
-          value={`${stats.revenue.toFixed(3)} TND`}
+          value={`${formatPriceTnd(stats.revenue)} TND`}
           tone="accent"
         />
         <AdminStatCard
@@ -77,7 +79,7 @@ export default async function AdminDashboardPage() {
         <AdminQuickLink
           href="/admin/settings"
           title="Tarif de livraison"
-          description={`Actuellement ${stats.deliveryFee.toFixed(3)} TND par commande.`}
+          description={`Actuellement ${formatPriceTnd(stats.deliveryFee)} TND par commande.`}
         />
       </div>
 
@@ -96,7 +98,7 @@ export default async function AdminDashboardPage() {
                     #{order.id} — {order.customerName}
                   </p>
                   <p className="text-sm text-slate-500">
-                    {new Date(order.createdAt).toLocaleDateString('fr-TN')} ·{' '}
+                    {formatDateFr(order.createdAt)} ·{' '}
                     {order.orderType === 'delivery' ? 'Livraison' : 'Boutique'}
                   </p>
                 </div>
@@ -105,7 +107,7 @@ export default async function AdminDashboardPage() {
                     {orderStatusMeta(order.status).label}
                   </AdminBadge>
                   <span className="text-sm font-bold text-slate-900">
-                    {parseFloat(order.totalAmount).toFixed(3)} TND
+                    {formatPriceTnd(parseFloat(order.totalAmount))} TND
                   </span>
                 </div>
               </div>

@@ -76,8 +76,10 @@ export function Navbar({ storeCategories }: { storeCategories: StoreCategory[] }
           </Link>
 
           <button
-            className="flex flex-col gap-1.5 lg:hidden"
+            type="button"
+            className="flex min-h-11 min-w-11 flex-col items-center justify-center gap-1.5 lg:hidden"
             onClick={() => setMenuOpen(!menuOpen)}
+            aria-expanded={menuOpen}
             aria-label={menuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
           >
             <span className={`block h-px w-6 bg-foreground transition-all ${menuOpen ? 'translate-y-2.5 rotate-45' : ''}`} />
