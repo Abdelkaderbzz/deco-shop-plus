@@ -17,9 +17,9 @@ import { Controller, useForm } from 'react-hook-form'
 const storeLabelCls = 'mb-2 block text-sm font-semibold text-foreground'
 const storeSectionCls = 'mb-5 text-sm font-semibold uppercase tracking-wide text-primary'
 const storeInputCls =
-  'w-full rounded-xl border-2 border-border bg-white px-4 py-3 text-base text-foreground outline-none transition-colors placeholder:text-muted-foreground/80 focus:border-primary focus:ring-2 focus:ring-primary/20'
+  'w-full rounded-xl border-2 border-border bg-card px-4 py-3 text-base text-foreground outline-none transition-colors placeholder:text-muted-foreground/80 focus:border-primary focus:ring-2 focus:ring-primary/20'
 const storeInputErrorCls =
-  'w-full rounded-xl border-2 border-destructive bg-white px-4 py-3 text-base text-foreground outline-none focus:border-destructive focus:ring-2 focus:ring-destructive/20'
+  'w-full rounded-xl border-2 border-destructive bg-card px-4 py-3 text-base text-foreground outline-none focus:border-destructive focus:ring-2 focus:ring-destructive/20'
 
 function StoreFieldError({ message }: { message?: string }) {
   if (!message) return null
@@ -118,7 +118,7 @@ export default function CheckoutPage() {
                 <img
                   src={item.imageUrl}
                   alt={item.productName}
-                  className="h-20 w-16 object-cover flex-shrink-0"
+                  className="h-20 w-16 object-cover shrink-0"
                 />
               )}
               <div className="flex flex-1 flex-col justify-between">
@@ -136,7 +136,7 @@ export default function CheckoutPage() {
                     >
                       &minus;
                     </button>
-                    <span className="min-w-[20px] text-center text-sm font-light text-foreground">
+                    <span className="min-w-5 text-center text-sm font-light text-foreground">
                       {item.quantity}
                     </span>
                     <button

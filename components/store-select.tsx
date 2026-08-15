@@ -26,7 +26,7 @@ export function StoreSelect({
       disabled={disabled}
       onChange={(e) => onChange(e.target.value)}
       className={cn(
-        'w-full rounded-xl border-2 bg-white px-4 py-3 text-base outline-none transition-colors focus:ring-2',
+        'w-full rounded-xl border-2 bg-card px-4 py-3 text-base outline-none transition-colors focus:ring-2',
         hasError
           ? 'border-destructive text-foreground focus:border-destructive focus:ring-destructive/20'
           : 'border-border text-foreground focus:border-primary focus:ring-primary/20',

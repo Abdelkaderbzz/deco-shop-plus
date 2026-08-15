@@ -47,35 +47,34 @@
 }
 
 :root {
-  color-scheme: light;
-  --background: #fef8f6;
-  --foreground: #3d2830;
-  --card: #fffcfb;
-  --card-foreground: #3d2830;
-  --popover: #fffcfb;
-  --popover-foreground: #3d2830;
-  /* Darkened primary/muted for WCAG AA contrast on cream backgrounds */
-  --primary: #9a5f52;
-  --primary-foreground: #fff9f7;
-  --secondary: #f8e8ec;
-  --secondary-foreground: #3d2830;
-  --muted: #f5e6ea;
-  --muted-foreground: #73545c;
-  --accent: #b8844f;
-  --accent-foreground: #fff9f7;
+  color-scheme: dark;
+  --background: #0b0b0b;
+  --foreground: #f3e6c4;
+  --card: #141210;
+  --card-foreground: #f3e6c4;
+  --popover: #141210;
+  --popover-foreground: #f3e6c4;
+  --primary: #c9a44a;
+  --primary-foreground: #0b0b0b;
+  --secondary: #1c1810;
+  --secondary-foreground: #f3e6c4;
+  --muted: #1a1712;
+  --muted-foreground: #b8a88a;
+  --accent: #e0c078;
+  --accent-foreground: #0b0b0b;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: #edd8de;
-  --input: #faf0f2;
-  --ring: #9a5f52;
+  --border: #3a3224;
+  --input: #1c1810;
+  --ring: #c9a44a;
   --radius: 0.625rem;
-  --sidebar: #fffcfb;
-  --sidebar-foreground: #3d2830;
-  --sidebar-primary: #9a5f52;
-  --sidebar-primary-foreground: #fff9f7;
-  --sidebar-accent: #f8e8ec;
-  --sidebar-accent-foreground: #3d2830;
-  --sidebar-border: #edd8de;
-  --sidebar-ring: #9a5f52;
+  --sidebar: #141210;
+  --sidebar-foreground: #f3e6c4;
+  --sidebar-primary: #c9a44a;
+  --sidebar-primary-foreground: #0b0b0b;
+  --sidebar-accent: #1c1810;
+  --sidebar-accent-foreground: #f3e6c4;
+  --sidebar-border: #3a3224;
+  --sidebar-ring: #c9a44a;
 }
 
 @layer base {
@@ -117,37 +116,50 @@
   }
 }
 
-@keyframes testimonial-bubble-pop {
-  0% {
-    opacity: 0;
-    transform: scale(0.82) translateY(10px);
-  }
-  70% {
-    transform: scale(1.02) translateY(-1px);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+/* Infinite testimonial marquee.
+   The track holds two identical passes side by side, so shifting it by exactly
+   -50% lands on the start of the second pass — visually identical to frame 0,
+   which is what makes the loop seamless. */
+.marquee {
+  overflow: hidden;
 }
 
-@keyframes testimonial-slide-up {
+.marquee-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: marquee-drift-left var(--marquee-duration, 70s) linear infinite;
+}
+
+.marquee-track[data-direction='right'] {
+  animation-name: marquee-drift-right;
+}
+
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes marquee-drift-left {
   from {
-    opacity: 0;
-    transform: translateY(18px);
+    transform: translate3d(0, 0, 0);
   }
   to {
-    opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
-@keyframes testimonial-float-soft {
-  0%,
-  100% {
-    transform: translateY(0);
+@keyframes marquee-drift-right {
+  from {
+    transform: translate3d(-50%, 0, 0);
   }
-  50% {
-    transform: translateY(-5px);
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
   }
 }
