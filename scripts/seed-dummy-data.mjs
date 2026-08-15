@@ -31,7 +31,7 @@ const GOVERNORATES = [
   'bizerte',
 ]
 
-const CATEGORY_SLUGS = ['parfums', 'maquillage', 'sacs', 'soins']
+const CATEGORY_SLUGS = ['femme', 'homme']
 const PLACEHOLDER_IMAGES = [
   '/categories/parfums.webp',
   '/categories/maquillage.webp',
@@ -85,7 +85,7 @@ function parseArgs(argv) {
 
 function printHelp() {
   console.log(`
-Dummy data seeder — Water of Cold Parfume
+Dummy data seeder — Water of Gold
 
 Usage:
   node scripts/seed-dummy-data.mjs [options]

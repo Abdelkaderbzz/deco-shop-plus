@@ -11,7 +11,7 @@ const JOBS = [
   { dir: 'hero', maxWidth: 900, quality: 72 },
   { dir: 'categories', maxWidth: 900, quality: 72 },
   { dir: 'showcase', maxWidth: 900, quality: 72 },
-  { file: 'logo.png', maxWidth: 256, quality: 80 },
+  { file: 'logo.png', maxWidth: 800, quality: 90 },
 ]
 
 async function optimizeFile(inputPath, maxWidth, quality) {

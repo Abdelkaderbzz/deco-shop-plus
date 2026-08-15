@@ -12,34 +12,21 @@ if (!DATABASE_URL) {
 }
 
 const RESTORE_CATEGORIES = [
-  { name: 'Parfums', slug: 'parfums' },
-  { name: 'Maquillage', slug: 'maquillage' },
-  { name: 'Sacs', slug: 'sacs' },
-  { name: 'Soins', slug: 'soins' },
+  { name: 'Femme', slug: 'femme' },
+  { name: 'Homme', slug: 'homme' },
 ]
 
-const REMOVE_SLUGS = ['homme', 'femme', 'unisex', 'tous']
+const REMOVE_SLUGS = ['parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous']
 
-// Original categories from seed-products.mjs (name + brand -> category)
 const PRODUCT_CATEGORY_MAP = [
-  ['Yara', 'Lattafa', 'parfums'],
-  ['Bright Orchard', 'MATCH', 'parfums'],
-  ['Miss Gris Intense', 'ASSAF', 'parfums'],
-  ['Musk Collection', 'Ibraheem Al Qurashi', 'parfums'],
-  ['Vanilla Candy Rock Sugar | 42', 'Kayali', 'parfums'],
-  ['Musk Pomegranate', 'IBRAQ', 'parfums'],
-  ['Eclaire', 'Lattafa', 'parfums'],
-  ['Couture Mini Clutch', 'Yves Saint Laurent', 'maquillage'],
-  ['Peptide Lip Tint Set', 'rhode', 'maquillage'],
-  ['Rouge Dior Mini Lipstick Set', 'Dior', 'maquillage'],
-  ['3D Hydra Lipgloss N°26', 'KIKO Milano', 'maquillage'],
-  ['Rosy Glow Blush', 'Dior', 'maquillage'],
-  ['Madagascar Centella Set', 'SKIN1004', 'soins'],
-  ['Charming Coffret Soins', 'Enchanteur', 'soins'],
-  ['Bare Vanilla Set', "Victoria's Secret", 'soins'],
-  ['Lady Dior Crocodile', 'Dior', 'sacs'],
-  ['Sac Cannage', 'Dior', 'sacs'],
-  ['Coffret Yara', 'Lattafa', 'parfums'],
+  ['Yara', 'Lattafa', 'femme'],
+  ['Bright Orchard', 'MATCH', 'femme'],
+  ['Miss Gris Intense', 'ASSAF', 'femme'],
+  ['Musk Collection', 'Ibraheem Al Qurashi', 'femme'],
+  ['Vanilla Candy Rock Sugar | 42', 'Kayali', 'femme'],
+  ['Musk Pomegranate', 'IBRAQ', 'femme'],
+  ['Eclaire', 'Lattafa', 'femme'],
+  ['Coffret Yara', 'Lattafa', 'femme'],
 ]
 
 const pool = new Pool({ connectionString: DATABASE_URL })
@@ -66,11 +53,11 @@ try {
   }
 
   const fallback = await pool.query(
-    `UPDATE "products" SET "category" = 'parfums', "updatedAt" = now()
-     WHERE "category" IN ('homme', 'femme', 'unisex')`,
+    `UPDATE "products" SET "category" = 'femme', "updatedAt" = now()
+     WHERE "category" IN ('parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous')`,
   )
   if (fallback.rowCount > 0) {
-    console.log(`✓ Fallback: ${fallback.rowCount} remaining product(s) set to parfums`)
+    console.log(`✓ Fallback: ${fallback.rowCount} remaining product(s) set to femme`)
   }
 
   const removed = await pool.query(

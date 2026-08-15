@@ -7,38 +7,25 @@ export type StoreCategory = {
 
 export const STORE_CATEGORIES: StoreCategory[] = [
   {
-    slug: 'parfums',
-    name: 'Parfums',
-    tagline: 'Fragrances feminines & coffrets',
-    image: '/categories/parfums.webp',
+    slug: 'femme',
+    name: 'Femme',
+    tagline: 'Fragrances feminines de longue tenue',
+    image: '/categories/femme.webp',
   },
   {
-    slug: 'maquillage',
-    name: 'Maquillage',
-    tagline: 'Levres, teint & palettes',
-    image: '/categories/maquillage.webp',
-  },
-  {
-    slug: 'sacs',
-    name: 'Sacs',
-    tagline: 'Sacs a main & accessoires',
-    image: '/categories/sacs.webp',
-  },
-  {
-    slug: 'soins',
-    name: 'Soins',
-    tagline: 'Corps, cheveux & bien-etre',
-    image: '/categories/soins.webp',
+    slug: 'homme',
+    name: 'Homme',
+    tagline: 'Fragrances masculines de longue tenue',
+    image: '/categories/homme.webp',
   },
 ]
 
 /** @deprecated Prefer getHeroImages() from app/actions/hero — kept for showcase gallery refs. */
 export const HERO_IMAGES = [
-  { src: '/hero/perfume-1.webp', alt: 'Parfums feminins' },
-  { src: '/hero/makeup-1.webp', alt: 'Maquillage luxe' },
-  { src: '/hero/perfume-2.webp', alt: 'Eau de parfum' },
-  { src: '/hero/bag-1.webp', alt: 'Sacs a main' },
-  { src: '/hero/makeup-2.webp', alt: 'Maquillage' },
+  { src: '/hero/campaign-ramadan.webp', alt: 'Campagne Water of Gold' },
+  { src: '/hero/boutique-shelves.webp', alt: 'Boutique Water of Gold' },
+  { src: '/hero/lifestyle-signature.webp', alt: 'Parfum signature' },
+  { src: '/hero/gold-bottles.webp', alt: 'Selection Water of Gold' },
 ]
 
 export type ShowcaseImage = {
@@ -48,16 +35,12 @@ export type ShowcaseImage = {
 }
 
 export const SHOWCASE_GALLERY: ShowcaseImage[] = [
-  { src: '/showcase/perfume-4.png', alt: 'Lattafa Yara', category: 'parfums' },
-  { src: '/categories/parfums.webp', alt: 'Coffret Lattafa Yara', category: 'parfums' },
-  { src: '/categories/maquillage.webp', alt: 'Maquillage', category: 'maquillage' },
-  { src: '/hero/makeup-1.webp', alt: 'Rouge a levres', category: 'maquillage' },
-  { src: '/hero/makeup-2.webp', alt: 'Gloss', category: 'maquillage' },
-  { src: '/categories/sacs.webp', alt: 'Sacs', category: 'sacs' },
-  { src: '/hero/bag-1.webp', alt: 'Sac a main luxe', category: 'sacs' },
-  { src: '/categories/soins.webp', alt: 'Soins', category: 'soins' },
-  { src: '/hero/perfume-1.webp', alt: 'Parfum', category: 'parfums' },
-  { src: '/hero/perfume-2.webp', alt: 'Fragrance', category: 'parfums' },
+  { src: '/hero/dg-devotion.webp', alt: 'Parfum femme', category: 'femme' },
+  { src: '/hero/ysl-libre.webp', alt: 'Eau de parfum', category: 'femme' },
+  { src: '/hero/campaign-ramadan.webp', alt: 'Collection femme', category: 'femme' },
+  { src: '/hero/givenchy-gentleman.webp', alt: 'Parfum homme', category: 'homme' },
+  { src: '/hero/boutique-shelves.webp', alt: 'Boutique Water of Gold', category: 'homme' },
+  { src: '/hero/gold-bottles.webp', alt: 'Fragrances Water of Gold', category: 'femme' },
 ]
 
 export function getShowcaseByCategory(category: string) {
