@@ -22,7 +22,7 @@ export function Logo({ size = 'md', className = '', priority = false }: LogoProp
     >
       <Image
         src="/logo.webp"
-        alt="Parfumerie Janna"
+        alt="Water of Cold Parfume"
         width={config.px}
         height={config.px}
         sizes={`${config.px}px`}

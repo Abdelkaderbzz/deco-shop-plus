@@ -1,4 +1,4 @@
-# jannah-parfume
+# Water of Cold Parfume
 
 Boutique de parfums en Tunisie — Next.js storefront and admin dashboard.
 

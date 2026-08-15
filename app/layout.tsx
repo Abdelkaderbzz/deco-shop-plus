@@ -17,10 +17,13 @@ const inter = Inter({
   display: 'swap',
 })
 
-const siteUrl = 'https://www.parfumeriejannah.com'
-const siteTitle = 'Parfumerie Janna | Beaute feminine'
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
+  ?? (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : 'http://localhost:3000')
+const siteTitle = 'Water of Cold Parfume | Beaute feminine'
 const siteDescription =
-  'Boutique feminine en Tunisie. Parfums, maquillage, sacs et soins selectionnes avec amour pour sublimer votre elegance.'
+  'Water of Cold Parfume — boutique feminine en Tunisie. Parfums, maquillage, sacs et soins selectionnes avec amour pour sublimer votre elegance.'
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -33,7 +36,7 @@ export const metadata: Metadata = {
     'sacs',
     'soins',
     'Tunisie',
-    'Parfumerie Janna',
+    'Water of Cold Parfume',
     'femme',
   ],
   alternates: {
@@ -43,7 +46,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'fr_TN',
     url: siteUrl,
-    siteName: 'Parfumerie Janna',
+    siteName: 'Water of Cold Parfume',
     title: siteTitle,
     description: siteDescription,
   },

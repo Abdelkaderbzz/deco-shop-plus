@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og'
 
-export const alt = 'Parfumerie Janna — Beaute feminine'
+export const alt = 'Water of Cold Parfume — Beaute feminine'
 export const size = {
   width: 1200,
   height: 630,
@@ -41,7 +41,7 @@ export default function OpenGraphImage() {
               marginBottom: 18,
             }}
           >
-            Parfumerie Janna
+            Water of Cold Parfume
           </div>
           <div
             style={{

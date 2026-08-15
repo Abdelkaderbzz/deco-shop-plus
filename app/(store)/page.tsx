@@ -56,7 +56,7 @@ export default async function HomePage() {
             <Logo size="lg" className="md:h-36 md:w-36" priority />
             <div className="mt-6">
               <h1 className="font-serif text-4xl font-light tracking-wide text-foreground md:text-5xl">
-                Beaute feminine
+                Water of Cold Parfume
               </h1>
               <p className="mt-3 text-[11px] font-light tracking-[0.4em] text-primary">
                 PARFUMS &middot; MAQUILLAGE &middot; SACS &middot; SOINS
@@ -64,7 +64,7 @@ export default async function HomePage() {
               <p className="mt-4 text-sm font-light tracking-widest text-muted-foreground">TUNISIE</p>
             </div>
             <p className="mt-6 max-w-md text-base font-light leading-relaxed text-muted-foreground">
-              Votre boutique en ligne pour parfums, maquillage, sacs et soins. Des produits choisis avec amour pour
+              Votre boutique Water of Cold Parfume pour parfums, maquillage, sacs et soins. Des produits choisis avec amour pour
               reveler votre elegance.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3 md:justify-start">

@@ -85,7 +85,7 @@ function parseArgs(argv) {
 
 function printHelp() {
   console.log(`
-Dummy data seeder — Jannah Parfume
+Dummy data seeder — Water of Cold Parfume
 
 Usage:
   node scripts/seed-dummy-data.mjs [options]

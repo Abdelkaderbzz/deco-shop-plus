@@ -30,7 +30,7 @@ export default async function StoreLayout({ children }: { children: React.ReactN
               rel="noopener noreferrer"
               className="text-xs font-light tracking-widest text-[#e8b4a8] hover:underline"
             >
-              @parfumerie_jannah_
+              @waterofcold
             </a>
             <a
               href={TIKTOK_URL}
@@ -38,11 +38,19 @@ export default async function StoreLayout({ children }: { children: React.ReactN
               rel="noopener noreferrer"
               className="text-xs font-light tracking-widest text-[#e8b4a8] hover:underline"
             >
-              @parfumeriejanna3
+              @waterofcold
             </a>
           </div>
-          <p className="mt-4 text-[11px] text-secondary/80">
-            &copy; {new Date().getFullYear()} Parfumerie Janna. Tous droits reserves.
+          <p className="mt-4 text-sm font-light tracking-wider text-secondary">
+            Site web cree par{' '}
+            <a
+              href="https://www.revixa.agency/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-secondary/70 transition-colors hover:text-[#e8b4a8] hover:underline"
+            >
+              Revixa Agency
+            </a>
           </p>
         </div>
       </footer>
