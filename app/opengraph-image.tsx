@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og'
 
-export const alt = 'Water of Cold Parfume — Beaute feminine'
+export const alt = 'Water of Gold — Parfumerie a Sousse'
 export const size = {
   width: 1200,
   height: 630,
@@ -18,7 +18,7 @@ export default function OpenGraphImage() {
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
-          background: 'linear-gradient(160deg, #fef8f6 0%, #f5e6e0 55%, #edd5cc 100%)',
+          background: 'linear-gradient(160deg, #0b0b0b 0%, #1a1712 55%, #2a2418 100%)',
           fontFamily: 'Georgia, Times New Roman, serif',
         }}
       >
@@ -28,8 +28,8 @@ export default function OpenGraphImage() {
             flexDirection: 'column',
             alignItems: 'center',
             padding: '48px 64px',
-            border: '1px solid rgba(168, 112, 98, 0.28)',
-            background: 'rgba(255,255,255,0.55)',
+            border: '1px solid rgba(201, 164, 74, 0.35)',
+            background: 'rgba(20, 18, 16, 0.7)',
           }}
         >
           <div
@@ -37,22 +37,22 @@ export default function OpenGraphImage() {
               fontSize: 28,
               letterSpacing: '0.35em',
               textTransform: 'uppercase',
-              color: '#a87062',
+              color: '#c9a44a',
               marginBottom: 18,
             }}
           >
-            Water of Cold Parfume
+            Water of Gold
           </div>
           <div
             style={{
-              fontSize: 72,
+              fontSize: 64,
               fontWeight: 300,
               letterSpacing: '0.08em',
-              color: '#3a2a26',
+              color: '#f3e6c4',
               lineHeight: 1.1,
             }}
           >
-            Beaute feminine
+            Parfumerie
           </div>
           <div
             style={{
@@ -60,10 +60,10 @@ export default function OpenGraphImage() {
               fontSize: 22,
               letterSpacing: '0.28em',
               textTransform: 'uppercase',
-              color: '#7a5a52',
+              color: '#b8a88a',
             }}
           >
-            Parfums · Maquillage · Sacs · Soins
+            Femme · Homme · Longue tenue
           </div>
           <div
             style={{
@@ -71,10 +71,10 @@ export default function OpenGraphImage() {
               fontSize: 20,
               letterSpacing: '0.2em',
               textTransform: 'uppercase',
-              color: '#a87062',
+              color: '#c9a44a',
             }}
           >
-            Tunisie
+            Sousse, Tunisie
           </div>
         </div>
       </div>

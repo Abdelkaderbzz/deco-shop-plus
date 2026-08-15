@@ -21,23 +21,23 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
   ?? (process.env.VERCEL_PROJECT_PRODUCTION_URL
     ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
     : 'http://localhost:3000')
-const siteTitle = 'Water of Cold Parfume | Beaute feminine'
+const siteTitle = 'Water of Gold | Parfumerie a Sousse'
 const siteDescription =
-  'Water of Cold Parfume — boutique feminine en Tunisie. Parfums, maquillage, sacs et soins selectionnes avec amour pour sublimer votre elegance.'
+  'Water of Gold est une boutique de parfums a Sousse, Tunisie. Fragrances inspirees des plus grandes marques internationales et parfums de choix, de longue tenue, pour femmes et hommes.'
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: siteTitle,
   description: siteDescription,
   keywords: [
-    'beaute',
     'parfum',
-    'maquillage',
-    'sacs',
-    'soins',
+    'parfumerie',
+    'Sousse',
     'Tunisie',
-    'Water of Cold Parfume',
-    'femme',
+    'Water of Gold',
+    'parfum femme',
+    'parfum homme',
+    'fragrance',
   ],
   alternates: {
     canonical: '/',
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'fr_TN',
     url: siteUrl,
-    siteName: 'Water of Cold Parfume',
+    siteName: 'Water of Gold',
     title: siteTitle,
     description: siteDescription,
   },
@@ -58,8 +58,8 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  colorScheme: 'light',
-  themeColor: '#fef8f6',
+  colorScheme: 'dark',
+  themeColor: '#0b0b0b',
 }
 
 export default function RootLayout({
@@ -68,8 +68,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="fr" className={`bg-background ${cormorant.variable} ${inter.variable}`}>
-      <body className="font-sans antialiased">
+    <html lang="fr" className={`bg-background ${cormorant.variable} ${inter.variable}`} suppressHydrationWarning>
+      <body className="font-sans antialiased" suppressHydrationWarning>
         <ToastProvider>{children}</ToastProvider>
         {process.env.VERCEL === '1' && <Analytics />}
       </body>

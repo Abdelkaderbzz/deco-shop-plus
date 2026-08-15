@@ -20,10 +20,10 @@ export function Navbar({ storeCategories }: { storeCategories: StoreCategory[] }
   ]
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/80 bg-card/95 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-border/80 bg-card/95 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3.5">
-        <Link href="/" className="flex items-center gap-3" aria-label="Water of Cold Parfume — Accueil">
-          <Logo size="sm" />
+        <Link href="/" className="flex items-center gap-3" aria-label="Water of Gold — Accueil">
+          <Logo size="sm" priority />
         </Link>
 
         <nav className="hidden items-center gap-6 lg:flex">

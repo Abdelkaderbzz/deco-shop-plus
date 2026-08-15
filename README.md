@@ -1,6 +1,8 @@
-# Water of Cold Parfume
+# Water of Gold
 
-Boutique de parfums en Tunisie — Next.js storefront and admin dashboard.
+Boutique de parfums a Sousse, Tunisie — Next.js storefront and admin dashboard.
+
+Parfums inspires des grandes marques internationales et parfums de choix, de longue tenue, pour femmes et hommes.
 
 ## Stack
 
