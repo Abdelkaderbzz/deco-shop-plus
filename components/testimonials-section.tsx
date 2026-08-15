@@ -1,378 +1,139 @@
-'use client'
+import Image from 'next/image'
+import { InstagramCommentCard, WhatsAppCommentCard } from '@/components/testimonial-cards'
+import {
+  TESTIMONIAL_SOURCES,
+  googleTestimonials,
+  socialTestimonials,
+  usedTestimonialSources,
+  type TestimonialItem,
+} from '@/lib/testimonials'
 
-import { useEffect, useRef, useState } from 'react'
+/** Seconds for one full pass. Higher = slower drift. */
+const ROW_DURATION_SECONDS = { top: 78, bottom: 94 } as const
 
-type Testimonial = {
-  id: string
-  platform: 'instagram' | 'whatsapp' | 'facebook'
-  username: string
-  message: string
-  time: string
-  avatar: string
-  storyRing?: boolean
-  delay: number
+/** How many times the item list repeats inside a single pass. One pass must be
+ *  wider than the viewport or a gap opens at the trailing edge. Short rows
+ *  (Google screenshots) need more copies than the mixed social row. */
+function repeatsFor(count: number) {
+  return Math.max(2, Math.ceil(8 / Math.max(count, 1)))
 }
 
-const TESTIMONIALS: Testimonial[] = [
-  {
-    id: '1',
-    platform: 'instagram',
-    username: 'fedi.alaya',
-    message: 'Produit original w qualité top, merci Water of Cold 🔥',
-    time: '7 sem',
-    avatar: 'FA',
-    delay: 0,
-  },
-  {
-    id: '2',
-    platform: 'whatsapp',
-    username: 'beyahaw',
-    message: 'التوصيل للدار سريع برشا، الريحة روعة ❤️',
-    time: '14:32',
-    avatar: 'BY',
-    delay: 120,
-  },
-  {
-    id: '3',
-    platform: 'instagram',
-    username: 'ala_chafroud',
-    message: '❤️ ❤️',
-    time: '7 sem',
-    avatar: 'AC',
-    storyRing: true,
-    delay: 240,
-  },
-  {
-    id: '4',
-    platform: 'facebook',
-    username: 'Zizou Ben Ali',
-    message: 'Parfums De Marly Althaïr يفوح تحفة، ننصح بيه بشدة 👌',
-    time: '29 sem',
-    avatar: 'ZB',
-    delay: 360,
-  },
-  {
-    id: '5',
-    platform: 'whatsapp',
-    username: 'Olfa Ali',
-    message: 'الريحة تحفة برشا، شكرا Water of Cold Parfume 🙏',
-    time: '09:15',
-    avatar: 'OA',
-    delay: 480,
-  },
-  {
-    id: '6',
-    platform: 'instagram',
-    username: 'olfa.ali_',
-    message: '❤️ ❤️ ❤️ ❤️ ❤️',
-    time: '3 j',
-    avatar: 'OL',
-    delay: 600,
-  },
-  {
-    id: '7',
-    platform: 'facebook',
-    username: 'Hamed Sadraoui',
-    message: 'خدمة ممتازة والتوصيل في الوقت. ننصح بيهم.',
-    time: '2 j',
-    avatar: 'HS',
-    delay: 720,
-  },
-  {
-    id: '8',
-    platform: 'whatsapp',
-    username: 'Sarra M.',
-    message: 'وصلتني الطلبية اليوم، العطر أصلي 100% ✨',
-    time: '18:47',
-    avatar: 'SM',
-    delay: 840,
-  },
-]
+/** Shared by every card so both rows line up and nothing shrinks mid-animation. */
+const ITEM_CLS = 'h-36 shrink-0 overflow-hidden sm:h-40 lg:h-46'
 
-function useInView(threshold = 0.15) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [visible, setVisible] = useState(false)
+/** Comments are HTML, so unlike screenshots they need an explicit width. */
+const COMMENT_WIDTH_CLS = 'w-72 sm:w-80 lg:w-96'
 
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true)
-          observer.disconnect()
-        }
-      },
-      { threshold },
-    )
-
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [threshold])
-
-  return { ref, visible }
-}
-
-function Avatar({
-  label,
-  storyRing,
-  platform,
-}: {
-  label: string
-  storyRing?: boolean
-  platform: Testimonial['platform']
-}) {
-  const colors = {
-    instagram: 'from-pink-500 via-purple-500 to-orange-400',
-    whatsapp: 'from-emerald-500 to-teal-600',
-    facebook: 'from-blue-500 to-blue-700',
-  }
-
-  const inner = (
-    <div
-      className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br ${colors[platform]} text-[10px] font-semibold text-white`}
-    >
-      {label}
-    </div>
-  )
-
-  if (storyRing) {
+function TestimonialItemCard({ item, decorative }: { item: TestimonialItem; decorative: boolean }) {
+  if (item.kind === 'screenshot') {
     return (
-      <div className="rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 p-[2px]">
-        <div className="rounded-full bg-[#121212] p-[2px]">{inner}</div>
-      </div>
+      <li className={`${ITEM_CLS} border-r border-black/5 bg-white`}>
+        <Image
+          src={item.src}
+          alt={decorative ? '' : item.alt}
+          width={item.width}
+          height={item.height}
+          sizes="(max-width: 640px) 400px, (max-width: 1024px) 460px, 540px"
+          draggable={false}
+          // Lazy loading never fires reliably inside the animated track, which
+          // leaves blank cards drifting into view. These are a few KB each and
+          // repeat across both rows, so the browser fetches them once.
+          loading="eager"
+          className="block h-full w-auto select-none"
+        />
+      </li>
     )
   }
 
-  return inner
-}
-
-function InstagramCard({ item, visible }: { item: Testimonial; visible: boolean }) {
   return (
-    <div
-      className="rounded-2xl bg-[#121212] px-4 py-3.5 shadow-lg shadow-black/20"
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? 'translateY(0) scale(1)' : 'translateY(28px) scale(0.96)',
-        transition: `opacity 0.6s ease ${item.delay}ms, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) ${item.delay}ms`,
-      }}
-    >
-      <div className="mb-2 flex items-center gap-1.5 text-[10px] text-white/40">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069z" />
-        </svg>
-        Instagram
-      </div>
-      <div className="flex gap-3">
-        <Avatar label={item.avatar} storyRing={item.storyRing} platform="instagram" />
-        <div className="min-w-0 flex-1">
-          <p className="text-sm leading-snug text-white">
-            <span className="font-semibold">{item.username}</span>{' '}
-            <span className="font-normal">{item.message}</span>
-          </p>
-          <div className="mt-1.5 flex items-center gap-3 text-[11px] text-white/40">
-            <span>{item.time}</span>
-            <button type="button" className="font-medium hover:text-white/60">
-              Repondre
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <li className={`${ITEM_CLS} ${COMMENT_WIDTH_CLS} border-r border-white/5`}>
+      {item.source === 'instagram' ? (
+        <InstagramCommentCard item={item} />
+      ) : (
+        <WhatsAppCommentCard item={item} />
+      )}
+    </li>
   )
 }
 
-function WhatsAppCard({ item, visible }: { item: Testimonial; visible: boolean }) {
+function MarqueeRow({
+  items,
+  direction,
+  duration,
+}: {
+  items: TestimonialItem[]
+  direction: 'left' | 'right'
+  duration: number
+}) {
+  if (items.length === 0) return null
+
+  const pass = Array.from({ length: repeatsFor(items.length) }, () => items).flat()
+
   return (
-    <div
-      className="overflow-hidden rounded-2xl bg-[#0b141a] shadow-lg shadow-black/25"
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? 'translateX(0) scale(1)' : 'translateX(-24px) scale(0.95)',
-        transition: `opacity 0.65s ease ${item.delay}ms, transform 0.65s cubic-bezier(0.22, 1, 0.36, 1) ${item.delay}ms`,
-      }}
-    >
-      <div className="flex items-center gap-2 border-b border-white/5 bg-[#1f2c34] px-4 py-2.5">
-        <Avatar label={item.avatar} platform="whatsapp" />
-        <div>
-          <p className="text-sm font-medium text-white">{item.username}</p>
-          <p className="text-[10px] text-emerald-400">en ligne</p>
-        </div>
-      </div>
-      <div
-        className="relative px-3 py-4"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }}
+    <div className="marquee">
+      <ul
+        className="marquee-track"
+        data-direction={direction}
+        style={{ '--marquee-duration': `${duration}s` } as React.CSSProperties}
       >
-        <div
-          className="relative max-w-[88%] rounded-lg rounded-tl-none bg-[#005c4b] px-3 py-2 shadow-sm"
-          style={{
-            animation: visible ? `testimonial-bubble-pop 0.4s ease ${item.delay + 200}ms both` : 'none',
-          }}
-        >
-          <p className="text-[13px] leading-relaxed text-[#e9edef]">{item.message}</p>
-          <div className="mt-1 flex items-center justify-end gap-1">
-            <span className="text-[10px] text-white/50">{item.time}</span>
-            <svg width="14" height="10" viewBox="0 0 16 11" fill="#53bdeb">
-              <path d="M11.071.653a.457.457 0 0 0-.304-.102.493.493 0 0 0-.381.178l-6.19 7.636-2.405-2.272a.463.463 0 0 0-.336-.146.47.47 0 0 0-.343.146.445.445 0 0 0-.14.334.43.43 0 0 0 .146.331l2.932 2.77a.463.463 0 0 0 .326.127.48.48 0 0 0 .313-.114l6.566-8.099a.43.43 0 0 0 .096-.323.444.444 0 0 0-.172-.3z" />
-              <path d="M15.266.653a.457.457 0 0 0-.304-.102.493.493 0 0 0-.381.178l-8.79 10.86-1.09-1.03a.463.463 0 0 0-.336-.146.47.47 0 0 0-.343.146.445.445 0 0 0-.14.334.43.43 0 0 0 .146.331l1.617 1.53a.463.463 0 0 0 .326.127.48.48 0 0 0 .313-.114l9.166-11.32a.43.43 0 0 0 .096-.323.444.444 0 0 0-.172-.3z" />
-            </svg>
-          </div>
-        </div>
-      </div>
+        {[...pass, ...pass].map((item, index) => {
+          // Only the first run of unique items is exposed to assistive tech; the
+          // rest exist purely to make the loop seamless.
+          const decorative = index >= items.length
+          return (
+            <TestimonialItemCard
+              key={`${item.id}-${index}`}
+              item={item}
+              decorative={decorative}
+            />
+          )
+        })}
+      </ul>
     </div>
   )
-}
-
-function FacebookLikeIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true">
-      <circle cx="8" cy="8" r="8" fill="#2078F4" />
-      <path
-        fill="#fff"
-        d="M4.25 6.75h1.1v5.5H3.9a.65.65 0 0 1-.65-.65v-4.2c0-.36.29-.65.65-.65h.35zm7.45-.2c-.14-.12-.33-.2-.53-.2H8.9V4.4c0-.78-.55-1.4-1.3-1.4h-.18c-.18 0-.3.17-.24.34.28.62.1 1.28-.42 1.72L5.9 5.85H5.75v5.4h4.2c.38 0 .71-.25.8-.61l.85-3.35c.08-.32-.05-.64-.35-.84-.08-.05-.16-.1-.25-.1h-.05c.07 0 .13.01.2.04.08.03.15.07.22.12.2.14.34.37.38.64l-.85 3.35c-.03.12-.14.22-.26.22H6.85V6.75h.95l.72-.58c.72-.58 1.15-1.5 1.15-2.48V3.6c.35 0 .63.28.63.63v2.12h2.05c.08 0 .15.02.21.07.1.08.14.22.11.35l-.02.08z"
-      />
-    </svg>
-  )
-}
-
-function FacebookLoveIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true">
-      <circle cx="8" cy="8" r="8" fill="#F33E58" />
-      <path
-        fill="#fff"
-        d="M8 12.55c-.1 0-.2-.04-.28-.11-2.05-1.75-3.6-3.25-4.3-4.4C2.7 6.9 2.65 5.85 3.25 4.95c.55-.85 1.5-1.35 2.55-1.35.95 0 1.8.4 2.4 1.1.6-.7 1.45-1.1 2.4-1.1 1.05 0 2 .5 2.55 1.35.6.9.55 1.95-.17 3.09-.7 1.15-2.25 2.65-4.3 4.4-.08.07-.18.11-.28.11z"
-      />
-    </svg>
-  )
-}
-
-function FacebookCard({ item, visible }: { item: Testimonial; visible: boolean }) {
-  return (
-    <div
-      className="rounded-2xl border border-white/5 bg-[#242526] px-4 py-3.5 shadow-lg shadow-black/20"
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? 'translateY(0) rotate(0deg)' : 'translateY(24px) rotate(-1deg)',
-        transition: `opacity 0.6s ease ${item.delay}ms, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) ${item.delay}ms`,
-      }}
-    >
-      <div className="mb-2.5 flex items-center gap-1.5 text-[10px] text-blue-400">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-        </svg>
-        Facebook
-      </div>
-      <div className="flex gap-3">
-        <Avatar label={item.avatar} platform="facebook" />
-        <div className="min-w-0 flex-1">
-          <div className="inline-block rounded-2xl bg-[#3a3b3c] px-3 py-2">
-            <p className="text-xs font-semibold text-white">{item.username}</p>
-            <p className="mt-0.5 text-sm leading-snug text-[#e4e6eb]">{item.message}</p>
-          </div>
-          <div className="mt-1.5 flex items-center gap-4 text-[11px] font-semibold text-[#b0b3b8]">
-            <span>{item.time}</span>
-            <button type="button">J&apos;aime</button>
-            <button type="button">Repondre</button>
-          </div>
-          <div className="mt-2 inline-flex items-center gap-1">
-            <div className="flex items-center">
-              <span className="relative z-[1] rounded-full shadow-sm ring-[1.5px] ring-[#242526]">
-                <FacebookLikeIcon />
-              </span>
-              <span className="relative -ml-1.5 rounded-full shadow-sm ring-[1.5px] ring-[#242526]">
-                <FacebookLoveIcon />
-              </span>
-            </div>
-            <span className="pl-0.5 text-[12px] text-[#b0b3b8]">12</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function TestimonialCard({ item, visible }: { item: Testimonial; visible: boolean }) {
-  switch (item.platform) {
-    case 'instagram':
-      return <InstagramCard item={item} visible={visible} />
-    case 'whatsapp':
-      return <WhatsAppCard item={item} visible={visible} />
-    case 'facebook':
-      return <FacebookCard item={item} visible={visible} />
-  }
 }
 
 export function TestimonialsSection() {
-  const { ref, visible } = useInView(0.1)
+  const sources = usedTestimonialSources()
 
   return (
-    <section className="border-t border-border bg-secondary/50 py-20">
-      <div ref={ref} className="mx-auto max-w-6xl px-4">
-        <div
-          className="mb-14 text-center"
-          style={{
-            opacity: visible ? 1 : 0,
-            transform: visible ? 'translateY(0)' : 'translateY(20px)',
-            transition: 'opacity 0.7s ease, transform 0.7s ease',
-          }}
-        >
-          <p className="text-[10px] font-light tracking-[0.4em] text-primary">TEMOIGNAGES</p>
-          <h2 className="mt-2 font-serif text-3xl font-light tracking-widest text-foreground">
-            ELLES NOUS FONT CONFIANCE
-          </h2>
-          <p className="mx-auto mt-3 max-w-lg text-sm font-light text-muted-foreground">
-            Des avis authentiques de nos clientes sur Instagram, WhatsApp et Facebook.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {TESTIMONIALS.map((item, i) => (
-            <div
-              key={item.id}
-              className={`testimonial-float ${i % 3 === 1 ? 'lg:mt-8' : i % 3 === 2 ? 'lg:-mt-4' : ''}`}
-            >
-              <TestimonialCard item={item} visible={visible} />
-            </div>
-          ))}
-        </div>
-
-        <div
-          className="mt-12 flex flex-wrap items-center justify-center gap-6 text-[11px] font-light tracking-widest text-muted-foreground"
-          style={{
-            opacity: visible ? 1 : 0,
-            transition: 'opacity 0.8s ease 900ms',
-          }}
-        >
-          <span className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-gradient-to-r from-pink-500 to-orange-400" />
-            Instagram
-          </span>
-          <span className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-emerald-500" />
-            WhatsApp
-          </span>
-          <span className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-blue-500" />
-            Facebook
-          </span>
-        </div>
+    <section className="border-t border-border bg-secondary py-20">
+      <div className="mx-auto mb-14 max-w-6xl px-4 text-center">
+        <p className="text-[10px] font-light tracking-[0.4em] text-primary">TEMOIGNAGES</p>
+        <h2 className="mt-2 font-serif text-3xl font-light tracking-widest text-foreground">
+          ELLES NOUS FONT CONFIANCE
+        </h2>
+        <p className="mx-auto mt-3 max-w-lg text-sm font-light text-muted-foreground">
+          Avis Google, commentaires Instagram et messages WhatsApp de nos clientes.
+        </p>
       </div>
 
-      <style jsx global>{`
-        .testimonial-float:nth-child(3n + 1) {
-          animation: testimonial-float-soft 6s ease-in-out infinite;
-        }
-        .testimonial-float:nth-child(3n + 2) {
-          animation: testimonial-float-soft 7s ease-in-out 1s infinite;
-        }
-        .testimonial-float:nth-child(3n) {
-          animation: testimonial-float-soft 5.5s ease-in-out 0.5s infinite;
-        }
-      `}</style>
+      <div className="relative border-y border-border/60">
+        <MarqueeRow
+          items={googleTestimonials()}
+          direction="left"
+          duration={ROW_DURATION_SECONDS.top}
+        />
+        <MarqueeRow
+          items={socialTestimonials()}
+          direction="right"
+          duration={ROW_DURATION_SECONDS.bottom}
+        />
+
+        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-linear-to-r from-secondary to-transparent sm:w-20 lg:w-28" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-linear-to-l from-secondary to-transparent sm:w-20 lg:w-28" />
+      </div>
+
+      {sources.length > 0 ? (
+        <div className="mt-12 flex flex-wrap items-center justify-center gap-6 text-[11px] font-light tracking-widest text-muted-foreground">
+          {sources.map((source) => (
+            <span key={source} className="flex items-center gap-2">
+              <span className={`h-2 w-2 rounded-full ${TESTIMONIAL_SOURCES[source].dotClass}`} />
+              {TESTIMONIAL_SOURCES[source].label}
+            </span>
+          ))}
+        </div>
+      ) : null}
     </section>
   )
 }

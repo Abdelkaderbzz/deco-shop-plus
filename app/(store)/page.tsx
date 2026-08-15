@@ -1,7 +1,7 @@
-import { getCarouselVideoUrls } from '@/app/actions/carousel'
 import { getCategories } from '@/app/actions/categories'
 import { getHeroImages } from '@/app/actions/hero'
 import { getFeaturedProducts } from '@/app/actions/products'
+import { BoutiquesSection } from '@/components/boutiques-section'
 import { CategoriesSection } from '@/components/categories-section'
 import { Logo } from '@/components/logo'
 import { ProductCard } from '@/components/product-card'
@@ -9,34 +9,17 @@ import {
   InstagramFollowButton,
   InstagramSectionHeader,
 } from '@/components/instagram-section-static'
+import { TestimonialsSection } from '@/components/testimonials-section'
 import { mergeStoreCategories } from '@/lib/store-categories'
-import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import Link from 'next/link'
-
-const TestimonialsSection = dynamic(
-  () => import('@/components/testimonials-section').then((m) => m.TestimonialsSection),
-  {
-    loading: () => <div className="border-t border-border bg-secondary/50 py-20" aria-hidden />,
-  },
-)
-
-const InstagramCarousel = dynamic(
-  () => import('@/components/instagram-embed').then((m) => m.InstagramCarousel),
-  {
-    loading: () => (
-      <div className="mx-auto h-[490px] w-full max-w-5xl rounded-2xl bg-secondary/40" aria-hidden />
-    ),
-  },
-)
 
 export const revalidate = 120
 
 export default async function HomePage() {
-  const [featured, categories, carouselReels, heroImages] = await Promise.all([
+  const [featured, categories, heroImages] = await Promise.all([
     getFeaturedProducts(),
     getCategories(),
-    getCarouselVideoUrls(),
     getHeroImages(),
   ])
   const storeCategories = mergeStoreCategories(categories)
@@ -56,16 +39,16 @@ export default async function HomePage() {
             <Logo size="lg" className="md:h-36 md:w-36" priority />
             <div className="mt-6">
               <h1 className="font-serif text-4xl font-light tracking-wide text-foreground md:text-5xl">
-                Water of Cold Parfume
+                Water of Gold
               </h1>
               <p className="mt-3 text-[11px] font-light tracking-[0.4em] text-primary">
-                PARFUMS &middot; MAQUILLAGE &middot; SACS &middot; SOINS
+                PARFUMS FEMME &amp; HOMME
               </p>
-              <p className="mt-4 text-sm font-light tracking-widest text-muted-foreground">TUNISIE</p>
+              <p className="mt-4 text-sm font-light tracking-widest text-muted-foreground">SOUSSE, TUNISIE</p>
             </div>
             <p className="mt-6 max-w-md text-base font-light leading-relaxed text-muted-foreground">
-              Votre boutique Water of Cold Parfume pour parfums, maquillage, sacs et soins. Des produits choisis avec amour pour
-              reveler votre elegance.
+              Boutique de parfums a Sousse. Fragrances inspirees des plus grandes marques internationales et parfums de
+              choix, de longue tenue, pour femmes et hommes.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3 md:justify-start">
               <Link
@@ -75,17 +58,23 @@ export default async function HomePage() {
                 VOIR LA BOUTIQUE
               </Link>
               <Link
-                href="/products?category=parfums"
+                href="/products?category=femme"
                 className="rounded-full border border-border px-8 py-3 text-xs font-light tracking-[0.3em] text-muted-foreground transition-all hover:border-primary hover:bg-primary/5 hover:text-primary"
               >
-                PARFUMS
+                FEMME
+              </Link>
+              <Link
+                href="/products?category=homme"
+                className="rounded-full border border-border px-8 py-3 text-xs font-light tracking-[0.3em] text-muted-foreground transition-all hover:border-primary hover:bg-primary/5 hover:text-primary"
+              >
+                HOMME
               </Link>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3 md:gap-4">
             <div className="space-y-3 md:space-y-4">
-              <div className="relative aspect-[3/4] overflow-hidden rounded-3xl border border-border/60 shadow-sm shadow-primary/10">
+              <div className="relative aspect-3/4 overflow-hidden rounded-3xl border border-border/60 shadow-sm shadow-primary/10">
                 <Image
                   src={heroTopLeft.imageUrl}
                   alt={heroTopLeft.alt}
@@ -116,7 +105,7 @@ export default async function HomePage() {
                   className="object-cover"
                 />
               </div>
-              <div className="relative aspect-[3/4] overflow-hidden rounded-3xl border border-border/60 shadow-sm shadow-primary/10">
+              <div className="relative aspect-3/4 overflow-hidden rounded-3xl border border-border/60 shadow-sm shadow-primary/10">
                 <Image
                   src={heroBottomRight.imageUrl}
                   alt={heroBottomRight.alt}
@@ -157,11 +146,12 @@ export default async function HomePage() {
 
       <TestimonialsSection />
 
+      <BoutiquesSection />
+
       {/* Instagram */}
       <section className="border-t border-border bg-secondary/30 py-20">
         <div className="mx-auto max-w-6xl px-4">
           <InstagramSectionHeader />
-          <InstagramCarousel reels={carouselReels} />
           <InstagramFollowButton />
         </div>
       </section>

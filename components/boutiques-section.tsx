@@ -1,0 +1,179 @@
+import Image from 'next/image'
+import { BOUTIQUES, phoneHref, type Boutique } from '@/lib/boutiques'
+import { FACEBOOK_URL } from '@/lib/social-links'
+
+function StarIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M12 2.5l2.9 6.2 6.6.9-4.8 4.7 1.2 6.7L12 17.8l-5.9 3.2 1.2-6.7L2.5 9.6l6.6-.9L12 2.5z" />
+    </svg>
+  )
+}
+
+function PinIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      aria-hidden
+    >
+      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 1116 0z" />
+      <circle cx="12" cy="10" r="2.75" />
+    </svg>
+  )
+}
+
+function PhoneIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      aria-hidden
+    >
+      <path d="M21 16.9v2.4a1.5 1.5 0 01-1.6 1.5 16.3 16.3 0 01-7.1-2.5 16 16 0 01-4.9-4.9A16.3 16.3 0 014.9 6.3 1.5 1.5 0 016.4 4.7h2.4a1.5 1.5 0 011.5 1.3c.1.8.3 1.6.6 2.4a1.5 1.5 0 01-.4 1.6l-1 1a12.7 12.7 0 004.9 4.9l1-1a1.5 1.5 0 011.6-.4c.8.3 1.6.5 2.4.6a1.5 1.5 0 011.3 1.5z" />
+    </svg>
+  )
+}
+
+function FacebookIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M14.5 8.5h2.5V5.2c-.4-.06-1.4-.2-2.6-.2-2.6 0-4.3 1.6-4.3 4.6V12H7.5v3.6h2.6V22h3.6v-6.4h2.6l.4-3.6h-3V9.9c0-1 .3-1.4 1.3-1.4z" />
+    </svg>
+  )
+}
+
+const actionCls =
+  'inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-[11px] font-light tracking-[0.18em] text-muted-foreground transition-all hover:border-primary hover:bg-primary/5 hover:text-primary'
+
+function BoutiqueCard({ boutique }: { boutique: Boutique }) {
+  return (
+    <article className="group overflow-hidden rounded-3xl border border-border/80 bg-card transition-all duration-500 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10">
+      <a
+        href={boutique.directionsUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="relative block aspect-4/3 overflow-hidden bg-secondary"
+      >
+        <Image
+          src={boutique.image}
+          alt={boutique.imageAlt}
+          fill
+          sizes="(max-width: 768px) 100vw, 50vw"
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-linear-to-t from-black/55 via-transparent to-transparent" />
+        <span className="absolute bottom-4 left-5 flex items-center gap-1.5 rounded-full bg-black/55 px-3 py-1 text-[10px] font-light tracking-[0.3em] text-white backdrop-blur-sm">
+          <PinIcon className="shrink-0" />
+          {boutique.region.toUpperCase()}
+        </span>
+      </a>
+
+      <div className="p-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h3 className="font-serif text-2xl font-light tracking-wide text-foreground">
+            {boutique.city}
+          </h3>
+          <div className="flex items-center gap-2">
+            <span className="flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-[11px] font-light tracking-wider text-primary">
+              <StarIcon />
+              {boutique.rating.toFixed(1)}
+            </span>
+            <span className="text-[11px] font-light tracking-wider text-muted-foreground">
+              {boutique.reviewCount ? `${boutique.reviewCount} avis · ` : ''}
+              {boutique.ratingSource}
+            </span>
+          </div>
+        </div>
+
+        <p className="mt-4 text-sm font-light leading-relaxed text-muted-foreground">
+          {boutique.description}
+        </p>
+
+        {boutique.address || boutique.phone ? (
+          <dl className="mt-5 space-y-2.5 border-t border-border/60 pt-5">
+            {boutique.address ? (
+              <div className="flex items-start gap-2.5">
+                <dt className="mt-0.5 text-primary">
+                  <PinIcon className="shrink-0" />
+                  <span className="sr-only">Adresse</span>
+                </dt>
+                <dd className="text-sm font-light text-muted-foreground">{boutique.address}</dd>
+              </div>
+            ) : null}
+            {boutique.phone ? (
+              <div className="flex items-start gap-2.5">
+                <dt className="mt-0.5 text-primary">
+                  <PhoneIcon className="shrink-0" />
+                  <span className="sr-only">Telephone</span>
+                </dt>
+                <dd>
+                  <a
+                    href={phoneHref(boutique.phone)}
+                    className="text-sm font-light tracking-wide text-muted-foreground transition-colors hover:text-primary hover:underline"
+                  >
+                    +216 {boutique.phone}
+                  </a>
+                </dd>
+              </div>
+            ) : null}
+          </dl>
+        ) : null}
+
+        <div className="mt-6 flex flex-wrap gap-3">
+          <a href={boutique.directionsUrl} target="_blank" rel="noopener noreferrer" className={actionCls}>
+            <PinIcon />
+            ITINERAIRE
+          </a>
+          {boutique.phone ? (
+            <a href={phoneHref(boutique.phone)} className={actionCls}>
+              <PhoneIcon />
+              APPELER
+            </a>
+          ) : null}
+          <a href={FACEBOOK_URL} target="_blank" rel="noopener noreferrer" className={actionCls}>
+            <FacebookIcon />
+            FACEBOOK
+          </a>
+        </div>
+      </div>
+    </article>
+  )
+}
+
+export function BoutiquesSection() {
+  return (
+    <section
+      id="boutiques"
+      className="scroll-mt-20 border-t border-border bg-secondary/20 py-20"
+    >
+      <div className="mx-auto max-w-6xl px-4">
+        <div className="mb-12 text-center">
+          <p className="text-[10px] font-light tracking-[0.4em] text-primary">NOS ADRESSES</p>
+          <h2 className="mt-2 font-serif text-3xl font-light tracking-widest text-foreground">
+            NOS BOUTIQUES
+          </h2>
+          <p className="mx-auto mt-3 max-w-lg text-sm font-light text-muted-foreground">
+            Deux boutiques pour decouvrir nos parfums : Sousse et Moknine.
+          </p>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2">
+          {BOUTIQUES.map((boutique) => (
+            <BoutiqueCard key={boutique.slug} boutique={boutique} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}

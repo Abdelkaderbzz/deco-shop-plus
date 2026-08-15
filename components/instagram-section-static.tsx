@@ -26,10 +26,10 @@ export function InstagramSectionHeader() {
     <div className="mb-12 text-center">
       <p className="text-[10px] font-light tracking-[0.4em] text-primary">INSTAGRAM</p>
       <h2 className="mt-2 font-serif text-3xl font-light tracking-widest text-foreground">
-        @waterofcold
+        @waterofgold
       </h2>
       <p className="mx-auto mt-3 max-w-md text-sm font-light text-muted-foreground">
-        Coulisses, nouveautes et inspirations parfumees au quotidien.
+        Coulisses, nouveautes et inspirations parfumees a Sousse.
       </p>
     </div>
   )
@@ -40,11 +40,11 @@ export function InstagramFollowButton() {
     <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
       <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className={followButtonCls}>
         <InstagramIcon />
-        SUIVRE @waterofcold
+        SUIVRE @waterofgold
       </a>
       <a href={TIKTOK_URL} target="_blank" rel="noopener noreferrer" className={followButtonCls}>
         <TikTokIcon />
-        SUIVRE @waterofcold
+        SUIVRE @waterofgold
       </a>
     </div>
   )
