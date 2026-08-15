@@ -84,38 +84,6 @@ export type DeliveryFeeFormValues = z.infer<typeof deliveryFeeSchema>
 export const BANNER_VARIANTS = ['offer', 'news', 'discount'] as const
 export type BannerVariant = (typeof BANNER_VARIANTS)[number]
 
-export const siteBannerSchema = z
-  .object({
-    bannerEnabled: z.boolean(),
-    bannerMessage: z.string().max(160, 'Message trop long (160 caracteres maximum)'),
-    bannerVariant: z.enum(BANNER_VARIANTS),
-    bannerLinkLabel: z.string().max(40, 'Libelle trop long'),
-    bannerLinkHref: z
-      .string()
-      .max(300, 'Lien trop long')
-      .refine((value) => value === '' || value.startsWith('/') || /^https?:\/\//.test(value), {
-        message: 'Utilisez un chemin interne (/products) ou une URL complete (https://...)',
-      }),
-  })
-  .superRefine((data, ctx) => {
-    if (data.bannerEnabled && data.bannerMessage.trim() === '') {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'Un message est requis pour activer la banniere',
-        path: ['bannerMessage'],
-      })
-    }
-    if (data.bannerLinkLabel.trim() !== '' && data.bannerLinkHref.trim() === '') {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'Ajoutez le lien correspondant au bouton',
-        path: ['bannerLinkHref'],
-      })
-    }
-  })
-
-export type SiteBannerFormValues = z.infer<typeof siteBannerSchema>
-
 export const BANNER_FONT_SIZE_MIN = 10
 export const BANNER_FONT_SIZE_MAX = 22
 
