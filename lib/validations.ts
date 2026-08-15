@@ -116,6 +116,89 @@ export const siteBannerSchema = z
 
 export type SiteBannerFormValues = z.infer<typeof siteBannerSchema>
 
+export const BANNER_FONT_SIZE_MIN = 10
+export const BANNER_FONT_SIZE_MAX = 22
+
+const hexColorSchema = z
+  .string()
+  .regex(/^#[0-9a-fA-F]{6}$/, 'Couleur invalide (format #rrggbb)')
+
+const linkHrefSchema = z
+  .string()
+  .max(300, 'Lien trop long')
+  .refine((value) => value === '' || value.startsWith('/') || /^https?:\/\//.test(value), {
+    message: 'Utilisez un chemin interne (/products) ou une URL complete (https://...)',
+  })
+
+export const bannerSchema = z
+  .object({
+    name: z.string().max(60, 'Nom trop long'),
+    message: z
+      .string()
+      .min(1, 'Message requis')
+      .max(160, 'Message trop long (160 caracteres maximum)'),
+    variant: z.enum(BANNER_VARIANTS),
+    backgroundColor: hexColorSchema,
+    textColor: hexColorSchema,
+    fontSize: z
+      .number()
+      .int()
+      .min(BANNER_FONT_SIZE_MIN, `Taille minimum ${BANNER_FONT_SIZE_MIN}px`)
+      .max(BANNER_FONT_SIZE_MAX, `Taille maximum ${BANNER_FONT_SIZE_MAX}px`),
+    linkLabel: z.string().max(40, 'Libelle trop long'),
+    linkHref: linkHrefSchema,
+    dismissible: z.boolean(),
+    active: z.boolean(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.linkLabel.trim() !== '' && data.linkHref.trim() === '') {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Ajoutez le lien correspondant au bouton',
+        path: ['linkHref'],
+      })
+    }
+  })
+
+export type BannerFormValues = z.infer<typeof bannerSchema>
+
+export const boutiqueSchema = z.object({
+  name: z.string().min(1, 'Nom requis').max(120, 'Nom trop long'),
+  slug: z
+    .string()
+    .max(120, 'Slug trop long')
+    .refine((value) => value === '' || /^[a-z0-9-]+$/.test(value), {
+      message: 'Slug invalide (lettres minuscules, chiffres et tirets uniquement)',
+    }),
+  city: z.string().min(1, 'Ville requise').max(80, 'Ville trop longue'),
+  region: z.string().max(80, 'Region trop longue'),
+  description: z.string().max(400, 'Description trop longue'),
+  imageUrl: z.string(),
+  imageAlt: z.string().max(200, 'Texte alternatif trop long'),
+  address: z.string().max(200, 'Adresse trop longue'),
+  phone: z.string().max(30, 'Telephone trop long'),
+  rating: z
+    .string()
+    .refine(
+      (value) =>
+        value === '' ||
+        (!Number.isNaN(parseFloat(value)) && parseFloat(value) >= 0 && parseFloat(value) <= 5),
+      { message: 'Note invalide (entre 0 et 5)' },
+    ),
+  reviewCount: z
+    .string()
+    .refine(
+      (value) => value === '' || (Number.isInteger(Number(value)) && Number(value) >= 0),
+      { message: "Nombre d'avis invalide" },
+    ),
+  ratingSource: z.string().max(60, 'Source trop longue'),
+  directionsUrl: linkHrefSchema,
+  pickupEnabled: z.boolean(),
+  published: z.boolean(),
+})
+
+export type BoutiqueFormValues = z.infer<typeof boutiqueSchema>
+
 export const orderEditSchema = z
   .object({
     customerName: z.string().min(1, 'Nom requis').max(200, 'Nom trop long'),
@@ -218,31 +301,41 @@ export const checkoutSchema = z
       .min(8, 'Telephone invalide (8 chiffres minimum)'),
     customerGovernorate: z.string(),
     customerAddress: z.string(),
+    pickupBoutiqueId: z.number().int().positive().nullable(),
     notes: z.string().max(500, 'Notes trop longues'),
   })
   .superRefine((data, ctx) => {
-    if (data.orderType === 'delivery') {
-      if (!data.customerGovernorate) {
+    if (data.orderType === 'boutique') {
+      if (data.pickupBoutiqueId == null) {
         ctx.addIssue({
           code: 'custom',
-          message: 'Gouvernorat requis',
-          path: ['customerGovernorate'],
-        })
-      } else if (!GOVERNORATE_SLUGS.includes(data.customerGovernorate)) {
-        ctx.addIssue({
-          code: 'custom',
-          message: 'Gouvernorat invalide',
-          path: ['customerGovernorate'],
+          message: 'Choisissez la boutique de retrait',
+          path: ['pickupBoutiqueId'],
         })
       }
+      return
+    }
 
-      if (!data.customerAddress.trim()) {
-        ctx.addIssue({
-          code: 'custom',
-          message: 'Adresse de livraison requise',
-          path: ['customerAddress'],
-        })
-      }
+    if (!data.customerGovernorate) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Gouvernorat requis',
+        path: ['customerGovernorate'],
+      })
+    } else if (!GOVERNORATE_SLUGS.includes(data.customerGovernorate)) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Gouvernorat invalide',
+        path: ['customerGovernorate'],
+      })
+    }
+
+    if (!data.customerAddress.trim()) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Adresse de livraison requise',
+        path: ['customerAddress'],
+      })
     }
   })
 

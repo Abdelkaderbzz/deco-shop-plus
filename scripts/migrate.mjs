@@ -121,11 +121,71 @@ const statements = [
   `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "compareAtPrice" numeric(10, 3)`,
   `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "relatedProductIds" text NOT NULL DEFAULT '[]'`,
   `ALTER TABLE "orders" ADD COLUMN IF NOT EXISTS "customerGovernorate" text`,
+  `ALTER TABLE "orders" ADD COLUMN IF NOT EXISTS "pickupBoutiqueId" integer`,
+  `ALTER TABLE "orders" ADD COLUMN IF NOT EXISTS "pickupBoutiqueName" text`,
   `ALTER TABLE "settings" ADD COLUMN IF NOT EXISTS "bannerEnabled" boolean NOT NULL DEFAULT false`,
   `ALTER TABLE "settings" ADD COLUMN IF NOT EXISTS "bannerMessage" text NOT NULL DEFAULT ''`,
   `ALTER TABLE "settings" ADD COLUMN IF NOT EXISTS "bannerVariant" text NOT NULL DEFAULT 'offer'`,
   `ALTER TABLE "settings" ADD COLUMN IF NOT EXISTS "bannerLinkLabel" text NOT NULL DEFAULT ''`,
   `ALTER TABLE "settings" ADD COLUMN IF NOT EXISTS "bannerLinkHref" text NOT NULL DEFAULT ''`,
+  `CREATE TABLE IF NOT EXISTS "banners" (
+    "id" serial PRIMARY KEY,
+    "name" text NOT NULL DEFAULT '',
+    "message" text NOT NULL,
+    "variant" text NOT NULL DEFAULT 'offer',
+    "backgroundColor" text NOT NULL DEFAULT '#c9a44a',
+    "textColor" text NOT NULL DEFAULT '#0b0b0b',
+    "fontSize" integer NOT NULL DEFAULT 13,
+    "linkLabel" text NOT NULL DEFAULT '',
+    "linkHref" text NOT NULL DEFAULT '',
+    "dismissible" boolean NOT NULL DEFAULT true,
+    "active" boolean NOT NULL DEFAULT false,
+    "createdAt" timestamp NOT NULL DEFAULT now(),
+    "updatedAt" timestamp NOT NULL DEFAULT now()
+  )`,
+  `CREATE UNIQUE INDEX IF NOT EXISTS "banners_single_active_idx" ON "banners" ("active") WHERE "active"`,
+  // Carry the previous single-banner settings row into the new table, once.
+  `INSERT INTO "banners" ("name", "message", "variant", "linkLabel", "linkHref", "active")
+   SELECT 'Banniere importee', "bannerMessage", "bannerVariant", "bannerLinkLabel", "bannerLinkHref", "bannerEnabled"
+   FROM "settings"
+   WHERE "id" = 1
+     AND "bannerMessage" != ''
+     AND NOT EXISTS (SELECT 1 FROM "banners")`,
+  `CREATE TABLE IF NOT EXISTS "boutiques" (
+    "id" serial PRIMARY KEY,
+    "slug" text NOT NULL UNIQUE,
+    "name" text NOT NULL,
+    "city" text NOT NULL,
+    "region" text NOT NULL DEFAULT '',
+    "description" text NOT NULL DEFAULT '',
+    "imageUrl" text,
+    "imageAlt" text NOT NULL DEFAULT '',
+    "address" text,
+    "phone" text,
+    "rating" numeric(2, 1),
+    "reviewCount" integer,
+    "ratingSource" text NOT NULL DEFAULT 'Google Maps',
+    "directionsUrl" text NOT NULL DEFAULT '',
+    "pickupEnabled" boolean NOT NULL DEFAULT true,
+    "published" boolean NOT NULL DEFAULT true,
+    "sortOrder" integer NOT NULL DEFAULT 0,
+    "createdAt" timestamp NOT NULL DEFAULT now(),
+    "updatedAt" timestamp NOT NULL DEFAULT now()
+  )`,
+  `INSERT INTO "boutiques"
+    ("slug", "name", "city", "region", "description", "imageUrl", "imageAlt", "address", "phone", "rating", "reviewCount", "ratingSource", "directionsUrl", "sortOrder")
+   VALUES
+    ('sahloul-sousse', 'Water of Gold Sousse', 'Sousse', 'Sahloul',
+     'Notre boutique a Sousse. Toute la collection femme et homme, avec conseil personnalise sur place.',
+     '/boutiques/storefront.webp', 'Facade de la boutique Water of Gold a Sousse, de nuit',
+     'Av. Yasser Arafat, Sousse', '27 330 407', 4.9, NULL, 'Google Maps',
+     'https://www.google.com/maps/dir/?api=1&destination=35.8377722%2C10.5965168', 0),
+    ('moknine-monastir', 'Water of Gold Moknine', 'Moknine', 'Monastir',
+     'Notre adresse a Moknine. La meme selection de fragrances inspirees et de parfums de choix, longue tenue.',
+     '/boutiques/interior.webp', 'Interieur de la boutique Water of Gold, presentoirs de parfums',
+     NULL, NULL, 4.7, 72, 'Facebook',
+     'https://www.google.com/maps/dir/?api=1&destination=Moknine%2C+Monastir%2C+Tunisie', 1)
+   ON CONFLICT ("slug") DO NOTHING`,
   `UPDATE "products"
    SET "images" = json_build_array("imageUrl")::text
    WHERE "imageUrl" IS NOT NULL
