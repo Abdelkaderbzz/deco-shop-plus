@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Reveal } from '@/components/reveal'
 
 export default async function SuccessPage({
   searchParams,
@@ -8,7 +9,7 @@ export default async function SuccessPage({
   const { orderId } = await searchParams
 
   return (
-    <div className="flex min-h-[70vh] flex-col items-center justify-center gap-8 px-4 text-center">
+    <Reveal className="flex min-h-[70vh] flex-col items-center justify-center gap-8 px-4 text-center" variant="zoom">
       <div className="flex h-16 w-16 items-center justify-center rounded-full border border-primary bg-primary/10">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-primary">
           <polyline points="20 6 9 17 4 12" />
@@ -32,6 +33,6 @@ export default async function SuccessPage({
       >
         CONTINUER LES ACHATS
       </Link>
-    </div>
+    </Reveal>
   )
 }

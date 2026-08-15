@@ -1,21 +1,23 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Cormorant_Garamond, Inter } from 'next/font/google'
+import { Bodoni_Moda, Josefin_Sans } from 'next/font/google'
 import { StorefrontScale } from '@/components/storefront-scale'
 import { ThemeScript } from '@/components/theme-script'
 import { ToastProvider } from '@/components/toast-provider'
 import { SITE_LANG, SITE_OG_LOCALE } from '@/lib/locale'
 import './globals.css'
 
-const cormorant = Cormorant_Garamond({
+const bodoni = Bodoni_Moda({
   subsets: ['latin', 'latin-ext'],
-  weight: ['300', '400', '600'],
+  weight: ['400', '500', '600', '700'],
+  style: ['normal', 'italic'],
   variable: '--font-serif',
   display: 'swap',
 })
 
-const inter = Inter({
+const josefin = Josefin_Sans({
   subsets: ['latin', 'latin-ext'],
+  weight: ['300', '400', '500', '600', '700'],
   variable: '--font-sans',
   display: 'swap',
 })
@@ -78,7 +80,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang={SITE_LANG} className={`bg-background ${cormorant.variable} ${inter.variable}`} suppressHydrationWarning>
+    <html lang={SITE_LANG} className={`bg-background ${bodoni.variable} ${josefin.variable}`} suppressHydrationWarning>
       <body className="font-sans antialiased" suppressHydrationWarning>
         <ThemeScript />
         <StorefrontScale />

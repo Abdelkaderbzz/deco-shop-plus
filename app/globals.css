@@ -126,6 +126,16 @@
     @apply bg-background text-foreground;
   }
 
+  /* Didones look broken when the browser synthesizes a 300 weight. */
+  .font-serif {
+    font-synthesis: none;
+  }
+  .font-serif.font-thin,
+  .font-serif.font-extralight,
+  .font-serif.font-light {
+    font-weight: 400;
+  }
+
   button:not(:disabled),
   [type='button']:not(:disabled),
   [type='submit']:not(:disabled),
@@ -199,5 +209,322 @@
 @media (prefers-reduced-motion: reduce) {
   .marquee-track {
     animation: none;
+  }
+}
+
+/* Scroll reveals (AOS-style): one rise per element, then it stays. */
+.reveal {
+  --reveal-delay: 0ms;
+  transition:
+    opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay);
+}
+
+.reveal[data-reveal='up']:not([data-inview]) {
+  opacity: 0;
+  transform: translate3d(0, 32px, 0);
+}
+
+.reveal[data-reveal='fade']:not([data-inview]) {
+  opacity: 0;
+}
+
+.reveal[data-reveal='zoom']:not([data-inview]) {
+  opacity: 0;
+  transform: scale(0.94);
+}
+
+.reveal[data-reveal='left']:not([data-inview]) {
+  opacity: 0;
+  transform: translate3d(-28px, 0, 0);
+}
+
+.reveal[data-reveal='right']:not([data-inview]) {
+  opacity: 0;
+  transform: translate3d(28px, 0, 0);
+}
+
+.reveal[data-inview] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Maison hero: clip-up title, gold rule, photo unmask, then a slow campaign drift. */
+@keyframes hero-logo-in {
+  from {
+    opacity: 0;
+    transform: scale(0.86);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hero-eyebrow {
+  from {
+    opacity: 0;
+    letter-spacing: 0.72em;
+    transform: translate3d(0, 10px, 0);
+  }
+  to {
+    opacity: 1;
+    letter-spacing: 0.45em;
+    transform: none;
+  }
+}
+
+@keyframes hero-char-up {
+  from {
+    transform: translate3d(0, 115%, 0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes hero-rule-draw {
+  from {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+@keyframes hero-copy-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hero-shot-in {
+  from {
+    opacity: 0;
+    clip-path: inset(100% 0 0 0);
+    transform: translate3d(0, 28px, 0);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0);
+    transform: none;
+  }
+}
+
+@keyframes hero-corner-draw {
+  from {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  to {
+    opacity: 0.7;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@keyframes hero-ken-slow {
+  from {
+    transform: scale(1.04);
+  }
+  to {
+    transform: scale(1.12);
+  }
+}
+
+@keyframes hero-ken-slower {
+  from {
+    transform: scale(1.12);
+  }
+  to {
+    transform: scale(1.04);
+  }
+}
+
+@keyframes hero-glow-pulse {
+  from {
+    opacity: 0.45;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.hero-logo {
+  animation: hero-logo-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.hero-eyebrow {
+  animation: hero-eyebrow 1s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
+}
+
+.hero-title {
+  line-height: 1.05;
+}
+
+.hero-char-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+
+.hero-char {
+  display: inline-block;
+  animation: hero-char-up 0.95s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.hero-rule {
+  transform-origin: center;
+  animation: hero-rule-draw 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.72s both;
+}
+
+@media (min-width: 768px) {
+  .hero-rule {
+    transform-origin: left center;
+  }
+}
+
+.hero-copy {
+  animation: hero-copy-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.82s both;
+}
+
+.hero-cta {
+  animation: hero-copy-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.96s both;
+}
+
+.hero-frame {
+  --hx: 0px;
+  --hy: 0px;
+  --hr: 0deg;
+}
+
+.hero-collage {
+  transform: translate3d(var(--hx), var(--hy), 0) rotate(var(--hr));
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.hero-shot {
+  animation: hero-shot-in 1.15s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.hero-delay-3 {
+  animation-delay: 0.28s;
+}
+.hero-delay-4 {
+  animation-delay: 0.4s;
+}
+.hero-delay-5 {
+  animation-delay: 0.52s;
+}
+.hero-delay-6 {
+  animation-delay: 0.64s;
+}
+
+.hero-tile {
+  box-shadow: 0 12px 32px -18px color-mix(in srgb, var(--primary) 45%, transparent);
+}
+
+.hero-tile::after {
+  content: '';
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border: 1px solid color-mix(in srgb, var(--primary) 28%, transparent);
+}
+
+.hero-ken {
+  will-change: transform;
+}
+
+.hero-ken-slow {
+  animation: hero-ken-slow 22s ease-in-out 1.2s infinite alternate both;
+}
+
+.hero-ken-slower {
+  animation: hero-ken-slower 28s ease-in-out 1.2s infinite alternate both;
+}
+
+.hero-glow {
+  animation: hero-glow-pulse 6s ease-in-out infinite alternate;
+}
+
+.hero-glow-late {
+  animation-delay: 1.6s;
+}
+
+.hero-corner {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-color: var(--primary);
+  border-style: solid;
+  animation: hero-corner-draw 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.85s both;
+}
+
+.hero-corner-tl {
+  top: 0;
+  left: 0;
+  border-width: 1px 0 0 1px;
+}
+
+.hero-corner-tr {
+  top: 0;
+  right: 0;
+  border-width: 1px 1px 0 0;
+}
+
+.hero-corner-bl {
+  bottom: 0;
+  left: 0;
+  border-width: 0 0 1px 1px;
+}
+
+.hero-corner-br {
+  bottom: 0;
+  right: 0;
+  border-width: 0 1px 1px 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal[data-reveal]:not([data-inview]),
+  .hero-logo,
+  .hero-eyebrow,
+  .hero-char,
+  .hero-rule,
+  .hero-copy,
+  .hero-cta,
+  .hero-shot,
+  .hero-ken,
+  .hero-ken-slow,
+  .hero-ken-slower,
+  .hero-glow,
+  .hero-glow-late,
+  .hero-corner,
+  .hero-collage {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+    transition: none;
+  }
+
+  .hero-eyebrow {
+    letter-spacing: 0.45em;
+  }
+
+  .hero-corner {
+    width: 18px;
+    height: 18px;
   }
 }

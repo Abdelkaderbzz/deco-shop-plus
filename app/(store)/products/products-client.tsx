@@ -2,6 +2,7 @@
 
 import { CategoryPhotos } from '@/components/category-photos'
 import { ProductCard } from '@/components/product-card'
+import { Reveal } from '@/components/reveal'
 import { useRouteTransition } from '@/lib/use-route-transition'
 import type { StoreCategory } from '@/lib/store-categories'
 import { usePathname } from 'next/navigation'
@@ -77,7 +78,7 @@ export function ProductsClient({
     <>
       <CategoryPhotos category={category} categories={storeCategories} />
 
-      <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-start lg:gap-6">
+      <Reveal className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-start lg:gap-6">
         <div className="relative w-full lg:w-72 lg:shrink-0">
           <svg
             className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
@@ -123,7 +124,7 @@ export function ProductsClient({
             </button>
           ))}
         </div>
-      </div>
+      </Reveal>
 
       <div className="relative min-h-[30vh]">
         {isPending && (
@@ -148,12 +149,13 @@ export function ProductsClient({
         ) : (
           <>
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-              {products.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  categories={storeCategories.map((item) => ({ slug: item.slug, name: item.name }))}
-                />
+              {products.map((product, index) => (
+                <Reveal key={product.id} delay={(index % 4) * 70}>
+                  <ProductCard
+                    product={product}
+                    categories={storeCategories.map((item) => ({ slug: item.slug, name: item.name }))}
+                  />
+                </Reveal>
               ))}
             </div>
 

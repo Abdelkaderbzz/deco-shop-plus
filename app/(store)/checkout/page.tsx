@@ -5,6 +5,7 @@ import { createOrder } from '@/app/actions/orders'
 import { getDeliveryFee } from '@/app/actions/settings'
 import { StoreSelect } from '@/components/store-select'
 import { useCart } from '@/components/cart-context'
+import { Reveal } from '@/components/reveal'
 import { useToast } from '@/components/toast-provider'
 import { boutiqueLabel, phoneHref, type PickupBoutique } from '@/lib/boutiques'
 import { getErrorMessage } from '@/lib/get-error-message'
@@ -118,7 +119,7 @@ export default function CheckoutPage() {
 
   if (items.length === 0) {
     return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 px-4 text-center">
+      <Reveal className="flex min-h-[60vh] flex-col items-center justify-center gap-6 px-4 text-center">
         <p className="text-sm font-light tracking-widest text-muted-foreground">VOTRE PANIER EST VIDE</p>
         <Link
           href="/products"
@@ -126,16 +127,16 @@ export default function CheckoutPage() {
         >
           VOIR LA BOUTIQUE
         </Link>
-      </div>
+      </Reveal>
     )
   }
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
-      <div className="mb-8">
+      <Reveal className="mb-8">
         <p className="text-sm font-semibold uppercase tracking-wide text-primary">Votre commande</p>
         <h1 className="mt-2 font-serif text-2xl font-semibold text-foreground">Panier</h1>
-      </div>
+      </Reveal>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-5">
         <div className="lg:col-span-3 space-y-4">

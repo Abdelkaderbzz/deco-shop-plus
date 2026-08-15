@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import { InstagramCommentCard, WhatsAppCommentCard } from '@/components/testimonial-cards'
+import { Reveal } from '@/components/reveal'
 import {
   TESTIMONIAL_SOURCES,
   googleTestimonials,
@@ -99,40 +100,44 @@ export function TestimonialsSection() {
   return (
     <section className="border-t border-border bg-secondary py-12 md:py-14">
       <div className="mx-auto mb-8 max-w-6xl px-4 text-center">
-        <p className="text-[10px] font-light tracking-[0.4em] text-primary">TEMOIGNAGES</p>
-        <h2 className="mt-2 font-serif text-2xl font-light tracking-widest text-foreground">
-          ELLES NOUS FONT CONFIANCE
-        </h2>
-        <p className="mx-auto mt-3 max-w-lg text-sm font-light text-muted-foreground">
-          Avis Google, commentaires Instagram et messages WhatsApp de nos clientes.
-        </p>
+        <Reveal>
+          <p className="text-[10px] font-light tracking-[0.4em] text-primary">TEMOIGNAGES</p>
+          <h2 className="mt-2 font-serif text-2xl font-light tracking-widest text-foreground">
+            ELLES NOUS FONT CONFIANCE
+          </h2>
+          <p className="mx-auto mt-3 max-w-lg text-sm font-light text-muted-foreground">
+            Avis Google, commentaires Instagram et messages WhatsApp de nos clientes.
+          </p>
+        </Reveal>
       </div>
 
-      <div className="relative border-y border-border/60">
-        <MarqueeRow
-          items={googleTestimonials()}
-          direction="left"
-          duration={ROW_DURATION_SECONDS.top}
-        />
-        <MarqueeRow
-          items={socialTestimonials()}
-          direction="right"
-          duration={ROW_DURATION_SECONDS.bottom}
-        />
+      <Reveal variant="fade">
+        <div className="relative border-y border-border/60">
+          <MarqueeRow
+            items={googleTestimonials()}
+            direction="left"
+            duration={ROW_DURATION_SECONDS.top}
+          />
+          <MarqueeRow
+            items={socialTestimonials()}
+            direction="right"
+            duration={ROW_DURATION_SECONDS.bottom}
+          />
 
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-linear-to-r from-secondary to-transparent sm:w-20 lg:w-28" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-linear-to-l from-secondary to-transparent sm:w-20 lg:w-28" />
-      </div>
+          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-linear-to-r from-secondary to-transparent sm:w-20 lg:w-28" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-linear-to-l from-secondary to-transparent sm:w-20 lg:w-28" />
+        </div>
+      </Reveal>
 
       {sources.length > 0 ? (
-        <div className="mt-12 flex flex-wrap items-center justify-center gap-6 text-[11px] font-light tracking-widest text-muted-foreground">
+        <Reveal className="mt-12 flex flex-wrap items-center justify-center gap-6 text-[11px] font-light tracking-widest text-muted-foreground" delay={80}>
           {sources.map((source) => (
             <span key={source} className="flex items-center gap-2">
               <span className={`h-2 w-2 rounded-full ${TESTIMONIAL_SOURCES[source].dotClass}`} />
               {TESTIMONIAL_SOURCES[source].label}
             </span>
           ))}
-        </div>
+        </Reveal>
       ) : null}
     </section>
   )

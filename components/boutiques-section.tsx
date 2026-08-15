@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import { phoneHref, type Boutique } from '@/lib/boutiques'
 import { FACEBOOK_URL } from '@/lib/social-links'
+import { Reveal } from '@/components/reveal'
 
 function StarIcon({ className }: { className?: string }) {
   return (
@@ -197,7 +198,7 @@ export function BoutiquesSection({ boutiques }: { boutiques: Boutique[] }) {
   return (
     <section id="boutiques" className="scroll-mt-16 border-t border-border bg-secondary/20 py-12 md:py-14">
       <div className="mx-auto max-w-6xl px-4">
-        <div className="mb-8 text-center">
+        <Reveal className="mb-8 text-center">
           <p className="text-[10px] font-light tracking-[0.4em] text-primary">NOS ADRESSES</p>
           <h2 className="mt-2 font-serif text-2xl font-light tracking-widest text-foreground">
             NOS BOUTIQUES
@@ -205,15 +206,17 @@ export function BoutiquesSection({ boutiques }: { boutiques: Boutique[] }) {
           <p className="mx-auto mt-3 max-w-lg text-sm font-light text-muted-foreground">
             {buildTagline(boutiques)}
           </p>
-        </div>
+        </Reveal>
 
         <div
           className={`grid gap-6 ${
             boutiques.length === 1 ? 'mx-auto max-w-xl' : 'md:grid-cols-2'
           }`}
         >
-          {boutiques.map((boutique) => (
-            <BoutiqueCard key={boutique.id} boutique={boutique} />
+          {boutiques.map((boutique, index) => (
+            <Reveal key={boutique.id} variant={index % 2 === 0 ? 'left' : 'right'} delay={index * 90}>
+              <BoutiqueCard boutique={boutique} />
+            </Reveal>
           ))}
         </div>
       </div>

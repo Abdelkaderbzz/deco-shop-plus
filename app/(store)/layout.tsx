@@ -6,6 +6,7 @@ import { WhatsAppButton } from '@/components/whatsapp-button'
 import { FACEBOOK_URL, INSTAGRAM_URL, TIKTOK_URL } from '@/lib/social-links'
 import { Logo } from '@/components/logo'
 import { Navbar } from '@/components/navbar'
+import { Reveal } from '@/components/reveal'
 import { mergeStoreCategories } from '@/lib/store-categories'
 
 export default async function StoreLayout({ children }: { children: React.ReactNode }) {
@@ -18,8 +19,8 @@ export default async function StoreLayout({ children }: { children: React.ReactN
       <Navbar storeCategories={storeCategories} />
       <main className="min-h-screen">{children}</main>
       <footer className="border-t border-border bg-card py-8">
-        <div className="mx-auto max-w-6xl px-4 text-center">
-          <Logo size="md" className="mx-auto mb-4" />
+        <Reveal className="mx-auto max-w-6xl px-4 text-center">
+          <Logo size="lg" className="mx-auto mb-4" />
           <p className="text-xs font-light tracking-widest text-primary">
             PARFUMERIE &middot; FEMME &amp; HOMME
           </p>
@@ -63,7 +64,7 @@ export default async function StoreLayout({ children }: { children: React.ReactN
               Revixa Agency
             </a>
           </p>
-        </div>
+        </Reveal>
       </footer>
       <WhatsAppButton />
     </CartProvider>

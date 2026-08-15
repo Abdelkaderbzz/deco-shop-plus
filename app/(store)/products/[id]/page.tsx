@@ -4,6 +4,7 @@ import { getDeliveryFee } from '@/app/actions/settings'
 import { ProductCard } from '@/components/product-card'
 import { ProductGallery } from '@/components/product-gallery'
 import { ProductPrice } from '@/components/product-price'
+import { Reveal } from '@/components/reveal'
 import { parseProductImages } from '@/lib/product-images'
 import { formatPriceTnd } from '@/lib/product-price'
 import { getCategoryLabel } from '@/lib/store-categories'
@@ -34,24 +35,25 @@ export default async function ProductDetailPage({
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
-      {/* Breadcrumb */}
-      <nav className="mb-8 flex items-center gap-2 text-[11px] font-light tracking-widest text-muted-foreground">
-        <Link href="/" className="hover:text-primary transition-colors">ACCUEIL</Link>
-        <span>/</span>
-        <Link href="/products" className="hover:text-primary transition-colors">BOUTIQUE</Link>
-        <span>/</span>
-        <span className="text-foreground">{product.name.toUpperCase()}</span>
-      </nav>
+      <Reveal className="mb-8">
+        <nav className="flex items-center gap-2 text-[11px] font-light tracking-widest text-muted-foreground">
+          <Link href="/" className="hover:text-primary transition-colors">ACCUEIL</Link>
+          <span>/</span>
+          <Link href="/products" className="hover:text-primary transition-colors">BOUTIQUE</Link>
+          <span>/</span>
+          <span className="text-foreground">{product.name.toUpperCase()}</span>
+        </nav>
+      </Reveal>
 
       <div className="grid grid-cols-1 gap-12 md:grid-cols-2">
-        {/* Image */}
-        <ProductGallery
-          images={images}
-          alt={`${product.brand} ${product.name}`}
-        />
+        <Reveal variant="left">
+          <ProductGallery
+            images={images}
+            alt={`${product.brand} ${product.name}`}
+          />
+        </Reveal>
 
-        {/* Details */}
-        <div className="flex flex-col gap-4">
+        <Reveal variant="right" className="flex flex-col gap-4">
           <div>
             <p className="text-[10px] font-light tracking-[0.4em] text-primary">
               {product.brand.toUpperCase()}
@@ -89,20 +91,22 @@ export default async function ProductDetailPage({
           <div className="border-t border-border pt-4 text-[11px] font-light tracking-wider text-muted-foreground">
             <p>Livraison disponible en Tunisie, {formatPriceTnd(deliveryFee)} TND</p>
           </div>
-        </div>
+        </Reveal>
       </div>
 
       {relatedProducts.length > 0 && (
         <section className="mt-12 border-t border-border pt-8">
-          <div className="mb-6 text-center">
+          <Reveal className="mb-6 text-center">
             <p className="text-[10px] font-light tracking-[0.4em] text-primary">SELECTION</p>
             <h2 className="mt-2 font-serif text-2xl font-light tracking-widest text-foreground">
               VOUS AIMEREZ AUSSI
             </h2>
-          </div>
+          </Reveal>
           <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
-            {relatedProducts.map((related) => (
-              <ProductCard key={related.id} product={related} categories={categories} />
+            {relatedProducts.map((related, index) => (
+              <Reveal key={related.id} delay={(index % 4) * 80}>
+                <ProductCard product={related} categories={categories} />
+              </Reveal>
             ))}
           </div>
         </section>

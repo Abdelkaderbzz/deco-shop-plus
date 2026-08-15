@@ -19,7 +19,7 @@ export function Logo({ size = 'md', className = '', priority = false }: LogoProp
   return (
     <div className={`relative shrink-0 overflow-hidden rounded-md bg-black ${config.className} ${className}`}>
       <Image
-        src="/logo.webp"
+        src="/logo-wog.webp"
         alt="Water of Gold"
         width={config.px}
         height={config.px}
@@ -27,6 +27,7 @@ export function Logo({ size = 'md', className = '', priority = false }: LogoProp
         priority={priority}
         loading={priority ? 'eager' : 'lazy'}
         fetchPriority={priority ? 'high' : 'auto'}
+        unoptimized
         className="h-full w-full object-contain"
       />
     </div>

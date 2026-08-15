@@ -1,4 +1,5 @@
 import { INSTAGRAM_URL, TIKTOK_URL } from '@/lib/social-links'
+import { Reveal } from '@/components/reveal'
 
 function InstagramIcon({ className }: { className?: string }) {
   return (
@@ -23,7 +24,7 @@ const followButtonCls =
 
 export function InstagramSectionHeader() {
   return (
-    <div className="mb-8 text-center">
+    <Reveal className="mb-8 text-center">
       <p className="text-[10px] font-light tracking-[0.4em] text-primary">INSTAGRAM</p>
       <h2 className="mt-2 font-serif text-2xl font-light tracking-widest text-foreground">
         @waterofgold
@@ -31,7 +32,7 @@ export function InstagramSectionHeader() {
       <p className="mx-auto mt-3 max-w-md text-sm font-light text-muted-foreground">
         Coulisses, nouveautes et inspirations parfumees a Sousse.
       </p>
-    </div>
+    </Reveal>
   )
 }
 
