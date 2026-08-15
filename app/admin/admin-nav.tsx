@@ -14,7 +14,7 @@ const NAV_ITEMS = [
   { href: '/admin/orders', label: 'Commandes' },
   { href: '/admin/categories', label: 'Categories' },
   { href: '/admin/hero', label: 'Images hero' },
-  { href: '/admin/carousel', label: 'Carousel' },
+  { href: '/admin/banner', label: 'Banniere' },
   { href: '/admin/settings', label: 'Livraison' },
 ]
 
@@ -101,7 +101,7 @@ export function AdminNav({ userEmail }: { userEmail: string }) {
           <Link href="/admin" className="text-xl font-bold text-amber-800">
             HF Admin
           </Link>
-          <p className="mt-1 text-sm font-medium text-slate-500">Water of Cold Parfume</p>
+          <p className="mt-1 text-sm font-medium text-slate-500">Water of Gold</p>
         </div>
 
         <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">

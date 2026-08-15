@@ -8,7 +8,7 @@ const ADMIN_ROUTES = [
   '/admin/orders',
   '/admin/categories',
   '/admin/hero',
-  '/admin/carousel',
+  '/admin/banner',
   '/admin/settings',
 ]
 
