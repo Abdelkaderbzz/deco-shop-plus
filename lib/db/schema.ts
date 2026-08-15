@@ -59,9 +59,55 @@ export const categories = pgTable('categories', {
   updatedAt: timestamp('updatedAt').notNull().defaultNow(),
 })
 
+/** Single row (id = 1) holding shop-wide settings. */
 export const settings = pgTable('settings', {
   id: integer('id').primaryKey().default(1),
   deliveryFee: numeric('deliveryFee', { precision: 10, scale: 3 }).notNull().default('7.000'),
+  updatedAt: timestamp('updatedAt').notNull().defaultNow(),
+})
+
+/** Saved announcement banners. At most one row has active = true; the rest are
+ *  drafts the admin can switch to. */
+export const banners = pgTable('banners', {
+  id: serial('id').primaryKey(),
+  /** Internal label so the admin can tell saved banners apart. */
+  name: text('name').notNull().default(''),
+  message: text('message').notNull(),
+  /** Preset that seeds the colours; colours stay independently editable. */
+  variant: text('variant').notNull().default('offer'),
+  backgroundColor: text('backgroundColor').notNull().default('#c9a44a'),
+  textColor: text('textColor').notNull().default('#0b0b0b'),
+  fontSize: integer('fontSize').notNull().default(13),
+  linkLabel: text('linkLabel').notNull().default(''),
+  linkHref: text('linkHref').notNull().default(''),
+  dismissible: boolean('dismissible').notNull().default(true),
+  active: boolean('active').notNull().default(false),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+  updatedAt: timestamp('updatedAt').notNull().defaultNow(),
+})
+
+/** Physical shops, shown on the homepage and offered as pickup points. */
+export const boutiques = pgTable('boutiques', {
+  id: serial('id').primaryKey(),
+  slug: text('slug').notNull().unique(),
+  name: text('name').notNull(),
+  city: text('city').notNull(),
+  region: text('region').notNull().default(''),
+  description: text('description').notNull().default(''),
+  imageUrl: text('imageUrl'),
+  imageAlt: text('imageAlt').notNull().default(''),
+  address: text('address'),
+  phone: text('phone'),
+  rating: numeric('rating', { precision: 2, scale: 1 }),
+  reviewCount: integer('reviewCount'),
+  ratingSource: text('ratingSource').notNull().default('Google Maps'),
+  directionsUrl: text('directionsUrl').notNull().default(''),
+  /** Offered as a pickup point at checkout. */
+  pickupEnabled: boolean('pickupEnabled').notNull().default(true),
+  /** Shown in the homepage boutiques section. */
+  published: boolean('published').notNull().default(true),
+  sortOrder: integer('sortOrder').notNull().default(0),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
   updatedAt: timestamp('updatedAt').notNull().defaultNow(),
 })
 
@@ -93,6 +139,9 @@ export const products = pgTable('products', {
   imageUrl: text('imageUrl'),
   images: text('images').notNull().default('[]'),
   sizes: text('sizes').notNull().default('[]'),
+  /** JSON array of product ids curated by the admin. Empty = fall back to the
+   *  same category on the storefront. */
+  relatedProductIds: text('relatedProductIds').notNull().default('[]'),
   inStock: boolean('inStock').notNull().default(true),
   featured: boolean('featured').notNull().default(false),
   published: boolean('published').notNull().default(true),
@@ -107,6 +156,10 @@ export const orders = pgTable('orders', {
   customerAddress: text('customerAddress'),
   customerGovernorate: text('customerGovernorate'),
   orderType: text('orderType').notNull().default('delivery'),
+  /** Chosen pickup shop for orderType = 'boutique'. The name is snapshotted so
+   *  order history survives a boutique being renamed or removed. */
+  pickupBoutiqueId: integer('pickupBoutiqueId'),
+  pickupBoutiqueName: text('pickupBoutiqueName'),
   status: text('status').notNull().default('pending'),
   totalAmount: numeric('totalAmount', { precision: 10, scale: 3 }).notNull(),
   deliveryFee: numeric('deliveryFee', { precision: 10, scale: 3 }).notNull().default('7.000'),

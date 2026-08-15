@@ -111,17 +111,21 @@ const statements = [
   `INSERT INTO "settings" ("id", "deliveryFee") VALUES (1, '7.000')
    ON CONFLICT ("id") DO NOTHING`,
   `INSERT INTO "categories" ("name", "slug") VALUES
-    ('Parfums', 'parfums'),
-    ('Maquillage', 'maquillage'),
-    ('Sacs', 'sacs'),
-    ('Soins', 'soins')
+    ('Femme', 'femme'),
+    ('Homme', 'homme')
    ON CONFLICT ("slug") DO NOTHING`,
-  `DELETE FROM "categories" WHERE "slug" IN ('homme', 'femme', 'unisex', 'tous')`,
+  `DELETE FROM "categories" WHERE "slug" IN ('parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous')`,
   `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "images" text NOT NULL DEFAULT '[]'`,
   `ALTER TABLE "categories" ADD COLUMN IF NOT EXISTS "bannerUrl" text`,
   `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "published" boolean NOT NULL DEFAULT true`,
   `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "compareAtPrice" numeric(10, 3)`,
+  `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "relatedProductIds" text NOT NULL DEFAULT '[]'`,
   `ALTER TABLE "orders" ADD COLUMN IF NOT EXISTS "customerGovernorate" text`,
+  `ALTER TABLE "settings" ADD COLUMN IF NOT EXISTS "bannerEnabled" boolean NOT NULL DEFAULT false`,
+  `ALTER TABLE "settings" ADD COLUMN IF NOT EXISTS "bannerMessage" text NOT NULL DEFAULT ''`,
+  `ALTER TABLE "settings" ADD COLUMN IF NOT EXISTS "bannerVariant" text NOT NULL DEFAULT 'offer'`,
+  `ALTER TABLE "settings" ADD COLUMN IF NOT EXISTS "bannerLinkLabel" text NOT NULL DEFAULT ''`,
+  `ALTER TABLE "settings" ADD COLUMN IF NOT EXISTS "bannerLinkHref" text NOT NULL DEFAULT ''`,
   `UPDATE "products"
    SET "images" = json_build_array("imageUrl")::text
    WHERE "imageUrl" IS NOT NULL
@@ -150,11 +154,14 @@ const statements = [
     "updatedAt" timestamp NOT NULL DEFAULT now()
   )`,
   `INSERT INTO "hero_images" ("slot", "imageUrl", "alt") VALUES
-    (0, '/hero/perfume-1.webp', 'Parfums feminins'),
-    (1, '/hero/makeup-1.webp', 'Maquillage luxe'),
-    (2, '/hero/bag-1.webp', 'Sacs a main'),
-    (3, '/hero/makeup-2.webp', 'Maquillage')
-   ON CONFLICT ("slot") DO NOTHING`,
+    (0, '/hero/campaign-ramadan.webp', 'Campagne Water of Gold'),
+    (1, '/hero/boutique-shelves.webp', 'Boutique Water of Gold'),
+    (2, '/hero/lifestyle-signature.webp', 'Parfum signature Water of Gold'),
+    (3, '/hero/gold-bottles.webp', 'Selection Water of Gold')
+   ON CONFLICT ("slot") DO UPDATE SET
+     "imageUrl" = EXCLUDED."imageUrl",
+     "alt" = EXCLUDED."alt",
+     "updatedAt" = now()`,
 ]
 
 try {

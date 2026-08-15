@@ -34,6 +34,9 @@ export const productSchema = z
     category: z.string().min(1, 'Categorie requise'),
     images: z.array(z.string().url('URL invalide')).max(5, 'Maximum 5 images par produit'),
     sizes: z.string(),
+    relatedProductIds: z
+      .array(z.number().int().positive())
+      .max(8, 'Maximum 8 produits associes'),
     inStock: z.boolean(),
     featured: z.boolean(),
     published: z.boolean(),
@@ -67,17 +70,6 @@ export const categorySchema = z.object({
 
 export type CategoryFormValues = z.infer<typeof categorySchema>
 
-export const carouselVideoSchema = z.object({
-  url: z
-    .string()
-    .min(1, 'Lien requis')
-    .refine((value) => /instagram\.com\/reel\//i.test(value.trim()), {
-      message: 'Utilisez un lien Instagram reel (ex: https://www.instagram.com/reel/...)',
-    }),
-})
-
-export type CarouselVideoFormValues = z.infer<typeof carouselVideoSchema>
-
 export const deliveryFeeSchema = z.object({
   deliveryFee: z
     .string()
@@ -88,6 +80,41 @@ export const deliveryFeeSchema = z.object({
 })
 
 export type DeliveryFeeFormValues = z.infer<typeof deliveryFeeSchema>
+
+export const BANNER_VARIANTS = ['offer', 'news', 'discount'] as const
+export type BannerVariant = (typeof BANNER_VARIANTS)[number]
+
+export const siteBannerSchema = z
+  .object({
+    bannerEnabled: z.boolean(),
+    bannerMessage: z.string().max(160, 'Message trop long (160 caracteres maximum)'),
+    bannerVariant: z.enum(BANNER_VARIANTS),
+    bannerLinkLabel: z.string().max(40, 'Libelle trop long'),
+    bannerLinkHref: z
+      .string()
+      .max(300, 'Lien trop long')
+      .refine((value) => value === '' || value.startsWith('/') || /^https?:\/\//.test(value), {
+        message: 'Utilisez un chemin interne (/products) ou une URL complete (https://...)',
+      }),
+  })
+  .superRefine((data, ctx) => {
+    if (data.bannerEnabled && data.bannerMessage.trim() === '') {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Un message est requis pour activer la banniere',
+        path: ['bannerMessage'],
+      })
+    }
+    if (data.bannerLinkLabel.trim() !== '' && data.bannerLinkHref.trim() === '') {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Ajoutez le lien correspondant au bouton',
+        path: ['bannerLinkHref'],
+      })
+    }
+  })
+
+export type SiteBannerFormValues = z.infer<typeof siteBannerSchema>
 
 export const orderEditSchema = z
   .object({
