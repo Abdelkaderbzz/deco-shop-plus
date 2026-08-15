@@ -1,3 +1,4 @@
+import { getBoutiques } from '@/app/actions/boutiques'
 import { getCategories } from '@/app/actions/categories'
 import { getHeroImages } from '@/app/actions/hero'
 import { getFeaturedProducts } from '@/app/actions/products'
@@ -17,10 +18,11 @@ import Link from 'next/link'
 export const revalidate = 120
 
 export default async function HomePage() {
-  const [featured, categories, heroImages] = await Promise.all([
+  const [featured, categories, heroImages, boutiques] = await Promise.all([
     getFeaturedProducts(),
     getCategories(),
     getHeroImages(),
+    getBoutiques(),
   ])
   const storeCategories = mergeStoreCategories(categories)
   const [heroTopLeft, heroTopRight, heroBottomLeft, heroBottomRight] = heroImages
@@ -146,7 +148,7 @@ export default async function HomePage() {
 
       <TestimonialsSection />
 
-      <BoutiquesSection />
+      <BoutiquesSection boutiques={boutiques} />
 
       {/* Instagram */}
       <section className="border-t border-border bg-secondary/30 py-20">

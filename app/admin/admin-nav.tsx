@@ -13,8 +13,9 @@ const NAV_ITEMS = [
   { href: '/admin/products', label: 'Produits' },
   { href: '/admin/orders', label: 'Commandes' },
   { href: '/admin/categories', label: 'Categories' },
+  { href: '/admin/boutiques', label: 'Boutiques' },
   { href: '/admin/hero', label: 'Images hero' },
-  { href: '/admin/banner', label: 'Banniere' },
+  { href: '/admin/banner', label: 'Bannieres' },
   { href: '/admin/settings', label: 'Livraison' },
 ]
 

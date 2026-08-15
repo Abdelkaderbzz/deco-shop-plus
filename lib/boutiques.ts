@@ -1,17 +1,30 @@
+/** A boutique as the storefront consumes it, mapped from the database row. */
 export type Boutique = {
+  id: number
   slug: string
   name: string
   city: string
   region: string
   description: string
-  image: string
+  image: string | null
   imageAlt: string
-  address?: string
-  phone?: string
-  rating: number
-  reviewCount?: number
+  address: string | null
+  phone: string | null
+  rating: number | null
+  reviewCount: number | null
   ratingSource: string
   directionsUrl: string
+  pickupEnabled: boolean
+}
+
+/** A pickup point offered at checkout. */
+export type PickupBoutique = {
+  id: number
+  name: string
+  city: string
+  region: string
+  address: string | null
+  phone: string | null
 }
 
 /** Display number -> tel: href (Tunisian mobile, no spaces). */
@@ -19,34 +32,18 @@ export function phoneHref(phone: string) {
   return `tel:+216${phone.replace(/\s+/g, '')}`
 }
 
-export const BOUTIQUES: Boutique[] = [
-  {
-    slug: 'sahloul-sousse',
-    name: 'Water of Gold Sousse',
-    city: 'Sousse',
-    region: 'Sahloul',
-    description:
-      'Notre boutique a Sousse. Toute la collection femme et homme, avec conseil personnalise sur place.',
-    image: '/boutiques/storefront.webp',
-    imageAlt: 'Facade de la boutique Water of Gold a Sousse, de nuit',
-    address: 'Av. Yasser Arafat, Sousse',
-    phone: '27 330 407',
-    rating: 4.9,
-    ratingSource: 'Google Maps',
-    directionsUrl: 'https://www.google.com/maps/dir/?api=1&destination=35.8377722%2C10.5965168',
-  },
-  {
-    slug: 'moknine-monastir',
-    name: 'Water of Gold Moknine',
-    city: 'Moknine',
-    region: 'Monastir',
-    description:
-      'Notre adresse a Moknine. La meme selection de fragrances inspirees et de parfums de choix, longue tenue.',
-    image: '/boutiques/interior.webp',
-    imageAlt: 'Interieur de la boutique Water of Gold, presentoirs de parfums',
-    rating: 4.7,
-    reviewCount: 72,
-    ratingSource: 'Facebook',
-    directionsUrl: 'https://www.google.com/maps/dir/?api=1&destination=Moknine%2C+Monastir%2C+Tunisie',
-  },
-]
+export function boutiqueLabel(boutique: Pick<PickupBoutique, 'city' | 'region'>) {
+  return boutique.region && boutique.region !== boutique.city
+    ? `${boutique.city} — ${boutique.region}`
+    : boutique.city
+}
+
+export function slugifyBoutique(value: string) {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 120)
+}

@@ -8,9 +8,16 @@ import { AdminButton, adminLabelCls } from './admin-ui'
 type CategoryBannerFieldProps = {
   value: string
   onChange: (url: string) => void
+  label?: string
+  hint?: string
 }
 
-export function CategoryBannerField({ value, onChange }: CategoryBannerFieldProps) {
+export function CategoryBannerField({
+  value,
+  onChange,
+  label = 'BANNIERE CATEGORIE',
+  hint = 'Image affichee sur la boutique (grille et banniere de categorie). 5 Mo maximum.',
+}: CategoryBannerFieldProps) {
   const toast = useToast()
   const inputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
@@ -49,11 +56,11 @@ export function CategoryBannerField({ value, onChange }: CategoryBannerFieldProp
 
   return (
     <div>
-      <label className={adminLabelCls}>BANNIERE CATEGORIE</label>
+      <label className={adminLabelCls}>{label}</label>
 
       {value ? (
         <div className="relative mb-3 overflow-hidden rounded-md border border-slate-200">
-          <img src={value} alt="Banniere categorie" className="h-36 w-full object-cover" />
+          <img src={value} alt={label} className="h-36 w-full object-cover" />
           <button
             type="button"
             onClick={() => onChange('')}
@@ -74,9 +81,7 @@ export function CategoryBannerField({ value, onChange }: CategoryBannerFieldProp
         className="block w-full text-sm text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-amber-100 file:px-3 file:py-2 file:text-sm file:font-medium file:text-amber-900 hover:file:bg-amber-200 disabled:opacity-60"
       />
 
-      <p className="mt-2 text-sm text-slate-500">
-        Image affichee sur la boutique (grille et banniere de categorie). 5 Mo maximum.
-      </p>
+      <p className="mt-2 text-sm text-slate-500">{hint}</p>
 
       {uploading && <p className="mt-2 text-sm text-amber-700">Televersement en cours...</p>}
     </div>

@@ -1,3 +1,5 @@
+import { SITE_LOCALE } from '@/lib/locale'
+
 /** Current/sale price is `price`. Optional `compareAtPrice` is the old (strikethrough) price. */
 
 export function parsePrice(value: string | null | undefined): number | null {
@@ -7,7 +9,10 @@ export function parsePrice(value: string | null | undefined): number | null {
 }
 
 export function formatPriceTnd(value: number): string {
-  return value.toFixed(3)
+  return value.toLocaleString(SITE_LOCALE, {
+    minimumFractionDigits: 3,
+    maximumFractionDigits: 3,
+  })
 }
 
 /** Discount % when compare-at is strictly greater than the current price. */

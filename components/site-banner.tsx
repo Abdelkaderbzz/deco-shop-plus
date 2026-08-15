@@ -1,53 +1,37 @@
 'use client'
 
-import type { SiteBannerFormValues } from '@/lib/validations'
+import type { ActiveBanner } from '@/app/actions/banners'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
-const VARIANTS = {
-  offer: {
-    label: 'OFFRE',
-    barCls: 'bg-primary text-primary-foreground',
-    labelCls: 'bg-primary-foreground/15 text-primary-foreground',
-    linkCls: 'border-primary-foreground/40 hover:bg-primary-foreground/10',
-  },
-  discount: {
-    label: 'PROMO',
-    barCls:
-      'bg-linear-to-r from-[#b8912f] via-[#e0c078] to-[#b8912f] text-primary-foreground',
-    labelCls: 'bg-primary-foreground/15 text-primary-foreground',
-    linkCls: 'border-primary-foreground/40 hover:bg-primary-foreground/10',
-  },
-  news: {
-    label: 'NOUVEAUTE',
-    barCls: 'border-b border-border bg-secondary text-foreground',
-    labelCls: 'bg-primary/20 text-primary',
-    linkCls: 'border-primary/50 text-primary hover:bg-primary/10',
-  },
+const VARIANT_LABELS = {
+  offer: 'OFFRE',
+  news: 'NOUVEAUTE',
+  discount: 'PROMO',
 } as const
 
-/** Dismissal is keyed by content, so editing the message brings the banner back
- *  for visitors who had already closed the previous one. */
-function storageKey(message: string) {
+/** Dismissal is keyed by banner id and message, so editing the text brings the
+ *  banner back for visitors who had already closed the previous version. */
+function storageKey(banner: ActiveBanner) {
   let hash = 0
-  for (let index = 0; index < message.length; index += 1) {
-    hash = (hash * 31 + message.charCodeAt(index)) | 0
+  for (let index = 0; index < banner.message.length; index += 1) {
+    hash = (hash * 31 + banner.message.charCodeAt(index)) | 0
   }
-  return `wog-banner-dismissed-${hash}`
+  return `wog-banner-dismissed-${banner.id}-${hash}`
 }
 
-export function SiteBanner({ banner }: { banner: SiteBannerFormValues }) {
+export function SiteBanner({ banner }: { banner: ActiveBanner }) {
   const [dismissed, setDismissed] = useState(false)
-  const variant = VARIANTS[banner.bannerVariant] ?? VARIANTS.offer
-  const key = storageKey(banner.bannerMessage)
+  const key = storageKey(banner)
 
   useEffect(() => {
+    if (!banner.dismissible) return
     try {
       if (window.localStorage.getItem(key) === '1') setDismissed(true)
     } catch {
       // Private mode or blocked storage — keep the banner visible.
     }
-  }, [key])
+  }, [key, banner.dismissible])
 
   function dismiss() {
     setDismissed(true)
@@ -60,53 +44,70 @@ export function SiteBanner({ banner }: { banner: SiteBannerFormValues }) {
 
   if (dismissed) return null
 
-  const hasLink = banner.bannerLinkHref !== ''
-  const linkLabel = banner.bannerLinkLabel || 'DECOUVRIR'
-  const isExternal = /^https?:\/\//.test(banner.bannerLinkHref)
+  const hasLink = banner.linkHref !== ''
+  const linkLabel = banner.linkLabel || 'DECOUVRIR'
+  const isExternal = /^https?:\/\//.test(banner.linkHref)
+  const linkCls =
+    'hidden shrink-0 rounded-full border border-current/40 px-3 py-1 font-light tracking-[0.15em] transition-opacity hover:opacity-70 sm:inline-block'
 
   return (
-    <div className={variant.barCls} role="region" aria-label="Annonce boutique">
+    <div
+      role="region"
+      aria-label="Annonce boutique"
+      style={{
+        backgroundColor: banner.backgroundColor,
+        color: banner.textColor,
+        fontSize: `${banner.fontSize}px`,
+      }}
+    >
       <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-2">
-        <span
-          className={`hidden shrink-0 rounded-full px-2 py-0.5 text-[9px] font-medium tracking-[0.2em] sm:inline-block ${variant.labelCls}`}
-        >
-          {variant.label}
+        <span className="hidden shrink-0 rounded-full bg-current/15 px-2 py-0.5 text-[0.7em] font-medium tracking-[0.2em] sm:inline-block">
+          {VARIANT_LABELS[banner.variant]}
         </span>
 
-        <p className="min-w-0 flex-1 truncate text-center text-[11px] font-light tracking-wider sm:text-xs">
-          {banner.bannerMessage}
+        <p className="min-w-0 flex-1 truncate text-center font-light tracking-wider">
+          {banner.message}
         </p>
 
         {hasLink &&
           (isExternal ? (
             <a
-              href={banner.bannerLinkHref}
+              href={banner.linkHref}
               target="_blank"
               rel="noopener noreferrer"
-              className={`hidden shrink-0 rounded-full border px-3 py-1 text-[10px] font-light tracking-[0.15em] transition-colors sm:inline-block ${variant.linkCls}`}
+              className={`${linkCls} text-[0.8em]`}
             >
               {linkLabel.toUpperCase()}
             </a>
           ) : (
-            <Link
-              href={banner.bannerLinkHref}
-              className={`hidden shrink-0 rounded-full border px-3 py-1 text-[10px] font-light tracking-[0.15em] transition-colors sm:inline-block ${variant.linkCls}`}
-            >
+            <Link href={banner.linkHref} className={`${linkCls} text-[0.8em]`}>
               {linkLabel.toUpperCase()}
             </Link>
           ))}
 
-        <button
-          type="button"
-          onClick={dismiss}
-          aria-label="Fermer l'annonce"
-          className="shrink-0 opacity-60 transition-opacity hover:opacity-100"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-        </button>
+        {banner.dismissible ? (
+          <button
+            type="button"
+            onClick={dismiss}
+            aria-label="Fermer l'annonce"
+            className="shrink-0 opacity-60 transition-opacity hover:opacity-100"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              aria-hidden
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        ) : (
+          <span className="w-3.5 shrink-0" aria-hidden />
+        )}
       </div>
     </div>
   )

@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { BOUTIQUES, phoneHref, type Boutique } from '@/lib/boutiques'
+import { phoneHref, type Boutique } from '@/lib/boutiques'
 import { FACEBOOK_URL } from '@/lib/social-links'
 
 function StarIcon({ className }: { className?: string }) {
@@ -56,49 +56,73 @@ function FacebookIcon({ className }: { className?: string }) {
 const actionCls =
   'inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-[11px] font-light tracking-[0.18em] text-muted-foreground transition-all hover:border-primary hover:bg-primary/5 hover:text-primary'
 
-function BoutiqueCard({ boutique }: { boutique: Boutique }) {
+function BoutiqueHero({ boutique }: { boutique: Boutique }) {
+  const badge = (boutique.region || boutique.city).toUpperCase()
+
   return (
-    <article className="group overflow-hidden rounded-3xl border border-border/80 bg-card transition-all duration-500 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10">
-      <a
-        href={boutique.directionsUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="relative block aspect-4/3 overflow-hidden bg-secondary"
-      >
+    <div className="relative aspect-4/3 overflow-hidden bg-secondary">
+      {boutique.image ? (
         <Image
           src={boutique.image}
-          alt={boutique.imageAlt}
+          alt={boutique.imageAlt || boutique.name}
           fill
           sizes="(max-width: 768px) 100vw, 50vw"
           className="object-cover transition-transform duration-700 group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-linear-to-t from-black/55 via-transparent to-transparent" />
-        <span className="absolute bottom-4 left-5 flex items-center gap-1.5 rounded-full bg-black/55 px-3 py-1 text-[10px] font-light tracking-[0.3em] text-white backdrop-blur-sm">
-          <PinIcon className="shrink-0" />
-          {boutique.region.toUpperCase()}
-        </span>
-      </a>
+      ) : (
+        <div className="flex h-full items-center justify-center text-primary/40">
+          <PinIcon className="size-10" />
+        </div>
+      )}
+      <div className="absolute inset-0 bg-linear-to-t from-black/55 via-transparent to-transparent" />
+      <span className="absolute bottom-4 left-5 flex items-center gap-1.5 rounded-full bg-black/55 px-3 py-1 text-[10px] font-light tracking-[0.3em] text-white backdrop-blur-sm">
+        <PinIcon className="shrink-0" />
+        {badge}
+      </span>
+    </div>
+  )
+}
+
+function BoutiqueCard({ boutique }: { boutique: Boutique }) {
+  return (
+    <article className="group overflow-hidden rounded-3xl border border-border/80 bg-card transition-all duration-500 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10">
+      {boutique.directionsUrl ? (
+        <a
+          href={boutique.directionsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block"
+        >
+          <BoutiqueHero boutique={boutique} />
+        </a>
+      ) : (
+        <BoutiqueHero boutique={boutique} />
+      )}
 
       <div className="p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h3 className="font-serif text-2xl font-light tracking-wide text-foreground">
             {boutique.city}
           </h3>
-          <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-[11px] font-light tracking-wider text-primary">
-              <StarIcon />
-              {boutique.rating.toFixed(1)}
-            </span>
-            <span className="text-[11px] font-light tracking-wider text-muted-foreground">
-              {boutique.reviewCount ? `${boutique.reviewCount} avis · ` : ''}
-              {boutique.ratingSource}
-            </span>
-          </div>
+          {boutique.rating != null ? (
+            <div className="flex items-center gap-2">
+              <span className="flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-[11px] font-light tracking-wider text-primary">
+                <StarIcon />
+                {boutique.rating.toFixed(1)}
+              </span>
+              <span className="text-[11px] font-light tracking-wider text-muted-foreground">
+                {boutique.reviewCount ? `${boutique.reviewCount} avis · ` : ''}
+                {boutique.ratingSource}
+              </span>
+            </div>
+          ) : null}
         </div>
 
-        <p className="mt-4 text-sm font-light leading-relaxed text-muted-foreground">
-          {boutique.description}
-        </p>
+        {boutique.description ? (
+          <p className="mt-4 text-sm font-light leading-relaxed text-muted-foreground">
+            {boutique.description}
+          </p>
+        ) : null}
 
         {boutique.address || boutique.phone ? (
           <dl className="mt-5 space-y-2.5 border-t border-border/60 pt-5">
@@ -131,10 +155,17 @@ function BoutiqueCard({ boutique }: { boutique: Boutique }) {
         ) : null}
 
         <div className="mt-6 flex flex-wrap gap-3">
-          <a href={boutique.directionsUrl} target="_blank" rel="noopener noreferrer" className={actionCls}>
-            <PinIcon />
-            ITINERAIRE
-          </a>
+          {boutique.directionsUrl ? (
+            <a
+              href={boutique.directionsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={actionCls}
+            >
+              <PinIcon />
+              ITINERAIRE
+            </a>
+          ) : null}
           {boutique.phone ? (
             <a href={phoneHref(boutique.phone)} className={actionCls}>
               <PhoneIcon />
@@ -151,12 +182,20 @@ function BoutiqueCard({ boutique }: { boutique: Boutique }) {
   )
 }
 
-export function BoutiquesSection() {
+function buildTagline(boutiques: Boutique[]) {
+  const cities = [...new Set(boutiques.map((boutique) => boutique.city))]
+  if (cities.length === 0) return ''
+  if (cities.length === 1) return `Venez decouvrir nos parfums a ${cities[0]}.`
+
+  const last = cities[cities.length - 1]
+  return `Retrouvez nos parfums a ${cities.slice(0, -1).join(', ')} et ${last}.`
+}
+
+export function BoutiquesSection({ boutiques }: { boutiques: Boutique[] }) {
+  if (boutiques.length === 0) return null
+
   return (
-    <section
-      id="boutiques"
-      className="scroll-mt-20 border-t border-border bg-secondary/20 py-20"
-    >
+    <section id="boutiques" className="scroll-mt-20 border-t border-border bg-secondary/20 py-20">
       <div className="mx-auto max-w-6xl px-4">
         <div className="mb-12 text-center">
           <p className="text-[10px] font-light tracking-[0.4em] text-primary">NOS ADRESSES</p>
@@ -164,13 +203,17 @@ export function BoutiquesSection() {
             NOS BOUTIQUES
           </h2>
           <p className="mx-auto mt-3 max-w-lg text-sm font-light text-muted-foreground">
-            Deux boutiques pour decouvrir nos parfums : Sousse et Moknine.
+            {buildTagline(boutiques)}
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2">
-          {BOUTIQUES.map((boutique) => (
-            <BoutiqueCard key={boutique.slug} boutique={boutique} />
+        <div
+          className={`grid gap-6 ${
+            boutiques.length === 1 ? 'mx-auto max-w-xl' : 'md:grid-cols-2'
+          }`}
+        >
+          {boutiques.map((boutique) => (
+            <BoutiqueCard key={boutique.id} boutique={boutique} />
           ))}
         </div>
       </div>

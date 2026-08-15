@@ -9,6 +9,7 @@ import {
 } from '@/app/actions/orders'
 import { useToast } from '@/components/toast-provider'
 import { useConfirm } from '@/components/confirm-provider'
+import { boutiqueLabel, type PickupBoutique } from '@/lib/boutiques'
 import { GOVERNORATE_SELECT_OPTIONS, getGovernorateLabel } from '@/lib/tunisia-governorates'
 import { orderEditSchema, type OrderEditFormValues } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -53,6 +54,8 @@ type Order = {
   customerGovernorate: string | null
   customerAddress: string | null
   orderType: string
+  pickupBoutiqueId: number | null
+  pickupBoutiqueName: string | null
   status: string
   totalAmount: string
   deliveryFee: string
@@ -71,6 +74,13 @@ const STATUS_SELECT_OPTIONS = STATUS_OPTIONS.map((status) => ({
   value: status.value,
   label: status.label,
 }))
+
+function boutiqueSelectOptions(boutiques: PickupBoutique[]) {
+  return boutiques.map((boutique) => ({
+    value: String(boutique.id),
+    label: `${boutique.name} — ${boutiqueLabel(boutique)}`,
+  }))
+}
 
 function buildOrdersUrl(search: string, status: string, page: number) {
   const params = new URLSearchParams()
@@ -103,6 +113,7 @@ export function AdminOrdersClient({
   statusCounts: initialStatusCounts,
   products,
   deliveryFee,
+  pickupBoutiques,
 }: {
   orders: Order[]
   total: number
@@ -112,6 +123,7 @@ export function AdminOrdersClient({
   statusCounts: Record<string, number>
   products: CreateOrderProduct[]
   deliveryFee: number
+  pickupBoutiques: PickupBoutique[]
 }) {
   const { isPending: isNavigating, push, refresh } = useRouteTransition()
   const toast = useToast()
@@ -150,6 +162,7 @@ export function AdminOrdersClient({
       customerGovernorate: '',
       customerAddress: '',
       orderType: 'delivery',
+      pickupBoutiqueId: null,
       status: 'pending',
       notes: '',
     },
@@ -181,6 +194,7 @@ export function AdminOrdersClient({
       customerGovernorate: order.customerGovernorate ?? '',
       customerAddress: order.customerAddress ?? '',
       orderType: order.orderType as 'delivery' | 'boutique',
+      pickupBoutiqueId: order.pickupBoutiqueId,
       status: order.status,
       notes: order.notes ?? '',
     })
@@ -224,6 +238,7 @@ export function AdminOrdersClient({
         customerGovernorate: values.customerGovernorate || undefined,
         customerAddress: values.customerAddress || undefined,
         orderType: values.orderType,
+        pickupBoutiqueId: values.orderType === 'boutique' ? values.pickupBoutiqueId : null,
         status: values.status,
         notes: values.notes || undefined,
       })
@@ -244,6 +259,8 @@ export function AdminOrdersClient({
                 customerGovernorate: refreshed.customerGovernorate,
                 customerAddress: refreshed.customerAddress,
                 orderType: refreshed.orderType,
+                pickupBoutiqueId: refreshed.pickupBoutiqueId,
+                pickupBoutiqueName: refreshed.pickupBoutiqueName,
                 status: refreshed.status,
                 totalAmount: refreshed.totalAmount,
                 notes: refreshed.notes,

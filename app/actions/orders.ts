@@ -2,7 +2,7 @@
 
 import { requireAdminId } from '@/lib/admin-auth'
 import { db } from '@/lib/db'
-import { orderItems, orders, products } from '@/lib/db/schema'
+import { boutiques, orderItems, orders, products } from '@/lib/db/schema'
 import { and, desc, eq, ilike, or, sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { getDeliveryFee } from './settings'
@@ -49,9 +49,29 @@ type CreateOrderInput = {
   customerGovernorate?: string
   customerAddress?: string
   orderType: 'delivery' | 'boutique'
+  pickupBoutiqueId?: number | null
   status?: string
   notes?: string
   items: CartItem[]
+}
+
+/** Resolves the chosen pickup shop and snapshots its name onto the order. */
+async function resolvePickupBoutique(orderType: string, boutiqueId?: number | null) {
+  if (orderType !== 'boutique' || !boutiqueId) {
+    return { pickupBoutiqueId: null, pickupBoutiqueName: null }
+  }
+
+  const [row] = await db
+    .select({ id: boutiques.id, name: boutiques.name, city: boutiques.city })
+    .from(boutiques)
+    .where(eq(boutiques.id, boutiqueId))
+    .limit(1)
+
+  if (!row) {
+    throw new Error('Boutique de retrait introuvable.')
+  }
+
+  return { pickupBoutiqueId: row.id, pickupBoutiqueName: `${row.name} (${row.city})` }
 }
 
 async function insertOrderWithItems(data: CreateOrderInput) {
@@ -62,6 +82,7 @@ async function insertOrderWithItems(data: CreateOrderInput) {
   const deliveryFeeValue = data.orderType === 'delivery' ? await getDeliveryFee() : 0
   const subtotal = data.items.reduce((acc, item) => acc + item.price * item.quantity, 0)
   const totalAmount = subtotal + deliveryFeeValue
+  const pickup = await resolvePickupBoutique(data.orderType, data.pickupBoutiqueId)
 
   const [order] = await db
     .insert(orders)
@@ -71,6 +92,7 @@ async function insertOrderWithItems(data: CreateOrderInput) {
       customerGovernorate: data.customerGovernorate || null,
       customerAddress: data.customerAddress || null,
       orderType: data.orderType,
+      ...pickup,
       status: data.status || 'pending',
       totalAmount: totalAmount.toFixed(3),
       deliveryFee: deliveryFeeValue.toFixed(3),
@@ -268,6 +290,7 @@ export async function updateOrder(
     customerGovernorate?: string
     customerAddress?: string
     orderType?: 'delivery' | 'boutique'
+    pickupBoutiqueId?: number | null
     status?: string
     notes?: string
   },
@@ -294,11 +317,16 @@ export async function updateOrder(
 
     const subtotal = items.reduce((acc, item) => acc + parseFloat(item.price) * item.quantity, 0)
     const totalAmount = subtotal + deliveryFeeValue
+    const pickup = await resolvePickupBoutique(
+      orderType,
+      'pickupBoutiqueId' in data ? data.pickupBoutiqueId : existing.pickupBoutiqueId,
+    )
 
     const [updated] = await db
       .update(orders)
       .set({
         ...data,
+        ...pickup,
         deliveryFee: deliveryFeeValue.toFixed(3),
         totalAmount: totalAmount.toFixed(3),
         updatedAt: new Date(),

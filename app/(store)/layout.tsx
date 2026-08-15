@@ -1,5 +1,5 @@
+import { getActiveBanner } from '@/app/actions/banners'
 import { getCategories } from '@/app/actions/categories'
-import { getSiteBanner } from '@/app/actions/settings'
 import { CartProvider } from '@/components/cart-context'
 import { SiteBanner } from '@/components/site-banner'
 import { WhatsAppButton } from '@/components/whatsapp-button'
@@ -9,7 +9,7 @@ import { Navbar } from '@/components/navbar'
 import { mergeStoreCategories } from '@/lib/store-categories'
 
 export default async function StoreLayout({ children }: { children: React.ReactNode }) {
-  const [categories, banner] = await Promise.all([getCategories(), getSiteBanner()])
+  const [categories, banner] = await Promise.all([getCategories(), getActiveBanner()])
   const storeCategories = mergeStoreCategories(categories)
 
   return (
@@ -17,7 +17,7 @@ export default async function StoreLayout({ children }: { children: React.ReactN
       {banner && <SiteBanner banner={banner} />}
       <Navbar storeCategories={storeCategories} />
       <main className="min-h-screen">{children}</main>
-      <footer className="border-t border-border bg-black py-12">
+      <footer className="border-t border-border bg-card py-12">
         <div className="mx-auto max-w-6xl px-4 text-center">
           <Logo size="md" className="mx-auto mb-4" />
           <p className="text-xs font-light tracking-widest text-primary">

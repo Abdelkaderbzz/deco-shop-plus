@@ -1,6 +1,7 @@
 'use client'
 
 import { Logo } from '@/components/logo'
+import { ThemeToggle } from '@/components/theme-toggle'
 import { useCart } from '@/components/cart-context'
 import { INSTAGRAM_URL, TIKTOK_URL } from '@/lib/social-links'
 import type { StoreCategory } from '@/lib/store-categories'
@@ -54,7 +55,8 @@ export function Navbar({ storeCategories }: { storeCategories: StoreCategory[] }
           </a>
         </nav>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-1 sm:gap-2">
+          <ThemeToggle />
           <Link
             href="/checkout"
             aria-label={count > 0 ? `Panier, ${count} article${count > 1 ? 's' : ''}` : 'Panier'}
@@ -76,7 +78,7 @@ export function Navbar({ storeCategories }: { storeCategories: StoreCategory[] }
           <button
             className="flex flex-col gap-1.5 lg:hidden"
             onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Toggle menu"
+            aria-label={menuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
           >
             <span className={`block h-px w-6 bg-foreground transition-all ${menuOpen ? 'translate-y-2.5 rotate-45' : ''}`} />
             <span className={`block h-px w-6 bg-foreground transition-all ${menuOpen ? 'opacity-0' : ''}`} />

@@ -16,6 +16,14 @@ const nextConfig = {
       bodySizeLimit: '6mb',
     },
   },
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [{ key: 'Content-Language', value: 'fr' }],
+      },
+    ]
+  },
 }
 
 export default nextConfig
