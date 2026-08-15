@@ -36,38 +36,38 @@ export default async function HomePage() {
           <div className="absolute -right-16 bottom-0 h-80 w-80 rounded-full bg-secondary blur-3xl" />
         </div>
 
-        <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 md:grid-cols-2 md:gap-12 md:py-24">
+        <div className="relative mx-auto grid max-w-6xl items-center gap-8 px-4 py-10 md:grid-cols-2 md:gap-10 md:py-16">
           <div className="flex flex-col items-center text-center md:items-start md:text-left">
-            <Logo size="lg" className="md:h-36 md:w-36" priority />
-            <div className="mt-6">
-              <h1 className="font-serif text-4xl font-light tracking-wide text-foreground md:text-5xl">
+            <Logo size="lg" className="md:h-28 md:w-28" priority />
+            <div className="mt-4">
+              <h1 className="font-serif text-3xl font-light tracking-wide text-foreground md:text-4xl">
                 Water of Gold
               </h1>
-              <p className="mt-3 text-[11px] font-light tracking-[0.4em] text-primary">
+              <p className="mt-2 text-[10px] font-light tracking-[0.4em] text-primary">
                 PARFUMS FEMME &amp; HOMME
               </p>
-              <p className="mt-4 text-sm font-light tracking-widest text-muted-foreground">SOUSSE, TUNISIE</p>
+              <p className="mt-3 text-sm font-light tracking-widest text-muted-foreground">SOUSSE, TUNISIE</p>
             </div>
-            <p className="mt-6 max-w-md text-base font-light leading-relaxed text-muted-foreground">
+            <p className="mt-4 max-w-md text-sm font-light leading-relaxed text-muted-foreground">
               Boutique de parfums a Sousse. Fragrances inspirees des plus grandes marques internationales et parfums de
               choix, de longue tenue, pour femmes et hommes.
             </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3 md:justify-start">
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5 md:justify-start">
               <Link
                 href="/products"
-                className="rounded-full border border-primary bg-primary px-8 py-3 text-xs font-light tracking-[0.3em] text-primary-foreground transition-all hover:bg-primary/90"
+                className="rounded-full border border-primary bg-primary px-6 py-2.5 text-[11px] font-light tracking-[0.3em] text-primary-foreground transition-all hover:bg-primary/90"
               >
                 VOIR LA BOUTIQUE
               </Link>
               <Link
                 href="/products?category=femme"
-                className="rounded-full border border-border px-8 py-3 text-xs font-light tracking-[0.3em] text-muted-foreground transition-all hover:border-primary hover:bg-primary/5 hover:text-primary"
+                className="rounded-full border border-border px-6 py-2.5 text-[11px] font-light tracking-[0.3em] text-muted-foreground transition-all hover:border-primary hover:bg-primary/5 hover:text-primary"
               >
                 FEMME
               </Link>
               <Link
                 href="/products?category=homme"
-                className="rounded-full border border-border px-8 py-3 text-xs font-light tracking-[0.3em] text-muted-foreground transition-all hover:border-primary hover:bg-primary/5 hover:text-primary"
+                className="rounded-full border border-border px-6 py-2.5 text-[11px] font-light tracking-[0.3em] text-muted-foreground transition-all hover:border-primary hover:bg-primary/5 hover:text-primary"
               >
                 HOMME
               </Link>
@@ -96,7 +96,7 @@ export default async function HomePage() {
                 />
               </div>
             </div>
-            <div className="space-y-3 pt-8 md:space-y-4 md:pt-12">
+            <div className="space-y-3 pt-6 md:space-y-4 md:pt-8">
               <div className="relative aspect-square overflow-hidden rounded-3xl border border-border/60 shadow-sm shadow-primary/10">
                 <Image
                   src={heroTopRight.imageUrl}
@@ -125,20 +125,20 @@ export default async function HomePage() {
 
       {/* Featured products */}
       {featured.length > 0 && (
-        <section className="mx-auto max-w-6xl px-4 py-20">
-          <div className="mb-12 text-center">
+        <section className="mx-auto max-w-6xl px-4 py-12 md:py-14">
+          <div className="mb-8 text-center">
             <p className="text-[10px] font-light tracking-[0.4em] text-primary">SELECTION</p>
-            <h2 className="mt-2 font-serif text-3xl font-light tracking-widest text-foreground">COUPS DE COEUR</h2>
+            <h2 className="mt-2 font-serif text-2xl font-light tracking-widest text-foreground">COUPS DE COEUR</h2>
           </div>
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
             {featured.map((product) => (
               <ProductCard key={product.id} product={product} categories={categories} />
             ))}
           </div>
-          <div className="mt-12 text-center">
+          <div className="mt-8 text-center">
             <Link
               href="/products"
-              className="rounded-full border border-border px-10 py-3 text-xs font-light tracking-[0.3em] text-muted-foreground transition-all hover:border-primary hover:bg-primary/5 hover:text-primary"
+              className="rounded-full border border-border px-8 py-2.5 text-[11px] font-light tracking-[0.3em] text-muted-foreground transition-all hover:border-primary hover:bg-primary/5 hover:text-primary"
             >
               TOUTE LA BOUTIQUE
             </Link>
@@ -151,7 +151,7 @@ export default async function HomePage() {
       <BoutiquesSection boutiques={boutiques} />
 
       {/* Instagram */}
-      <section className="border-t border-border bg-secondary/30 py-20">
+      <section className="border-t border-border bg-secondary/30 py-12 md:py-14">
         <div className="mx-auto max-w-6xl px-4">
           <InstagramSectionHeader />
           <InstagramFollowButton />

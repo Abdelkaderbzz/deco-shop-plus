@@ -1,6 +1,7 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Cormorant_Garamond, Inter } from 'next/font/google'
+import { StorefrontScale } from '@/components/storefront-scale'
 import { ThemeScript } from '@/components/theme-script'
 import { ToastProvider } from '@/components/toast-provider'
 import { SITE_LANG, SITE_OG_LOCALE } from '@/lib/locale'
@@ -80,6 +81,7 @@ export default function RootLayout({
     <html lang={SITE_LANG} className={`bg-background ${cormorant.variable} ${inter.variable}`} suppressHydrationWarning>
       <body className="font-sans antialiased" suppressHydrationWarning>
         <ThemeScript />
+        <StorefrontScale />
         <ToastProvider>{children}</ToastProvider>
         {process.env.VERCEL === '1' && <Analytics />}
       </body>

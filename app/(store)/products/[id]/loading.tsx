@@ -1,6 +1,6 @@
 export default function ProductDetailLoading() {
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12">
+    <div className="mx-auto max-w-6xl px-4 py-8">
       <div className="grid gap-10 lg:grid-cols-2">
         <div className="aspect-[3/4] animate-pulse rounded-2xl bg-muted/50" />
         <div className="space-y-4">

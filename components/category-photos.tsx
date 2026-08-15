@@ -14,7 +14,7 @@ export function CategoryPhotos({
       <div className="mb-10">
         <div className="mb-8 text-center">
           <p className="text-[10px] font-light tracking-[0.4em] text-primary">NOTRE BOUTIQUE</p>
-          <h1 className="mt-2 font-serif text-4xl font-light tracking-widest text-foreground">Boutique</h1>
+          <h1 className="mt-2 font-serif text-3xl font-light tracking-widest text-foreground">Boutique</h1>
           <p className="mx-auto mt-3 max-w-md text-sm font-light text-muted-foreground">
             Parfums femme et homme, de longue tenue
           </p>

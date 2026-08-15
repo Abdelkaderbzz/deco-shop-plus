@@ -97,10 +97,10 @@ export function TestimonialsSection() {
   const sources = usedTestimonialSources()
 
   return (
-    <section className="border-t border-border bg-secondary py-20">
-      <div className="mx-auto mb-14 max-w-6xl px-4 text-center">
+    <section className="border-t border-border bg-secondary py-12 md:py-14">
+      <div className="mx-auto mb-8 max-w-6xl px-4 text-center">
         <p className="text-[10px] font-light tracking-[0.4em] text-primary">TEMOIGNAGES</p>
-        <h2 className="mt-2 font-serif text-3xl font-light tracking-widest text-foreground">
+        <h2 className="mt-2 font-serif text-2xl font-light tracking-widest text-foreground">
           ELLES NOUS FONT CONFIANCE
         </h2>
         <p className="mx-auto mt-3 max-w-lg text-sm font-light text-muted-foreground">

@@ -33,7 +33,7 @@ export default async function ProductDetailPage({
   const images = parseProductImages(product)
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12">
+    <div className="mx-auto max-w-5xl px-4 py-8">
       {/* Breadcrumb */}
       <nav className="mb-8 flex items-center gap-2 text-[11px] font-light tracking-widest text-muted-foreground">
         <Link href="/" className="hover:text-primary transition-colors">ACCUEIL</Link>
@@ -51,12 +51,12 @@ export default async function ProductDetailPage({
         />
 
         {/* Details */}
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4">
           <div>
             <p className="text-[10px] font-light tracking-[0.4em] text-primary">
               {product.brand.toUpperCase()}
             </p>
-            <h1 className="mt-2 font-serif text-3xl font-light tracking-wide text-foreground leading-tight">
+            <h1 className="mt-2 font-serif text-2xl font-light tracking-wide text-foreground leading-tight md:text-3xl">
               {product.name}
             </h1>
             <p className="mt-1 text-[10px] font-light tracking-widest text-muted-foreground">
@@ -93,8 +93,8 @@ export default async function ProductDetailPage({
       </div>
 
       {relatedProducts.length > 0 && (
-        <section className="mt-20 border-t border-border pt-12">
-          <div className="mb-8 text-center">
+        <section className="mt-12 border-t border-border pt-8">
+          <div className="mb-6 text-center">
             <p className="text-[10px] font-light tracking-[0.4em] text-primary">SELECTION</p>
             <h2 className="mt-2 font-serif text-2xl font-light tracking-widest text-foreground">
               VOUS AIMEREZ AUSSI

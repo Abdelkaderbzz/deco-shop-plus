@@ -131,13 +131,13 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12">
-      <div className="mb-10">
+    <div className="mx-auto max-w-5xl px-4 py-8">
+      <div className="mb-8">
         <p className="text-sm font-semibold uppercase tracking-wide text-primary">Votre commande</p>
-        <h1 className="mt-2 font-serif text-3xl font-semibold text-foreground">Panier</h1>
+        <h1 className="mt-2 font-serif text-2xl font-semibold text-foreground">Panier</h1>
       </div>
 
-      <div className="grid grid-cols-1 gap-12 lg:grid-cols-5">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-5">
         <div className="lg:col-span-3 space-y-4">
           {items.map((item) => (
             <div

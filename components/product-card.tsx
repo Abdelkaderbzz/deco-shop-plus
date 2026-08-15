@@ -54,7 +54,7 @@ export function ProductCard({
           </div>
         </div>
 
-        <div className="p-4">
+        <div className="p-3">
           <p className="text-[10px] font-light tracking-widest text-primary">{product.brand.toUpperCase()}</p>
           <h3 className="mt-1 font-serif text-base font-light tracking-wide text-foreground leading-tight">{product.name}</h3>
           <ProductPrice

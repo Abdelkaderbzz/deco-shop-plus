@@ -7,10 +7,10 @@ type LogoProps = {
 }
 
 const sizes = {
-  sm: { className: 'h-12 w-12', px: 96 },
-  md: { className: 'h-20 w-20', px: 160 },
-  lg: { className: 'h-36 w-36', px: 288 },
-  xl: { className: 'h-44 w-44', px: 352 },
+  sm: { className: 'h-9 w-9', px: 72 },
+  md: { className: 'h-16 w-16', px: 128 },
+  lg: { className: 'h-28 w-28', px: 224 },
+  xl: { className: 'h-36 w-36', px: 288 },
 }
 
 export function Logo({ size = 'md', className = '', priority = false }: LogoProps) {

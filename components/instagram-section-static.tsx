@@ -19,13 +19,13 @@ function TikTokIcon({ className }: { className?: string }) {
 }
 
 const followButtonCls =
-  'inline-flex items-center gap-3 rounded-full border border-border px-8 py-3 text-xs font-light tracking-[0.25em] text-muted-foreground transition-all hover:border-primary hover:bg-primary/5 hover:text-primary'
+  'inline-flex items-center gap-2.5 rounded-full border border-border px-6 py-2.5 text-[11px] font-light tracking-[0.25em] text-muted-foreground transition-all hover:border-primary hover:bg-primary/5 hover:text-primary'
 
 export function InstagramSectionHeader() {
   return (
-    <div className="mb-12 text-center">
+    <div className="mb-8 text-center">
       <p className="text-[10px] font-light tracking-[0.4em] text-primary">INSTAGRAM</p>
-      <h2 className="mt-2 font-serif text-3xl font-light tracking-widest text-foreground">
+      <h2 className="mt-2 font-serif text-2xl font-light tracking-widest text-foreground">
         @waterofgold
       </h2>
       <p className="mx-auto mt-3 max-w-md text-sm font-light text-muted-foreground">
@@ -37,7 +37,7 @@ export function InstagramSectionHeader() {
 
 export function InstagramFollowButton() {
   return (
-    <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+    <div className="mt-8 flex flex-wrap items-center justify-center gap-2.5">
       <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className={followButtonCls}>
         <InstagramIcon />
         SUIVRE @waterofgold

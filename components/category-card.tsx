@@ -19,11 +19,11 @@ export function CategoryCard({ category }: { category: StoreCategory }) {
           />
         ) : null}
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/75 via-foreground/20 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 p-5 text-left">
+        <div className="absolute inset-x-0 bottom-0 p-4 text-left">
           <p className="text-[10px] font-light tracking-[0.35em] text-primary-foreground/80">
             {category.tagline.toUpperCase()}
           </p>
-          <h3 className="mt-1 font-serif text-2xl font-light tracking-wide text-primary-foreground">
+          <h3 className="mt-1 font-serif text-xl font-light tracking-wide text-primary-foreground">
             {category.name}
           </h3>
         </div>

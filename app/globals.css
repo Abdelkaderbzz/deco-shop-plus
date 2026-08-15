@@ -111,6 +111,14 @@
   html {
     scrollbar-gutter: stable;
   }
+  html.storefront {
+    font-size: 87.5%;
+  }
+  @media (min-width: 768px) {
+    html.storefront {
+      font-size: 80%;
+    }
+  }
   * {
     @apply border-border outline-ring/50;
   }

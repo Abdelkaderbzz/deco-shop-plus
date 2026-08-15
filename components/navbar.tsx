@@ -22,7 +22,7 @@ export function Navbar({ storeCategories }: { storeCategories: StoreCategory[] }
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/80 bg-card/95 backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3.5">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-2">
         <Link href="/" className="flex items-center gap-3" aria-label="Water of Gold — Accueil">
           <Logo size="sm" priority />
         </Link>
