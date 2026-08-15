@@ -2,6 +2,7 @@
 
 import { adminCreateOrder, type CartItem } from '@/app/actions/orders'
 import { useToast } from '@/components/toast-provider'
+import { boutiqueLabel, type PickupBoutique } from '@/lib/boutiques'
 import { GOVERNORATE_SELECT_OPTIONS } from '@/lib/tunisia-governorates'
 import { orderCreateSchema, type OrderCreateFormValues } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -55,11 +56,13 @@ type DraftLine = CartItem & { key: string }
 export function AdminOrderCreateModal({
   products,
   deliveryFee,
+  pickupBoutiques,
   onClose,
   onCreated,
 }: {
   products: CreateOrderProduct[]
   deliveryFee: number
+  pickupBoutiques: PickupBoutique[]
   onClose: () => void
   onCreated: () => void
 }) {
@@ -86,6 +89,7 @@ export function AdminOrderCreateModal({
       customerGovernorate: '',
       customerAddress: '',
       orderType: 'delivery',
+      pickupBoutiqueId: null,
       status: 'confirmed',
       notes: '',
       items: [],
@@ -202,6 +206,7 @@ export function AdminOrderCreateModal({
         customerGovernorate: values.customerGovernorate || undefined,
         customerAddress: values.customerAddress || undefined,
         orderType: values.orderType,
+        pickupBoutiqueId: values.orderType === 'boutique' ? values.pickupBoutiqueId : null,
         status: values.status,
         notes: values.notes || undefined,
         items: values.items,
@@ -312,6 +317,35 @@ export function AdminOrderCreateModal({
               />
               <AdminFieldError message={errors.customerAddress?.message} />
             </div>
+          </div>
+        )}
+
+        {orderType === 'boutique' && (
+          <div>
+            <label className={adminLabelCls}>BOUTIQUE DE RETRAIT *</label>
+            <Controller
+              control={control}
+              name="pickupBoutiqueId"
+              render={({ field }) => (
+                <AdminSelect
+                  value={field.value == null ? '' : String(field.value)}
+                  onValueChange={(value) => field.onChange(value ? Number(value) : null)}
+                  items={pickupBoutiques.map((boutique) => ({
+                    value: String(boutique.id),
+                    label: `${boutique.name} — ${boutiqueLabel(boutique)}`,
+                  }))}
+                  placeholder="Choisir une boutique"
+                  error={!!errors.pickupBoutiqueId}
+                  disabled={isPending || pickupBoutiques.length === 0}
+                />
+              )}
+            />
+            <AdminFieldError message={errors.pickupBoutiqueId?.message} />
+            {pickupBoutiques.length === 0 && (
+              <p className="mt-1 text-xs text-slate-500">
+                Activez le retrait sur au moins une boutique dans l onglet Boutiques.
+              </p>
+            )}
           </div>
         )}
 

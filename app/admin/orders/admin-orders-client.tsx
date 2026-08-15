@@ -10,6 +10,7 @@ import {
 import { useToast } from '@/components/toast-provider'
 import { useConfirm } from '@/components/confirm-provider'
 import { boutiqueLabel, type PickupBoutique } from '@/lib/boutiques'
+import { formatDateFr } from '@/lib/locale'
 import { GOVERNORATE_SELECT_OPTIONS, getGovernorateLabel } from '@/lib/tunisia-governorates'
 import { orderEditSchema, type OrderEditFormValues } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -418,12 +419,18 @@ export function AdminOrdersClient({
                 </td>
                 <td className={adminTableCellCls}>
                   <AdminCellEllipsis
-                    text={order.orderType === 'delivery' ? order.customerAddress : 'Retrait boutique'}
+                    text={
+                      order.orderType === 'delivery'
+                        ? order.customerAddress
+                        : order.pickupBoutiqueName
+                          ? `Retrait — ${order.pickupBoutiqueName}`
+                          : 'Retrait boutique'
+                    }
                     maxWidthClass="max-w-[220px]"
                   />
                 </td>
                 <td className={adminTableCellCls}>
-                  <AdminBadge tone={order.orderType === 'delivery' ? 'info' : 'default'}>
+                  <AdminBadge tone={order.orderType === 'delivery' ? 'info' : 'warning'}>
                     {order.orderType === 'delivery' ? 'Livraison' : 'Boutique'}
                   </AdminBadge>
                 </td>
@@ -440,7 +447,7 @@ export function AdminOrdersClient({
                   />
                 </td>
                 <td className={`${adminTableMutedCls} whitespace-nowrap text-xs`}>
-                  {new Date(order.createdAt).toLocaleDateString('fr-TN')}
+                  {formatDateFr(order.createdAt)}
                 </td>
                 <td className={adminTableCellCls}>
                   <div className="flex items-center justify-center gap-0.5">
@@ -488,6 +495,7 @@ export function AdminOrdersClient({
         <AdminOrderCreateModal
           products={products}
           deliveryFee={deliveryFee}
+          pickupBoutiques={pickupBoutiques}
           onClose={() => setCreating(false)}
           onCreated={() => {
             setCreating(false)
@@ -544,6 +552,16 @@ export function AdminOrdersClient({
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Adresse</p>
                 <p className="mt-1 text-slate-800">{selectedOrder.customerAddress}</p>
+              </div>
+            )}
+            {selectedOrder.orderType === 'boutique' && (
+              <div className="rounded-md border border-amber-200 bg-amber-50 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-amber-800">
+                  Boutique de retrait
+                </p>
+                <p className="mt-1 font-medium text-slate-900">
+                  {selectedOrder.pickupBoutiqueName ?? 'Non precisee'}
+                </p>
               </div>
             )}
             {selectedOrder.notes && (
@@ -661,6 +679,31 @@ export function AdminOrdersClient({
                   <AdminFieldError message={errors.customerAddress?.message} />
                 </div>
               </>
+            )}
+            {orderType === 'boutique' && (
+              <div>
+                <label className={adminLabelCls}>BOUTIQUE DE RETRAIT *</label>
+                <Controller
+                  control={control}
+                  name="pickupBoutiqueId"
+                  render={({ field }) => (
+                    <AdminSelect
+                      value={field.value == null ? '' : String(field.value)}
+                      onValueChange={(value) => field.onChange(value ? Number(value) : null)}
+                      items={boutiqueSelectOptions(pickupBoutiques)}
+                      placeholder="Choisir une boutique"
+                      error={!!errors.pickupBoutiqueId}
+                      disabled={isPending || pickupBoutiques.length === 0}
+                    />
+                  )}
+                />
+                <AdminFieldError message={errors.pickupBoutiqueId?.message} />
+                {pickupBoutiques.length === 0 && (
+                  <p className="mt-1 text-xs text-slate-500">
+                    Activez le retrait sur au moins une boutique dans l onglet Boutiques.
+                  </p>
+                )}
+              </div>
             )}
             <div>
               <label className={adminLabelCls}>STATUT</label>
