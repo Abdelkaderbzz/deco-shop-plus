@@ -1,8 +1,8 @@
-# Water of Gold
+# Deco Shop Plus
 
-Boutique de parfums a Sousse, Tunisie — Next.js storefront and admin dashboard.
+Boutique de decoration a Cite El Waha, Bizerte, Tunisie — Next.js storefront and admin dashboard.
 
-Parfums inspires des grandes marques internationales et parfums de choix, de longue tenue, pour femmes et hommes.
+Coussins, accessoires maison, rangement de vetements et literie.
 
 ## Stack
 

@@ -2,7 +2,7 @@
 // Run: node scripts/seed-dummy-data.mjs [--only=orders|products|categories|all] [--orders=25] [--products=20] [--clear]
 
 import { Pool } from 'pg'
-import { resolveDatabaseUrl } from './db-url.mjs'
+import { databaseHost, resolveDatabaseUrl } from './db-url.mjs'
 import { loadEnv } from './load-env.mjs'
 
 loadEnv()
@@ -12,6 +12,10 @@ if (!DATABASE_URL) {
   console.error('DATABASE_URL not set in .env')
   process.exit(1)
 }
+
+console.log(
+  `Dummy seed on DATABASE_URL (${databaseHost(DATABASE_URL)})`,
+)
 
 const pool = new Pool({ connectionString: DATABASE_URL })
 
@@ -31,21 +35,21 @@ const GOVERNORATES = [
   'bizerte',
 ]
 
-const CATEGORY_SLUGS = ['femme', 'homme']
+const CATEGORY_SLUGS = ['coussins', 'accessoires', 'rangement', 'textiles']
 const PLACEHOLDER_IMAGES = [
-  '/categories/parfums.webp',
-  '/categories/maquillage.webp',
-  '/categories/sacs.webp',
-  '/categories/soins.webp',
-  '/hero/perfume-1.webp',
-  '/hero/makeup-1.webp',
-  '/showcase/perfume-4.png',
+  '/assets/img_9760.webp',
+  '/assets/img_9758.webp',
+  '/assets/img_9756-1.webp',
+  '/assets/IMG_4758-1536x2048.jpeg.webp',
+  '/assets/photo-output-1-2.jpeg.webp',
+  '/assets/image00001-2-1537x2048.jpeg.webp',
+  '/assets/d236b9ee-ec87-4aaf-a0d1-8cb2c99327a9.webp',
 ]
 
 const EXTRA_CATEGORIES = [
-  { name: 'Demo Parfums Premium', slug: 'demo-parfums-premium' },
+  { name: 'Demo Coussins Premium', slug: 'demo-coussins-premium' },
   { name: 'Demo Accessoires', slug: 'demo-accessoires' },
-  { name: 'Demo Coffrets', slug: 'demo-coffrets' },
+  { name: 'Demo literie', slug: 'demo-textiles' },
 ]
 
 function parseArgs(argv) {
@@ -85,7 +89,7 @@ function parseArgs(argv) {
 
 function printHelp() {
   console.log(`
-Dummy data seeder — Water of Gold
+Dummy data seeder — Deco Shop Plus
 
 Usage:
   node scripts/seed-dummy-data.mjs [options]
@@ -200,7 +204,7 @@ async function seedDemoProducts(count) {
         category,
         image,
         images,
-        JSON.stringify(['50ml', '100ml']),
+        JSON.stringify(['Unique', '45x45']),
         inStock,
         featured,
         published,
@@ -364,7 +368,7 @@ async function main() {
   console.log('\nTest tips:')
   console.log('  - Admin orders: search "Demo Client" or filter by status')
   console.log('  - Admin products: search "Demo" — some are hidden (published=false)')
-  console.log('  - Store: /products?category=demo-parfums-premium')
+  console.log('  - Store: /products?category=demo-coussins-premium')
 }
 
 try {

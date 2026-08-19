@@ -12,22 +12,13 @@ if (!DATABASE_URL) {
 }
 
 const RESTORE_CATEGORIES = [
-  { name: 'Femme', slug: 'femme' },
-  { name: 'Homme', slug: 'homme' },
+  { name: 'Coussins', slug: 'coussins' },
+  { name: 'Accessoires', slug: 'accessoires' },
+  { name: 'Rangement', slug: 'rangement' },
+  { name: 'Literie', slug: 'textiles' },
 ]
 
-const REMOVE_SLUGS = ['parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous']
-
-const PRODUCT_CATEGORY_MAP = [
-  ['Yara', 'Lattafa', 'femme'],
-  ['Bright Orchard', 'MATCH', 'femme'],
-  ['Miss Gris Intense', 'ASSAF', 'femme'],
-  ['Musk Collection', 'Ibraheem Al Qurashi', 'femme'],
-  ['Vanilla Candy Rock Sugar | 42', 'Kayali', 'femme'],
-  ['Musk Pomegranate', 'IBRAQ', 'femme'],
-  ['Eclaire', 'Lattafa', 'femme'],
-  ['Coffret Yara', 'Lattafa', 'femme'],
-]
+const REMOVE_SLUGS = ['parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous', 'femme', 'homme']
 
 const pool = new Pool({ connectionString: DATABASE_URL })
 
@@ -41,23 +32,13 @@ try {
     console.log(`✓ Ensured category "${category.name}" (${category.slug})`)
   }
 
-  for (const [name, brand, category] of PRODUCT_CATEGORY_MAP) {
-    const result = await pool.query(
-      `UPDATE "products" SET "category" = $1, "updatedAt" = now()
-       WHERE "name" = $2 AND "brand" = $3`,
-      [category, name, brand],
-    )
-    if (result.rowCount > 0) {
-      console.log(`✓ Restored "${name}" → ${category}`)
-    }
-  }
-
   const fallback = await pool.query(
-    `UPDATE "products" SET "category" = 'femme', "updatedAt" = now()
-     WHERE "category" IN ('parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous')`,
+    `UPDATE "products" SET "category" = 'coussins', "updatedAt" = now()
+     WHERE "category" = ANY($1::text[])`,
+    [REMOVE_SLUGS],
   )
   if (fallback.rowCount > 0) {
-    console.log(`✓ Fallback: ${fallback.rowCount} remaining product(s) set to femme`)
+    console.log(`✓ Fallback: ${fallback.rowCount} remaining product(s) set to coussins`)
   }
 
   const removed = await pool.query(
