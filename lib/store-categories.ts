@@ -9,19 +9,19 @@ export const STORE_CATEGORIES: StoreCategory[] = [
   {
     slug: 'coussins',
     name: 'Coussins',
-    tagline: 'Coussins pour canape, lit et salon',
+    tagline: 'Coussins pour canapé, lit et salon',
     image: '/assets/img_9760.webp',
   },
   {
     slug: 'accessoires',
     name: 'Accessoires',
-    tagline: 'Objets deco pour la maison',
+    tagline: 'Objets déco pour la maison',
     image: '/assets/image00001-2-1537x2048.jpeg.webp',
   },
   {
     slug: 'rangement',
     name: 'Rangement',
-    tagline: 'Organisation des vetements et de la maison',
+    tagline: 'Organisation des vêtements et de la maison',
     image: '/assets/photo-output-12-1538x2048.jpeg.webp',
   },
   {
