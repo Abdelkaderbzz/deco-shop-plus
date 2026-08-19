@@ -6,6 +6,12 @@ import { useConfirm } from '@/components/confirm-provider'
 import { getErrorMessage } from '@/lib/get-error-message'
 import { getPrimaryImage, parseProductImages } from '@/lib/product-images'
 import { parseRelatedProductIds } from '@/lib/product-relations'
+import {
+  DEFAULT_PROMO_BG,
+  DEFAULT_PROMO_LABEL,
+  DEFAULT_PROMO_TEXT,
+  parseProductColors,
+} from '@/lib/product-colors'
 import { formatPriceTnd, getDiscountPercent, parsePrice } from '@/lib/product-price'
 import { productSchema, type ProductFormValues } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -30,6 +36,7 @@ import {
 } from './admin-ui'
 import { AdminSelect } from './admin-select'
 import { ProductImagesField } from './product-images-field'
+import { ProductColorsField } from './product-colors-field'
 import { RelatedProductsField, type ProductOption } from './related-products-field'
 import { ADMIN_PAGE_SIZE, AdminPagination } from './admin-pagination'
 
@@ -44,10 +51,15 @@ type Product = {
   imageUrl: string | null
   images: string | null
   sizes: string
+  colors?: string
   relatedProductIds: string
   inStock: boolean
   featured: boolean
   published: boolean
+  promoEnabled?: boolean
+  promoLabel?: string
+  promoBgColor?: string
+  promoTextColor?: string
 }
 
 type Category = {
@@ -62,13 +74,18 @@ const EMPTY_FORM: ProductFormValues = {
   description: '',
   price: '',
   compareAtPrice: '',
-  category: 'femme',
+  category: 'coussins',
   images: [],
   sizes: '',
+  colors: [],
   relatedProductIds: [],
   inStock: true,
   featured: false,
   published: true,
+  promoEnabled: false,
+  promoLabel: DEFAULT_PROMO_LABEL,
+  promoBgColor: DEFAULT_PROMO_BG,
+  promoTextColor: DEFAULT_PROMO_TEXT,
 }
 
 export function AdminProductsClient({
@@ -95,7 +112,7 @@ export function AdminProductsClient({
   const [isPending, startTransition] = useTransition()
   const isBusy = isPending || isNavigating
 
-  const defaultCategory = categories[0]?.slug ?? 'femme'
+  const defaultCategory = categories[0]?.slug ?? 'coussins'
 
   useEffect(() => {
     setSearchInput(initialSearch)
@@ -124,6 +141,8 @@ export function AdminProductsClient({
 
   const images = watch('images')
   const relatedProductIds = watch('relatedProductIds')
+  const colors = watch('colors')
+  const promoEnabled = watch('promoEnabled')
   const watchedPrice = watch('price')
   const watchedCompareAt = watch('compareAtPrice')
   const previewDiscount = getDiscountPercent(watchedPrice, watchedCompareAt)
@@ -145,10 +164,15 @@ export function AdminProductsClient({
       category: product.category,
       images: parseProductImages(product),
       sizes: JSON.parse(product.sizes || '[]').join(', '),
+      colors: parseProductColors(product),
       relatedProductIds: parseRelatedProductIds(product),
       inStock: product.inStock,
       featured: product.featured,
       published: product.published ?? true,
+      promoEnabled: product.promoEnabled ?? false,
+      promoLabel: product.promoLabel || DEFAULT_PROMO_LABEL,
+      promoBgColor: product.promoBgColor || DEFAULT_PROMO_BG,
+      promoTextColor: product.promoTextColor || DEFAULT_PROMO_TEXT,
     })
     setShowForm(true)
   }
@@ -172,10 +196,15 @@ export function AdminProductsClient({
             category: form.category,
             images: form.images,
             sizes: sizesArr,
+            colors: form.colors.filter((color) => color.name.trim()),
             relatedProductIds: form.relatedProductIds,
             inStock: form.inStock,
             featured: form.featured,
             published: form.published,
+            promoEnabled: form.promoEnabled,
+            promoLabel: form.promoLabel,
+            promoBgColor: form.promoBgColor,
+            promoTextColor: form.promoTextColor,
           })
           toast.success('Produit modifie avec succes.')
         } else {
@@ -188,10 +217,15 @@ export function AdminProductsClient({
             category: form.category,
             images: form.images,
             sizes: sizesArr,
+            colors: form.colors.filter((color) => color.name.trim()),
             relatedProductIds: form.relatedProductIds,
             inStock: form.inStock,
             featured: form.featured,
             published: form.published,
+            promoEnabled: form.promoEnabled,
+            promoLabel: form.promoLabel,
+            promoBgColor: form.promoBgColor,
+            promoTextColor: form.promoTextColor,
           })
           toast.success('Produit ajoute avec succes.')
         }
@@ -287,6 +321,9 @@ export function AdminProductsClient({
                   <td className={adminTableCellCls}>
                     <p className="font-medium text-slate-900">{p.name}</p>
                     {p.featured && <AdminBadge tone="info">Mis en avant</AdminBadge>}
+                    {p.promoEnabled && (
+                      <AdminBadge tone="warning">{p.promoLabel || DEFAULT_PROMO_LABEL}</AdminBadge>
+                    )}
                   </td>
                   <td className={adminTableMutedCls}>{p.brand}</td>
                   <td className={adminTableMutedCls}>{categoryLabel(p.category)}</td>
@@ -303,7 +340,7 @@ export function AdminProductsClient({
                   </td>
                   <td className={adminTableCellCls}>
                     <AdminBadge tone={p.inStock ? 'success' : 'danger'}>
-                      {p.inStock ? 'En stock' : 'Rupture'}
+                      {p.inStock ? 'En stock' : 'Épuisé'}
                     </AdminBadge>
                   </td>
                   <td className={adminTableCellCls}>
@@ -402,9 +439,72 @@ export function AdminProductsClient({
               error={errors.images?.message}
             />
             <div>
-              <label className={adminLabelCls}>TAILLES (ex: 50ml, 100ml)</label>
+              <label className={adminLabelCls}>TAILLES (ex: 45x45, Unique)</label>
               <input type="text" className={adminInputWithError(!!errors.sizes)} {...register('sizes')} />
               <AdminFieldError message={errors.sizes?.message} />
+            </div>
+
+            <ProductColorsField
+              value={colors}
+              onChange={(next) => setValue('colors', next, { shouldValidate: true, shouldDirty: true })}
+              error={errors.colors?.message || errors.colors?.root?.message}
+            />
+
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+              <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-700">
+                <input type="checkbox" className="accent-amber-700" {...register('promoEnabled')} />
+                Afficher un tag promotion
+              </label>
+              {promoEnabled && (
+                <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                  <div className="sm:col-span-2">
+                    <label className={adminLabelCls}>LIBELLE DU TAG</label>
+                    <input
+                      type="text"
+                      placeholder="Promotion"
+                      className={adminInputWithError(!!errors.promoLabel)}
+                      {...register('promoLabel')}
+                    />
+                    <AdminFieldError message={errors.promoLabel?.message} />
+                  </div>
+                  <div>
+                    <label className={adminLabelCls}>COULEUR DU TAG</label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="color"
+                        className="size-10 shrink-0 cursor-pointer rounded-md border border-slate-300 bg-white p-1"
+                        value={watch('promoBgColor')}
+                        onChange={(event) =>
+                          setValue('promoBgColor', event.target.value, { shouldDirty: true })
+                        }
+                      />
+                      <input
+                        className={adminInputWithError(!!errors.promoBgColor)}
+                        {...register('promoBgColor')}
+                      />
+                    </div>
+                    <AdminFieldError message={errors.promoBgColor?.message} />
+                  </div>
+                  <div>
+                    <label className={adminLabelCls}>COULEUR DU TEXTE</label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="color"
+                        className="size-10 shrink-0 cursor-pointer rounded-md border border-slate-300 bg-white p-1"
+                        value={watch('promoTextColor')}
+                        onChange={(event) =>
+                          setValue('promoTextColor', event.target.value, { shouldDirty: true })
+                        }
+                      />
+                      <input
+                        className={adminInputWithError(!!errors.promoTextColor)}
+                        {...register('promoTextColor')}
+                      />
+                    </div>
+                    <AdminFieldError message={errors.promoTextColor?.message} />
+                  </div>
+                </div>
+              )}
             </div>
 
             <div>

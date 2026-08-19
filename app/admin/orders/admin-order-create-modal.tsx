@@ -3,6 +3,7 @@
 import { adminCreateOrder, type CartItem } from '@/app/actions/orders'
 import { useToast } from '@/components/toast-provider'
 import { boutiqueLabel, type PickupBoutique } from '@/lib/boutiques'
+import { parseProductColors } from '@/lib/product-colors'
 import { GOVERNORATE_SELECT_OPTIONS } from '@/lib/tunisia-governorates'
 import { orderCreateSchema, type OrderCreateFormValues } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -27,6 +28,7 @@ export type CreateOrderProduct = {
   brand: string
   price: string
   sizes: string
+  colors: string
   inStock: boolean
 }
 
@@ -71,6 +73,7 @@ export function AdminOrderCreateModal({
   const [lines, setLines] = useState<DraftLine[]>([])
   const [productId, setProductId] = useState('')
   const [size, setSize] = useState('')
+  const [color, setColor] = useState('')
   const [quantity, setQuantity] = useState('1')
   const [itemError, setItemError] = useState<string | null>(null)
 
@@ -112,6 +115,13 @@ export function AdminOrderCreateModal({
     if (!selectedProduct) return []
     return parseProductSizes(selectedProduct.sizes).map((value) => ({ value, label: value }))
   }, [selectedProduct])
+  const colorOptions = useMemo(() => {
+    if (!selectedProduct) return []
+    return parseProductColors(selectedProduct).map((item) => ({
+      value: item.name,
+      label: item.name,
+    }))
+  }, [selectedProduct])
 
   const subtotal = lines.reduce((acc, line) => acc + line.price * line.quantity, 0)
   const fee = orderType === 'delivery' ? deliveryFee : 0
@@ -121,11 +131,12 @@ export function AdminOrderCreateModal({
     setLines(nextLines)
     setValue(
       'items',
-      nextLines.map(({ productId, productName, productBrand, size, quantity, price }) => ({
+      nextLines.map(({ productId, productName, productBrand, size, color, quantity, price }) => ({
         productId,
         productName,
         productBrand,
         size,
+        color: color || '',
         quantity,
         price,
       })),
@@ -139,6 +150,7 @@ export function AdminOrderCreateModal({
     const product = products.find((item) => String(item.id) === nextId)
     const sizes = product ? parseProductSizes(product.sizes) : []
     setSize(sizes[0] ?? '')
+    setColor(parseProductColors(product).at(0)?.name ?? '')
   }
 
   function addLine() {
@@ -150,6 +162,10 @@ export function AdminOrderCreateModal({
       setItemError('Selectionnez une taille.')
       return
     }
+    if (colorOptions.length > 0 && !color) {
+      setItemError('Selectionnez une couleur.')
+      return
+    }
     const qty = parseInt(quantity, 10)
     if (!Number.isFinite(qty) || qty < 1) {
       setItemError('Quantite invalide.')
@@ -157,7 +173,10 @@ export function AdminOrderCreateModal({
     }
 
     const existingIndex = lines.findIndex(
-      (line) => line.productId === selectedProduct.id && line.size === size,
+      (line) =>
+        line.productId === selectedProduct.id &&
+        line.size === size &&
+        (line.color || '') === (color || ''),
     )
     if (existingIndex >= 0) {
       const next = lines.map((line, index) =>
@@ -170,11 +189,12 @@ export function AdminOrderCreateModal({
       syncItems([
         ...lines,
         {
-          key: `${selectedProduct.id}-${size}-${Date.now()}`,
+          key: `${selectedProduct.id}-${size}-${color}-${Date.now()}`,
           productId: selectedProduct.id,
           productName: selectedProduct.name,
           productBrand: selectedProduct.brand,
           size,
+          color,
           quantity: qty,
           price: parseFloat(selectedProduct.price),
         },
@@ -370,13 +390,20 @@ export function AdminOrderCreateModal({
               placeholder="Selectionner un produit..."
               disabled={isPending || products.length === 0}
             />
-            <div className="grid grid-cols-[1fr_88px_auto] gap-2">
+            <div className="grid grid-cols-[1fr_1fr_88px_auto] gap-2 max-sm:grid-cols-2">
               <AdminSelect
                 value={size}
                 onValueChange={setSize}
                 items={sizeOptions}
                 placeholder="Taille"
                 disabled={isPending || !selectedProduct}
+              />
+              <AdminSelect
+                value={color}
+                onValueChange={setColor}
+                items={colorOptions}
+                placeholder="Couleur"
+                disabled={isPending || !selectedProduct || colorOptions.length === 0}
               />
               <input
                 type="number"
@@ -414,7 +441,8 @@ export function AdminOrderCreateModal({
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-slate-900">{line.productName}</p>
                     <p className="text-xs text-slate-500">
-                      {line.productBrand} · {line.size} · {line.price.toFixed(3)} TND
+                      {line.productBrand} · {line.size}
+                      {line.color ? ` · ${line.color}` : ''} · {line.price.toFixed(3)} TND
                     </p>
                   </div>
                   <input

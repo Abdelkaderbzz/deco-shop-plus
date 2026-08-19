@@ -1,18 +1,18 @@
-import { getAdminHeroImages } from '@/app/actions/hero'
+import { getAdminHeroSlides } from '@/app/actions/hero'
 import { AdminHeroClient } from '../../admin-hero-client'
 import { AdminPageHeader } from '../../admin-ui'
 
 export default async function AdminHeroPage() {
-  const images = await getAdminHeroImages()
+  const slides = await getAdminHeroSlides()
 
   return (
     <div>
       <AdminPageHeader
         eyebrow="PAGE D ACCUEIL"
-        title="Images hero"
-        description="Televersez les 4 images du collage affiche en haut de la page d accueil."
+        title="Carrousel hero"
+        description="Creez les slides du bandeau d accueil : image, texte et bouton anime vers une section."
       />
-      <AdminHeroClient initialImages={images} />
+      <AdminHeroClient initialSlides={slides} />
     </div>
   )
 }

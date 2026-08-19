@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 
 /* Shared admin design tokens — high contrast, readable sans-serif */
 export const adminInputCls =
-  'w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 text-sm font-normal text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-amber-600 focus:ring-2 focus:ring-amber-600/20'
+  'w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 text-sm font-normal text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-teal-700 focus:ring-2 focus:ring-teal-700/20'
 export const adminLabelCls = 'mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-600'
 export const adminFieldErrorCls = 'mt-1 text-xs font-medium text-red-600'
 
@@ -37,7 +37,7 @@ export function AdminPageHeader({
   return (
     <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wide text-amber-700">{eyebrow}</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-teal-800">{eyebrow}</p>
         <h1 className="mt-1 text-2xl font-bold text-slate-900">{title}</h1>
         {description && <p className="mt-2 max-w-2xl text-sm text-slate-600">{description}</p>}
       </div>
@@ -61,7 +61,7 @@ export function AdminStatCard({
     default: 'text-slate-900',
     warning: 'text-amber-700',
     success: 'text-emerald-700',
-    accent: 'text-amber-800',
+    accent: 'text-teal-800',
     info: 'text-blue-700',
     danger: 'text-red-600',
     violet: 'text-violet-700',
@@ -145,8 +145,8 @@ export function AdminButton({
   variant?: 'primary' | 'outline' | 'ghost' | 'danger'
 }) {
   const variants = {
-    primary: 'bg-amber-700 text-white hover:bg-amber-800 disabled:opacity-60',
-    outline: 'border border-amber-700 text-amber-800 hover:bg-amber-50',
+    primary: 'bg-teal-800 text-white hover:bg-teal-900 disabled:opacity-60',
+    outline: 'border border-teal-800 text-teal-900 hover:bg-teal-50',
     ghost: 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
     danger: 'text-red-600 hover:bg-red-50',
   }
@@ -197,9 +197,9 @@ export function AdminQuickLink({
     <Link
       href={href}
       prefetch
-      className="group cursor-pointer rounded-lg border border-slate-200 bg-white p-5 shadow-sm transition-[border-color,box-shadow] duration-200 hover:border-amber-400 hover:shadow-md"
+      className="group cursor-pointer rounded-lg border border-slate-200 bg-white p-5 shadow-sm transition-[border-color,box-shadow] duration-200 hover:border-teal-400 hover:shadow-md"
     >
-      <p className="text-sm font-semibold text-slate-900 group-hover:text-amber-800">{title}</p>
+      <p className="text-sm font-semibold text-slate-900 group-hover:text-teal-800">{title}</p>
       <p className="mt-2 text-sm text-slate-500">{description}</p>
     </Link>
   )
@@ -217,7 +217,7 @@ export function AdminSpinner({ className }: { className?: string }) {
   return (
     <span
       className={cn(
-        'inline-block size-4 animate-spin rounded-full border-2 border-slate-200 border-t-amber-700',
+        'inline-block size-4 animate-spin rounded-full border-2 border-slate-200 border-t-teal-800',
         className,
       )}
     />
@@ -330,7 +330,7 @@ export function AdminIconButton({
   const variants = {
     ghost: 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
     danger: 'text-red-600 hover:bg-red-50 hover:text-red-700',
-    accent: 'text-amber-700 hover:bg-amber-50 hover:text-amber-900',
+    accent: 'text-teal-800 hover:bg-teal-50 hover:text-teal-900',
   }
 
   return (
@@ -368,7 +368,7 @@ export function AdminIconLink({
   const variants = {
     ghost: 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
     danger: 'text-red-600 hover:bg-red-50 hover:text-red-700',
-    accent: 'text-amber-700 hover:bg-amber-50 hover:text-amber-900',
+    accent: 'text-teal-800 hover:bg-teal-50 hover:text-teal-900',
   }
 
   return (

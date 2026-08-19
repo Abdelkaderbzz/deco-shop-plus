@@ -4,8 +4,8 @@ export default function AdminHeroLoading() {
   return (
     <AdminPageSkeleton
       eyebrow="PAGE D ACCUEIL"
-      title="Images hero"
-      description="Televersez les 4 images du collage affiche en haut de la page d accueil."
+      title="Carrousel hero"
+      description="Creez les slides du bandeau d accueil : image, texte et bouton anime vers une section."
       rows={4}
       columns={2}
     />

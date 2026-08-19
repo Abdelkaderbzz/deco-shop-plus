@@ -14,7 +14,7 @@ const NAV_ITEMS = [
   { href: '/admin/orders', label: 'Commandes' },
   { href: '/admin/categories', label: 'Categories' },
   { href: '/admin/boutiques', label: 'Boutiques' },
-  { href: '/admin/hero', label: 'Images hero' },
+  { href: '/admin/hero', label: 'Carrousel hero' },
   { href: '/admin/banner', label: 'Bannieres' },
   { href: '/admin/settings', label: 'Livraison' },
 ]
@@ -25,7 +25,7 @@ function isActive(pathname: string, href: string) {
 }
 
 const storeLinkCls =
-  'flex items-center gap-2 rounded-md px-3 py-2.5 text-sm font-medium text-amber-800 transition-colors hover:bg-amber-50'
+  'flex items-center gap-2 rounded-md px-3 py-2.5 text-sm font-medium text-teal-800 transition-colors hover:bg-teal-50'
 
 export function AdminNav({ userEmail }: { userEmail: string }) {
   const pathname = usePathname()
@@ -56,15 +56,15 @@ export function AdminNav({ userEmail }: { userEmail: string }) {
     <>
       <header className="shrink-0 border-b border-slate-200 bg-white lg:hidden">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
-          <Link href="/admin" className="text-base font-bold text-amber-800">
-            HF Admin
+          <Link href="/admin" className="text-base font-bold text-teal-800">
+            DSP Admin
           </Link>
           <div className="flex items-center gap-3">
             <Link
               href="/"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-amber-800 hover:text-amber-900"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-teal-800 hover:text-teal-900"
             >
               <Store className="size-4" />
               Boutique
@@ -87,7 +87,7 @@ export function AdminNav({ userEmail }: { userEmail: string }) {
               prefetch
               className={`whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                 isActive(pathname, item.href)
-                  ? 'bg-amber-100 text-amber-900'
+                  ? 'bg-teal-100 text-teal-900'
                   : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
               }`}
             >
@@ -99,10 +99,10 @@ export function AdminNav({ userEmail }: { userEmail: string }) {
 
       <aside className="hidden h-full w-64 shrink-0 flex-col border-r border-slate-200 bg-white lg:flex">
         <div className="border-b border-slate-200 px-6 py-6">
-          <Link href="/admin" className="text-xl font-bold text-amber-800">
-            HF Admin
+          <Link href="/admin" className="text-xl font-bold text-teal-800">
+            DSP Admin
           </Link>
-          <p className="mt-1 text-sm font-medium text-slate-500">Water of Gold</p>
+          <p className="mt-1 text-sm font-medium text-slate-500">Deco Shop Plus</p>
         </div>
 
         <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
@@ -113,7 +113,7 @@ export function AdminNav({ userEmail }: { userEmail: string }) {
               prefetch
               className={`flex items-center rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
                 isActive(pathname, item.href)
-                  ? 'bg-amber-100 text-amber-900'
+                  ? 'bg-teal-100 text-teal-900'
                   : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
               }`}
             >

@@ -457,7 +457,7 @@ export function AdminBannerClient({ initialBanners }: { initialBanners: BannerRo
                 <label className={adminLabelCls}>LIEN DU BOUTON</label>
                 <input
                   className={adminInputWithError(!!errors.linkHref)}
-                  placeholder="/products?category=femme"
+                  placeholder="/products?category=coussins"
                   disabled={isPending}
                   {...register('linkHref')}
                 />

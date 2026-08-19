@@ -105,7 +105,7 @@ export function AdminLoginForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full rounded-md bg-amber-700 py-3 text-sm font-semibold text-white transition-colors hover:bg-amber-800 disabled:opacity-60"
+        className="w-full rounded-md bg-teal-800 py-3 text-sm font-semibold text-white transition-colors hover:bg-teal-900 disabled:opacity-60"
       >
         {isSubmitting ? 'Connexion...' : 'Se connecter'}
       </button>

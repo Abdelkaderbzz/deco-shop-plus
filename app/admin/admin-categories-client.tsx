@@ -213,7 +213,7 @@ export function AdminCategoriesClient({ initialCategories }: { initialCategories
               <label className={adminLabelCls}>NOM *</label>
               <input
                 className={adminInputWithError(!!errors.name)}
-                placeholder="Ex: Parfums"
+                placeholder="Ex: Coussins"
                 disabled={isPending}
                 {...register('name')}
               />
@@ -223,7 +223,7 @@ export function AdminCategoriesClient({ initialCategories }: { initialCategories
               <label className={adminLabelCls}>SLUG (optionnel)</label>
               <input
                 className={adminInputWithError(!!errors.slug)}
-                placeholder="Ex: parfums"
+                placeholder="Ex: coussins"
                 disabled={isPending}
                 {...register('slug')}
               />

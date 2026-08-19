@@ -308,7 +308,7 @@ export function AdminBoutiquesClient({ initialBoutiques }: { initialBoutiques: A
                 <label className={adminLabelCls}>NOM *</label>
                 <input
                   className={adminInputWithError(!!errors.name)}
-                  placeholder="Ex: Water of Gold Sousse"
+                  placeholder="Ex: Deco Shop Plus Bizerte"
                   disabled={isPending}
                   {...register('name')}
                 />
@@ -318,7 +318,7 @@ export function AdminBoutiquesClient({ initialBoutiques }: { initialBoutiques: A
                 <label className={adminLabelCls}>VILLE *</label>
                 <input
                   className={adminInputWithError(!!errors.city)}
-                  placeholder="Ex: Sousse"
+                  placeholder="Ex: Bizerte"
                   disabled={isPending}
                   {...register('city')}
                 />
@@ -328,7 +328,7 @@ export function AdminBoutiquesClient({ initialBoutiques }: { initialBoutiques: A
                 <label className={adminLabelCls}>QUARTIER / REGION</label>
                 <input
                   className={adminInputWithError(!!errors.region)}
-                  placeholder="Ex: Sahloul"
+                  placeholder="Ex: Cite El Waha"
                   disabled={isPending}
                   {...register('region')}
                 />
@@ -338,7 +338,7 @@ export function AdminBoutiquesClient({ initialBoutiques }: { initialBoutiques: A
                 <label className={adminLabelCls}>SLUG (optionnel)</label>
                 <input
                   className={adminInputWithError(!!errors.slug)}
-                  placeholder="Ex: sahloul-sousse"
+                  placeholder="Ex: cite-el-waha-bizerte"
                   disabled={isPending}
                   {...register('slug')}
                 />
@@ -363,7 +363,7 @@ export function AdminBoutiquesClient({ initialBoutiques }: { initialBoutiques: A
                 <label className={adminLabelCls}>ADRESSE</label>
                 <input
                   className={adminInputWithError(!!errors.address)}
-                  placeholder="Ex: Av. Yasser Arafat, Sousse"
+                  placeholder="Ex: Cite El Waha, Bizerte"
                   disabled={isPending}
                   {...register('address')}
                 />
@@ -373,7 +373,7 @@ export function AdminBoutiquesClient({ initialBoutiques }: { initialBoutiques: A
                 <label className={adminLabelCls}>TELEPHONE</label>
                 <input
                   className={adminInputWithError(!!errors.phone)}
-                  placeholder="Ex: 27 330 407"
+                  placeholder="Ex: 56 405 932"
                   disabled={isPending}
                   {...register('phone')}
                 />

@@ -49,7 +49,7 @@ export default async function AdminDashboardPage() {
         <AdminQuickLink
           href="/admin/products"
           title="Gerer les produits"
-          description="Ajouter, modifier ou supprimer des parfums."
+          description="Ajouter, modifier ou supprimer des articles."
         />
         <AdminQuickLink
           href="/admin/orders"
@@ -59,7 +59,7 @@ export default async function AdminDashboardPage() {
         <AdminQuickLink
           href="/admin/categories"
           title="Gerer les categories"
-          description="Organiser les parfums femme et homme."
+          description="Organiser coussins, accessoires, rangement et literie."
         />
         <AdminQuickLink
           href="/admin/boutiques"
@@ -68,8 +68,8 @@ export default async function AdminDashboardPage() {
         />
         <AdminQuickLink
           href="/admin/hero"
-          title="Images hero"
-          description="Modifier les 4 photos du collage d accueil."
+          title="Carrousel hero"
+          description="Slides, textes et boutons animes du bandeau d accueil."
         />
         <AdminQuickLink
           href="/admin/banner"
@@ -115,7 +115,7 @@ export default async function AdminDashboardPage() {
             <Link
               href="/admin/orders"
               prefetch
-              className="inline-block text-sm font-semibold text-amber-800 hover:underline"
+              className="inline-block text-sm font-semibold text-teal-800 hover:underline"
             >
               Voir toutes les commandes
             </Link>

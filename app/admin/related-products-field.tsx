@@ -133,7 +133,7 @@ export function RelatedProductsField({
       <AdminFieldError message={error} />
       <p className="mt-1.5 text-xs text-slate-500">
         Affiches sous la fiche produit. Si vous n en choisissez aucun, la boutique propose
-        automatiquement d autres parfums de la meme categorie.
+        automatiquement d autres articles de la meme categorie.
       </p>
     </div>
   )

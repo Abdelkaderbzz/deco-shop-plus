@@ -24,7 +24,7 @@ export default async function AdminProductsPage({
       <AdminPageHeader
         eyebrow="CATALOGUE"
         title="Produits"
-        description="Gerez votre catalogue de parfums: prix, stock, images et categories."
+        description="Gerez votre catalogue: prix, stock, images et categories."
       />
       <AdminProductsClient
         products={productPage.items}

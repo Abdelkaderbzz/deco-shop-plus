@@ -44,6 +44,7 @@ export default async function AdminOrdersPage({
           brand: product.brand,
           price: product.price,
           sizes: product.sizes,
+          colors: product.colors ?? '[]',
           inStock: product.inStock,
         }))}
         deliveryFee={deliveryFee}
