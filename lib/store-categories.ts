@@ -7,25 +7,37 @@ export type StoreCategory = {
 
 export const STORE_CATEGORIES: StoreCategory[] = [
   {
-    slug: 'femme',
-    name: 'Femme',
-    tagline: 'Fragrances feminines de longue tenue',
-    image: '/categories/femme.webp',
+    slug: 'coussins',
+    name: 'Coussins',
+    tagline: 'Coussins pour canape, lit et salon',
+    image: '/assets/img_9760.webp',
   },
   {
-    slug: 'homme',
-    name: 'Homme',
-    tagline: 'Fragrances masculines de longue tenue',
-    image: '/categories/homme.webp',
+    slug: 'accessoires',
+    name: 'Accessoires',
+    tagline: 'Objets deco pour la maison',
+    image: '/assets/image00001-2-1537x2048.jpeg.webp',
+  },
+  {
+    slug: 'rangement',
+    name: 'Rangement',
+    tagline: 'Organisation des vetements et de la maison',
+    image: '/assets/photo-output-12-1538x2048.jpeg.webp',
+  },
+  {
+    slug: 'textiles',
+    name: 'Literie',
+    tagline: 'Plaids, couvre-lits et linge de maison',
+    image: '/assets/IMG_4758-1536x2048.jpeg.webp',
   },
 ]
 
 /** @deprecated Prefer getHeroImages() from app/actions/hero — kept for showcase gallery refs. */
 export const HERO_IMAGES = [
-  { src: '/hero/campaign-ramadan.webp', alt: 'Campagne Water of Gold' },
-  { src: '/hero/boutique-shelves.webp', alt: 'Boutique Water of Gold' },
-  { src: '/hero/lifestyle-signature.webp', alt: 'Parfum signature' },
-  { src: '/hero/gold-bottles.webp', alt: 'Selection Water of Gold' },
+  { src: '/assets/img_9756-1.webp', alt: 'Coussins Deco Shop Plus' },
+  { src: '/assets/photo-output-1-2.jpeg.webp', alt: 'Salon Deco Shop Plus' },
+  { src: '/assets/img_9760.webp', alt: 'Coussin brode' },
+  { src: '/assets/IMG_4758-1536x2048.jpeg.webp', alt: 'Plaid marine' },
 ]
 
 export type ShowcaseImage = {
@@ -35,12 +47,12 @@ export type ShowcaseImage = {
 }
 
 export const SHOWCASE_GALLERY: ShowcaseImage[] = [
-  { src: '/hero/dg-devotion.webp', alt: 'Parfum femme', category: 'femme' },
-  { src: '/hero/ysl-libre.webp', alt: 'Eau de parfum', category: 'femme' },
-  { src: '/hero/campaign-ramadan.webp', alt: 'Collection femme', category: 'femme' },
-  { src: '/hero/givenchy-gentleman.webp', alt: 'Parfum homme', category: 'homme' },
-  { src: '/hero/boutique-shelves.webp', alt: 'Boutique Water of Gold', category: 'homme' },
-  { src: '/hero/gold-bottles.webp', alt: 'Fragrances Water of Gold', category: 'femme' },
+  { src: '/assets/img_9760.webp', alt: 'Coussin brode floral', category: 'coussins' },
+  { src: '/assets/img_9758.webp', alt: 'Coussins salon', category: 'coussins' },
+  { src: '/assets/img_9756-1.webp', alt: 'Banquette coussins', category: 'coussins' },
+  { src: '/assets/image00001-2-1537x2048.jpeg.webp', alt: 'Fauteuil et coussin', category: 'accessoires' },
+  { src: '/assets/photo-output-12-1538x2048.jpeg.webp', alt: 'Coussins canape', category: 'rangement' },
+  { src: '/assets/IMG_4758-1536x2048.jpeg.webp', alt: 'Plaid marine', category: 'textiles' },
 ]
 
 export function getShowcaseByCategory(category: string) {
