@@ -1,11 +1,12 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { catalogHref } from '@/lib/catalog-href'
 import type { StoreCategory } from '@/lib/store-categories'
 
 export function CategoryCard({ category }: { category: StoreCategory }) {
   return (
     <Link
-      href={`/products?category=${category.slug}`}
+      href={catalogHref({ category: category.slug })}
       className="group relative block overflow-hidden rounded-[1.75rem] border border-border/80 bg-card transition-all duration-500 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10"
     >
       <div className="relative aspect-[4/5] overflow-hidden bg-secondary">

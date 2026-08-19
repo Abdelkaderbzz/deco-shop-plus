@@ -1,5 +1,7 @@
-import { getProductById, getRelatedProducts } from '@/app/actions/products'
+import type { Metadata } from 'next'
+import { getProductById, getPublishedProductsForSitemap, getRelatedProducts } from '@/app/actions/products'
 import { getCategories } from '@/app/actions/categories'
+import { JsonLd } from '@/components/json-ld'
 import { ProductCard } from '@/components/product-card'
 import { ProductGallery } from '@/components/product-gallery'
 import { ProductPrice } from '@/components/product-price'
@@ -7,14 +9,66 @@ import { PromoBadge } from '@/components/promo-badge'
 import { EpuiseBadge } from '@/components/epuise-badge'
 import { ProductTrustBox } from '@/components/product-trust-box'
 import { Reveal } from '@/components/reveal'
+import { productHref } from '@/lib/catalog-href'
 import { parseProductColors, isPromoActive } from '@/lib/product-colors'
 import { parseProductImages } from '@/lib/product-images'
+import { breadcrumbJsonLd, productJsonLd } from '@/lib/seo'
+import { SITE } from '@/lib/site'
 import { getCategoryLabel } from '@/lib/store-categories'
 import { AddToCartButton } from './add-to-cart-button'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 
 export const revalidate = 120
+export const dynamicParams = true
+
+export async function generateStaticParams() {
+  try {
+    const products = await getPublishedProductsForSitemap()
+    return products.map((product) => ({ id: String(product.id) }))
+  } catch {
+    return []
+  }
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}): Promise<Metadata> {
+  const { id } = await params
+  const product = await getProductById(Number(id))
+  if (!product) {
+    return { title: 'Produit introuvable', robots: { index: false, follow: true } }
+  }
+
+  const description =
+    product.description?.trim() ||
+    `${product.name} chez ${SITE.name} à ${SITE.neighborhood}, ${SITE.city}. ${SITE.tagline}.`
+  const url = productHref(product.id)
+  const images = product.imageUrl
+    ? [{ url: product.imageUrl, alt: `${product.brand} ${product.name}` }]
+    : undefined
+
+  return {
+    title: product.name,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: 'website',
+      title: `${product.name} | ${SITE.name}`,
+      description,
+      url,
+      images,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: product.name,
+      description,
+      images: product.imageUrl ? [product.imageUrl] : undefined,
+    },
+  }
+}
 
 export default async function ProductDetailPage({
   params,
@@ -35,14 +89,28 @@ export default async function ProductDetailPage({
   const colors = parseProductColors(product)
   const images = parseProductImages(product)
   const promo = isPromoActive(product)
+  const categoryPath = `/categorie/${product.category}`
 
   return (
     <div className="mx-auto max-w-7xl px-2 py-8 sm:px-3">
+      <JsonLd data={productJsonLd(product)} />
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: 'Accueil', path: '/' },
+          { name: 'Boutique', path: '/products' },
+          { name: categoryLabel, path: categoryPath },
+          { name: product.name, path: productHref(product.id) },
+        ])}
+      />
       <Reveal className="mb-8">
-        <nav className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+        <nav aria-label="Fil d’Ariane" className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
           <Link href="/" className="hover:text-primary transition-colors">Accueil</Link>
           <span>/</span>
           <Link href="/products" className="hover:text-primary transition-colors">Boutique</Link>
+          <span>/</span>
+          <Link href={categoryPath} className="hover:text-primary transition-colors">
+            {categoryLabel}
+          </Link>
           <span>/</span>
           <span className="text-foreground">{product.name}</span>
         </nav>

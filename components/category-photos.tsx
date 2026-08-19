@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { Reveal } from '@/components/reveal'
+import { catalogHref } from '@/lib/catalog-href'
 import type { StoreCategory } from '@/lib/store-categories'
 
 export function CategoryPhotos({
@@ -24,7 +25,7 @@ export function CategoryPhotos({
           {categories.map((cat, index) => (
             <Reveal key={cat.slug} variant="zoom" delay={index * 70}>
               <Link
-                href={`/products?category=${cat.slug}`}
+                href={catalogHref({ category: cat.slug })}
                 className="group overflow-hidden rounded-[1.5rem] border border-border/60 transition-all hover:border-primary/30 hover:shadow-md hover:shadow-primary/10"
               >
                 <div className="relative aspect-square overflow-hidden bg-secondary">

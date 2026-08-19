@@ -1,6 +1,18 @@
-// Root admin layout — no auth here.
-// Auth is enforced in app/admin/(dashboard)/layout.tsx only.
-// This layout exists solely to avoid Next.js layout conflicts.
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: {
+    default: 'Administration',
+    template: '%s | Admin Deco Shop Plus',
+  },
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: { index: false, follow: false, noimageindex: true },
+  },
+}
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return <>{children}</>
 }

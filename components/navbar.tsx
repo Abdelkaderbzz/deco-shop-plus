@@ -5,6 +5,7 @@ import { ThemeToggle } from '@/components/theme-toggle'
 import { useCart } from '@/components/cart-context'
 import { PHONE_HREF } from '@/lib/social-links'
 import { SITE } from '@/lib/site'
+import { catalogHref } from '@/lib/catalog-href'
 import type { StoreCategory } from '@/lib/store-categories'
 import Link from 'next/link'
 import { useState } from 'react'
@@ -16,7 +17,7 @@ export function Navbar({ storeCategories }: { storeCategories: StoreCategory[] }
   const navLinks = [
     { href: '/products', label: 'Boutique' },
     ...storeCategories.map((category) => ({
-      href: `/products?category=${category.slug}`,
+      href: catalogHref({ category: category.slug }),
       label: category.name,
     })),
   ]

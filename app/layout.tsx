@@ -4,38 +4,48 @@ import { Montserrat } from 'next/font/google'
 import { StorefrontScale } from '@/components/storefront-scale'
 import { ThemeScript } from '@/components/theme-script'
 import { ToastProvider } from '@/components/toast-provider'
-import { SITE_LANG, SITE_OG_LOCALE } from '@/lib/locale'
+import { SITE_LOCALE, SITE_OG_LOCALE } from '@/lib/locale'
 import { SITE, SITE_KEYWORDS } from '@/lib/site'
+import { getSiteUrl } from '@/lib/site-url'
 import './globals.css'
 
 const montserrat = Montserrat({
   subsets: ['latin', 'latin-ext'],
-  weight: ['400', '500', '600', '700'],
   variable: '--font-sans',
   display: 'swap',
+  preload: true,
 })
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
-  ?? (process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : 'http://localhost:3000')
-const siteTitle = `${SITE.name} | ${SITE.tagline} a ${SITE.city}`
+const siteUrl = getSiteUrl()
+const siteTitle = `${SITE.name} | Décoration à ${SITE.neighborhood}, ${SITE.city}`
 const siteDescription = SITE.description
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: siteTitle,
+  title: {
+    default: siteTitle,
+    template: `%s | ${SITE.name}`,
+  },
   description: siteDescription,
   keywords: [...SITE_KEYWORDS],
+  applicationName: SITE.name,
+  authors: [{ name: SITE.name, url: siteUrl }],
+  creator: SITE.name,
+  publisher: SITE.name,
+  category: 'shopping',
   icons: {
-    icon: '/assets/deco-shop-logo.webp',
+    icon: '/icon.png',
     apple: '/apple-icon.png',
   },
-  alternates: {
-    canonical: '/',
-    languages: {
-      'fr-TN': '/',
-      fr: '/',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
     },
   },
   openGraph: {
@@ -51,9 +61,15 @@ export const metadata: Metadata = {
     title: siteTitle,
     description: siteDescription,
   },
+  other: {
+    'geo.region': 'TN-23',
+    'geo.placename': `${SITE.neighborhood}, ${SITE.city}`,
+  },
 }
 
 export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
   colorScheme: 'light dark',
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#F1F4F2' },
@@ -67,7 +83,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang={SITE_LANG} className={`bg-background ${montserrat.variable}`} suppressHydrationWarning>
+    <html lang={SITE_LOCALE} className={`bg-background ${montserrat.variable}`} suppressHydrationWarning>
       <body className={`${montserrat.className} font-sans antialiased`} suppressHydrationWarning>
         <ThemeScript />
         <StorefrontScale />

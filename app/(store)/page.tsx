@@ -18,10 +18,24 @@ import {
 import { Reveal } from '@/components/reveal'
 import { TestimonialsSection } from '@/components/testimonials-section'
 import { mergeStoreCategories } from '@/lib/store-categories'
+import { SITE } from '@/lib/site'
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 
 export const revalidate = 120
+
+export const metadata: Metadata = {
+  title: { absolute: `${SITE.name} | Décoration à ${SITE.neighborhood}, ${SITE.city}` },
+  description: SITE.description,
+  alternates: {
+    canonical: '/',
+    languages: {
+      'fr-TN': '/',
+      fr: '/',
+    },
+  },
+}
 
 function HomeProductSection({
   id,

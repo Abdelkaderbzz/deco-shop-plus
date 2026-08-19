@@ -5,7 +5,7 @@ import { ProductCard } from '@/components/product-card'
 import { Reveal } from '@/components/reveal'
 import { useRouteTransition } from '@/lib/use-route-transition'
 import type { StoreCategory } from '@/lib/store-categories'
-import { usePathname } from 'next/navigation'
+import { catalogHref } from '@/lib/catalog-href'
 import { useEffect, useMemo, useState } from 'react'
 
 type Product = {
@@ -40,7 +40,6 @@ export function ProductsClient({
   category: string
   storeCategories: StoreCategory[]
 }) {
-  const pathname = usePathname()
   const { isPending, push } = useRouteTransition()
   const [search, setSearch] = useState(initialSearch)
 
@@ -64,13 +63,7 @@ export function ProductsClient({
   )
 
   function syncUrl(newSearch: string, newCategory: string, newPage = 1) {
-    const params = new URLSearchParams()
-    if (newSearch.trim()) params.set('search', newSearch.trim())
-    if (newCategory !== 'all') params.set('category', newCategory)
-    if (newPage > 1) params.set('page', String(newPage))
-
-    const query = params.toString()
-    push(query ? `${pathname}?${query}` : pathname)
+    push(catalogHref({ search: newSearch, category: newCategory, page: newPage }))
   }
 
   function selectCategory(value: string) {
