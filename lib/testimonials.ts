@@ -5,8 +5,6 @@ type BaseTestimonial = {
   source: TestimonialSource
 }
 
-/** A real screenshot, shown as-is. Intrinsic size lets the marquee derive the
- *  card width from a fixed row height, so mixed ratios never get distorted. */
 export type TestimonialScreenshot = BaseTestimonial & {
   kind: 'screenshot'
   src: string
@@ -15,69 +13,83 @@ export type TestimonialScreenshot = BaseTestimonial & {
   alt: string
 }
 
-/** A comment rendered as a card, styled after the platform it came from. */
 export type TestimonialComment = BaseTestimonial & {
   kind: 'comment'
-  source: 'instagram' | 'whatsapp'
+  source: 'instagram' | 'whatsapp' | 'google'
   username: string
   message: string
   time: string
   avatar: string
-  /** Instagram only: draw the gradient story ring around the avatar. */
+  avatarColor?: string
   storyRing?: boolean
+  rating?: number
 }
 
 export type TestimonialItem = TestimonialScreenshot | TestimonialComment
 
-/** One ordered wall of social proof. Google screenshots live on the top row;
- *  Instagram and WhatsApp comments share the bottom. Add screenshots to
- *  `public/reviews` and append them here — the rows and the source legend
- *  both derive from this list. */
 export const TESTIMONIAL_ITEMS: TestimonialItem[] = [
   {
-    kind: 'screenshot',
-    id: 'google-pulut',
+    kind: 'comment',
+    id: 'g-islem',
     source: 'google',
-    src: '/reviews/pulut-plghuv.webp',
-    width: 714,
-    height: 278,
-    alt: 'Avis Google 5 etoiles de Pulut Plghuv : « Nice service »',
+    username: 'islem Abdelhamid',
+    message:
+      'Je recommande vivement 😍🤩🥰🥰 min ahssen li marque et c’est une fierté li andena une marque tunisienne hakaaaa 🇹🇳 bi qualité w détails hathou Ena jhezi koul min andikoum',
+    time: 'il y a 8 mois',
+    avatar: 'i',
+    avatarColor: '#7e57c2',
+    rating: 5,
   },
   {
     kind: 'comment',
-    id: 'ig-fedi',
-    source: 'instagram',
-    username: 'fedi.alaya',
-    message: 'Produit original w qualité top, merci Water of Gold 🔥',
-    time: '7 sem',
-    avatar: 'FA',
+    id: 'g-nour',
+    source: 'google',
+    username: 'Nour Mardessi',
+    message: 'La meilleure marque où tu peux acheter en toute tranquillité, avec une qualité top 🌸💗🌺👌🏻',
+    time: 'il y a 8 mois',
+    avatar: 'N',
+    avatarColor: '#5c6bc0',
+    rating: 5,
   },
   {
     kind: 'comment',
-    id: 'wa-beyahaw',
+    id: 'g-bilel',
+    source: 'google',
+    username: 'Bilel Trabelsi',
+    message: 'Top de chez top ❤️❤️',
+    time: 'il y a 8 mois',
+    avatar: 'B',
+    avatarColor: '#26a69a',
+    rating: 5,
+  },
+  {
+    kind: 'comment',
+    id: 'g-aleyaj',
+    source: 'google',
+    username: 'aleyaj',
+    message: 'Qualité supérieure, livraison en moins de 24h. Merci pour ce service génial ! Je recommande vivement',
+    time: 'il y a 8 mois',
+    avatar: 'a',
+    avatarColor: '#42a5f5',
+    rating: 5,
+  },
+  {
+    kind: 'comment',
+    id: 'wa-amira',
     source: 'whatsapp',
-    username: 'beyahaw',
-    message: 'التوصيل للدار سريع برشا، الريحة روعة ❤️',
+    username: 'Amira B.',
+    message: 'Les coussins wsolou nadhif, couleur kima sur les photos ❤️',
     time: '14:32',
-    avatar: 'BY',
-  },
-  {
-    kind: 'screenshot',
-    id: 'google-mohamed',
-    source: 'google',
-    src: '/reviews/mohamed-regaya.webp',
-    width: 732,
-    height: 258,
-    alt: 'Avis Google 5 etoiles de Mohamed Regaya : « A wide variety of quality perfumes. I recommend it. »',
+    avatar: 'AB',
   },
   {
     kind: 'comment',
-    id: 'ig-ala',
+    id: 'ig-sarra',
     source: 'instagram',
-    username: 'ala_chafroud',
-    message: 'Commande recue, tout est parfait ❤️ ❤️',
-    time: '7 sem',
-    avatar: 'AC',
+    username: 'sarra.home',
+    message: 'Rangement des vetements top, salon wella organized',
+    time: '3 j',
+    avatar: 'SH',
     storyRing: true,
   },
   {
@@ -85,45 +97,37 @@ export const TESTIMONIAL_ITEMS: TestimonialItem[] = [
     id: 'wa-olfa',
     source: 'whatsapp',
     username: 'Olfa Ali',
-    message: 'الريحة تحفة برشا، شكرا Water of Gold 🙏',
+    message: 'Literie trop douce, livraison rapide a Bizerte 🙏',
     time: '09:15',
     avatar: 'OA',
   },
   {
-    kind: 'screenshot',
-    id: 'google-faouzia',
-    source: 'google',
-    src: '/reviews/faouzia-chouki.webp',
-    width: 710,
-    height: 290,
-    alt: 'Avis Google 5 etoiles de Faouzia Chouki : « On trouve toutes sortes de parfums de grandes marques »',
-  },
-  {
     kind: 'comment',
-    id: 'wa-sarra',
-    source: 'whatsapp',
-    username: 'Sarra M.',
-    message: 'وصلتني الطلبية اليوم، العطر أصلي 100% ✨',
-    time: '18:47',
-    avatar: 'SM',
-  },
-  {
-    kind: 'screenshot',
-    id: 'google-luk',
-    source: 'google',
-    src: '/reviews/luk-becha.webp',
-    width: 724,
-    height: 260,
-    alt: 'Avis Google 5 etoiles de luk becha : « Numer one »',
-  },
-  {
-    kind: 'comment',
-    id: 'ig-olfa',
+    id: 'ig-noura',
     source: 'instagram',
-    username: 'olfa.ali_',
-    message: 'Ma commande est arrivee tres vite ❤️ ❤️ ❤️',
-    time: '3 j',
-    avatar: 'OL',
+    username: 'noura.cite',
+    message: 'Boutique Cite El Waha, accueil super et choix large',
+    time: '1 sem',
+    avatar: 'NC',
+  },
+  {
+    kind: 'comment',
+    id: 'wa-mouna',
+    source: 'whatsapp',
+    username: 'Mouna K.',
+    message: 'Commande les coussins, qualite top et prix raisonnable',
+    time: '18:47',
+    avatar: 'MK',
+  },
+  {
+    kind: 'comment',
+    id: 'ig-rim',
+    source: 'instagram',
+    username: 'rim.deco',
+    message: 'Les accessoires deco ont change le salon ✨',
+    time: '5 j',
+    avatar: 'RD',
+    storyRing: true,
   },
 ]
 

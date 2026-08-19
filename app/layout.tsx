@@ -1,23 +1,16 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Bodoni_Moda, Josefin_Sans } from 'next/font/google'
+import { Montserrat } from 'next/font/google'
 import { StorefrontScale } from '@/components/storefront-scale'
 import { ThemeScript } from '@/components/theme-script'
 import { ToastProvider } from '@/components/toast-provider'
 import { SITE_LANG, SITE_OG_LOCALE } from '@/lib/locale'
+import { SITE, SITE_KEYWORDS } from '@/lib/site'
 import './globals.css'
 
-const bodoni = Bodoni_Moda({
+const montserrat = Montserrat({
   subsets: ['latin', 'latin-ext'],
   weight: ['400', '500', '600', '700'],
-  style: ['normal', 'italic'],
-  variable: '--font-serif',
-  display: 'swap',
-})
-
-const josefin = Josefin_Sans({
-  subsets: ['latin', 'latin-ext'],
-  weight: ['300', '400', '500', '600', '700'],
   variable: '--font-sans',
   display: 'swap',
 })
@@ -26,24 +19,18 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
   ?? (process.env.VERCEL_PROJECT_PRODUCTION_URL
     ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
     : 'http://localhost:3000')
-const siteTitle = 'Water of Gold | Parfumerie a Sousse'
-const siteDescription =
-  'Water of Gold est une boutique de parfums a Sousse, Tunisie. Fragrances inspirees des plus grandes marques internationales et parfums de choix, de longue tenue, pour femmes et hommes.'
+const siteTitle = `${SITE.name} | ${SITE.tagline} a ${SITE.city}`
+const siteDescription = SITE.description
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: siteTitle,
   description: siteDescription,
-  keywords: [
-    'parfum',
-    'parfumerie',
-    'Sousse',
-    'Tunisie',
-    'Water of Gold',
-    'parfum femme',
-    'parfum homme',
-    'fragrance',
-  ],
+  keywords: [...SITE_KEYWORDS],
+  icons: {
+    icon: '/assets/deco-shop-logo.webp',
+    apple: '/apple-icon.png',
+  },
   alternates: {
     canonical: '/',
     languages: {
@@ -55,7 +42,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: SITE_OG_LOCALE,
     url: siteUrl,
-    siteName: 'Water of Gold',
+    siteName: SITE.name,
     title: siteTitle,
     description: siteDescription,
   },
@@ -69,8 +56,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   colorScheme: 'light dark',
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#f6efdc' },
-    { media: '(prefers-color-scheme: dark)', color: '#0b0b0b' },
+    { media: '(prefers-color-scheme: light)', color: '#F1F4F2' },
+    { media: '(prefers-color-scheme: dark)', color: '#0D1514' },
   ],
 }
 
@@ -80,8 +67,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang={SITE_LANG} className={`bg-background ${bodoni.variable} ${josefin.variable}`} suppressHydrationWarning>
-      <body className="font-sans antialiased" suppressHydrationWarning>
+    <html lang={SITE_LANG} className={`bg-background ${montserrat.variable}`} suppressHydrationWarning>
+      <body className={`${montserrat.className} font-sans antialiased`} suppressHydrationWarning>
         <ThemeScript />
         <StorefrontScale />
         <ToastProvider>{children}</ToastProvider>

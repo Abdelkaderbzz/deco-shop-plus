@@ -1,6 +1,7 @@
 import { ImageResponse } from 'next/og'
+import { SITE } from '@/lib/site'
 
-export const alt = 'Water of Gold — Parfumerie a Sousse'
+export const alt = `${SITE.name} — ${SITE.tagline} a ${SITE.city}`
 export const size = {
   width: 1200,
   height: 630,
@@ -18,7 +19,7 @@ export default function OpenGraphImage() {
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
-          background: 'linear-gradient(160deg, #0b0b0b 0%, #1a1712 55%, #2a2418 100%)',
+          background: 'linear-gradient(160deg, #0d1514 0%, #14201e 55%, #0f5c64 100%)',
           fontFamily: 'Georgia, Times New Roman, serif',
         }}
       >
@@ -28,53 +29,53 @@ export default function OpenGraphImage() {
             flexDirection: 'column',
             alignItems: 'center',
             padding: '48px 64px',
-            border: '1px solid rgba(201, 164, 74, 0.35)',
-            background: 'rgba(20, 18, 16, 0.7)',
+            borderRadius: 32,
+            border: '1px solid rgba(94, 179, 184, 0.35)',
+            background: 'rgba(20, 32, 30, 0.75)',
           }}
         >
           <div
             style={{
-              fontSize: 28,
-              letterSpacing: '0.35em',
+              fontSize: 22,
+              letterSpacing: '0.28em',
               textTransform: 'uppercase',
-              color: '#c9a44a',
+              color: '#5eb3b8',
               marginBottom: 18,
             }}
           >
-            Water of Gold
+            {SITE.neighborhood}
           </div>
           <div
             style={{
               fontSize: 64,
-              fontWeight: 300,
-              letterSpacing: '0.08em',
-              color: '#f3e6c4',
+              fontWeight: 500,
+              letterSpacing: '-0.03em',
+              color: '#e8efea',
               lineHeight: 1.1,
             }}
           >
-            Parfumerie
+            Deco Shop Plus
           </div>
           <div
             style={{
               marginTop: 22,
               fontSize: 22,
-              letterSpacing: '0.28em',
-              textTransform: 'uppercase',
-              color: '#b8a88a',
+              letterSpacing: '0.08em',
+              color: '#9bb0ab',
             }}
           >
-            Femme · Homme · Longue tenue
+            Coussins · Accessoires · Rangement · Literie
           </div>
           <div
             style={{
               marginTop: 28,
               fontSize: 20,
-              letterSpacing: '0.2em',
+              letterSpacing: '0.16em',
               textTransform: 'uppercase',
-              color: '#c9a44a',
+              color: '#3d9aa0',
             }}
           >
-            Sousse, Tunisie
+            {SITE.city}, Tunisie · {SITE.phoneDisplay}
           </div>
         </div>
       </div>
