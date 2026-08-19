@@ -5,6 +5,7 @@ import { db } from '@/lib/db'
 import { orderItems, products } from '@/lib/db/schema'
 import {
   ADMIN_PAGE_SIZE,
+  STORE_PAGE_SIZE,
   buildPaginatedResult,
   normalizePage,
   normalizePageSize,
@@ -26,6 +27,7 @@ import {
 } from '@/lib/product-relations'
 import { and, asc, desc, eq, ilike, inArray, ne, notInArray, or, sql } from 'drizzle-orm'
 import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
+import { cache } from 'react'
 
 function normalizeProductImages(images: string[]) {
   const serialized = serializeProductImages(images)
@@ -39,6 +41,7 @@ function normalizeProductImages(images: string[]) {
 function revalidateProductCaches(id?: number) {
   revalidateTag('products', 'max')
   if (id) revalidateTag(`product-${id}`, 'max')
+  revalidatePath('/categorie', 'layout')
 }
 
 function revalidateProductPage(id: number) {
@@ -119,7 +122,26 @@ export async function getStoreProductsPaginated(options: {
   search?: string
   category?: string
 } = {}) {
-  return queryProductsPaginated({ ...options, publishedOnly: true })
+  const page = normalizePage(options.page)
+  const pageSize = normalizePageSize(options.pageSize, STORE_PAGE_SIZE)
+  const search = options.search?.trim() ?? ''
+  const category = options.category?.trim() || 'all'
+
+  const run = () =>
+    queryProductsPaginated({
+      page,
+      pageSize,
+      search,
+      category,
+      publishedOnly: true,
+    })
+
+  if (search) return run()
+
+  return unstable_cache(run, ['store-products', category, String(page), String(pageSize)], {
+    revalidate: 120,
+    tags: ['products'],
+  })()
 }
 
 /** @deprecated Use getStoreProductsPaginated for paginated reads. */
@@ -216,7 +238,8 @@ export async function getBestSellerProducts() {
   return getBestSellerProductsCached()
 }
 
-export async function getProductById(id: number) {
+export const getProductById = cache(async (id: number) => {
+  if (!Number.isFinite(id) || id < 1) return null
   return unstable_cache(
     async () => {
       const result = await db
@@ -228,6 +251,23 @@ export async function getProductById(id: number) {
     },
     ['product-by-id', String(id)],
     { revalidate: 120, tags: ['products', `product-${id}`] },
+  )()
+})
+
+export async function getPublishedProductsForSitemap() {
+  return unstable_cache(
+    async () =>
+      db
+        .select({
+          id: products.id,
+          updatedAt: products.updatedAt,
+          category: products.category,
+        })
+        .from(products)
+        .where(eq(products.published, true))
+        .orderBy(desc(products.updatedAt)),
+    ['sitemap-products'],
+    { revalidate: 300, tags: ['products'] },
   )()
 }
 

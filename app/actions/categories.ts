@@ -44,6 +44,7 @@ function revalidateCategoryPaths() {
   revalidatePath('/admin/categories')
   revalidatePath('/admin/products')
   revalidatePath('/products')
+  revalidatePath('/categorie', 'layout')
   revalidatePath('/')
 }
 
