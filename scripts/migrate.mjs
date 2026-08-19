@@ -1,6 +1,6 @@
 // Run with: node scripts/migrate.mjs
 import { Pool } from 'pg'
-import { resolveDatabaseUrl } from './db-url.mjs'
+import { databaseHost, resolveDatabaseUrl } from './db-url.mjs'
 import { loadEnv } from './load-env.mjs'
 
 loadEnv()
@@ -10,6 +10,10 @@ if (!DATABASE_URL) {
   console.error('DATABASE_URL not set.')
   process.exit(1)
 }
+
+console.log(
+  `Migrating DATABASE_URL (${databaseHost(DATABASE_URL)})`,
+)
 
 const pool = new Pool({ connectionString: DATABASE_URL })
 
@@ -111,10 +115,12 @@ const statements = [
   `INSERT INTO "settings" ("id", "deliveryFee") VALUES (1, '7.000')
    ON CONFLICT ("id") DO NOTHING`,
   `INSERT INTO "categories" ("name", "slug") VALUES
-    ('Femme', 'femme'),
-    ('Homme', 'homme')
+    ('Coussins', 'coussins'),
+    ('Accessoires', 'accessoires'),
+    ('Rangement', 'rangement'),
+    ('Literie', 'textiles')
    ON CONFLICT ("slug") DO NOTHING`,
-  `DELETE FROM "categories" WHERE "slug" IN ('parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous')`,
+  `DELETE FROM "categories" WHERE "slug" IN ('parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous', 'femme', 'homme')`,
   `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "images" text NOT NULL DEFAULT '[]'`,
   `ALTER TABLE "categories" ADD COLUMN IF NOT EXISTS "bannerUrl" text`,
   `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "published" boolean NOT NULL DEFAULT true`,
@@ -133,8 +139,8 @@ const statements = [
     "name" text NOT NULL DEFAULT '',
     "message" text NOT NULL,
     "variant" text NOT NULL DEFAULT 'offer',
-    "backgroundColor" text NOT NULL DEFAULT '#c9a44a',
-    "textColor" text NOT NULL DEFAULT '#0b0b0b',
+    "backgroundColor" text NOT NULL DEFAULT '#0f5c64',
+    "textColor" text NOT NULL DEFAULT '#f7fbfa',
     "fontSize" integer NOT NULL DEFAULT 13,
     "linkLabel" text NOT NULL DEFAULT '',
     "linkHref" text NOT NULL DEFAULT '',
@@ -175,17 +181,27 @@ const statements = [
   `INSERT INTO "boutiques"
     ("slug", "name", "city", "region", "description", "imageUrl", "imageAlt", "address", "phone", "rating", "reviewCount", "ratingSource", "directionsUrl", "sortOrder")
    VALUES
-    ('sahloul-sousse', 'Water of Gold Sousse', 'Sousse', 'Sahloul',
-     'Notre boutique a Sousse. Toute la collection femme et homme, avec conseil personnalise sur place.',
-     '/boutiques/storefront.webp', 'Facade de la boutique Water of Gold a Sousse, de nuit',
-     'Av. Yasser Arafat, Sousse', '27 330 407', 4.9, NULL, 'Google Maps',
-     'https://www.google.com/maps/dir/?api=1&destination=35.8377722%2C10.5965168', 0),
-    ('moknine-monastir', 'Water of Gold Moknine', 'Moknine', 'Monastir',
-     'Notre adresse a Moknine. La meme selection de fragrances inspirees et de parfums de choix, longue tenue.',
-     '/boutiques/interior.webp', 'Interieur de la boutique Water of Gold, presentoirs de parfums',
-     NULL, NULL, 4.7, 72, 'Facebook',
-     'https://www.google.com/maps/dir/?api=1&destination=Moknine%2C+Monastir%2C+Tunisie', 1)
-   ON CONFLICT ("slug") DO NOTHING`,
+    ('cite-el-waha-bizerte', 'Deco Shop Plus', 'Bizerte', 'Cite El Waha',
+     'Notre boutique a Cite El Waha, Bizerte. Coussins, accessoires, rangement de vetements et literie pour la maison.',
+     '/assets/img_9756-1.webp', 'Salon et coussins Deco Shop Plus a Bizerte',
+     'Cite El Waha, Bizerte, Tunisie', '56 405 932', 4.9, NULL, 'Google Maps',
+     'https://www.google.com/maps/dir/?api=1&destination=Cite+El+Waha%2C+Bizerte%2C+Tunisie', 0)
+   ON CONFLICT ("slug") DO UPDATE SET
+     "name" = EXCLUDED."name",
+     "city" = EXCLUDED."city",
+     "region" = EXCLUDED."region",
+     "description" = EXCLUDED."description",
+     "imageUrl" = EXCLUDED."imageUrl",
+     "imageAlt" = EXCLUDED."imageAlt",
+     "address" = EXCLUDED."address",
+     "phone" = EXCLUDED."phone",
+     "directionsUrl" = EXCLUDED."directionsUrl",
+     "published" = true,
+     "pickupEnabled" = true,
+     "updatedAt" = now()`,
+  `UPDATE "boutiques"
+   SET "published" = false, "pickupEnabled" = false, "updatedAt" = now()
+   WHERE "slug" IN ('sahloul-sousse', 'moknine-monastir')`,
   `UPDATE "products"
    SET "images" = json_build_array("imageUrl")::text
    WHERE "imageUrl" IS NOT NULL
@@ -214,14 +230,44 @@ const statements = [
     "updatedAt" timestamp NOT NULL DEFAULT now()
   )`,
   `INSERT INTO "hero_images" ("slot", "imageUrl", "alt") VALUES
-    (0, '/hero/campaign-ramadan.webp', 'Campagne Water of Gold'),
-    (1, '/hero/boutique-shelves.webp', 'Boutique Water of Gold'),
-    (2, '/hero/lifestyle-signature.webp', 'Parfum signature Water of Gold'),
-    (3, '/hero/gold-bottles.webp', 'Selection Water of Gold')
+    (0, '/assets/img_9756-1.webp', 'Coussins brodes sur banquette Deco Shop Plus'),
+    (1, '/assets/photo-output-1-2.jpeg.webp', 'Coussins noirs sur canape'),
+    (2, '/assets/img_9760.webp', 'Coussin brode floral'),
+    (3, '/assets/IMG_4758-1536x2048.jpeg.webp', 'Plaid marine et deco maison')
    ON CONFLICT ("slot") DO UPDATE SET
      "imageUrl" = EXCLUDED."imageUrl",
      "alt" = EXCLUDED."alt",
      "updatedAt" = now()`,
+  `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "colors" text NOT NULL DEFAULT '[]'`,
+  `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "promoEnabled" boolean NOT NULL DEFAULT false`,
+  `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "promoLabel" text NOT NULL DEFAULT 'Promotion'`,
+  `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "promoBgColor" text NOT NULL DEFAULT '#e85d04'`,
+  `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "promoTextColor" text NOT NULL DEFAULT '#ffffff'`,
+  `ALTER TABLE "order_items" ADD COLUMN IF NOT EXISTS "color" text NOT NULL DEFAULT ''`,
+  `CREATE TABLE IF NOT EXISTS "hero_slides" (
+    "id" serial PRIMARY KEY,
+    "imageUrl" text NOT NULL,
+    "alt" text NOT NULL DEFAULT '',
+    "eyebrow" text NOT NULL DEFAULT '',
+    "title" text NOT NULL DEFAULT '',
+    "subtitle" text NOT NULL DEFAULT '',
+    "ctaLabel" text NOT NULL DEFAULT '',
+    "ctaTarget" text NOT NULL DEFAULT 'products',
+    "ctaHref" text NOT NULL DEFAULT '',
+    "published" boolean NOT NULL DEFAULT true,
+    "sortOrder" integer NOT NULL DEFAULT 0,
+    "createdAt" timestamp NOT NULL DEFAULT now(),
+    "updatedAt" timestamp NOT NULL DEFAULT now()
+  )`,
+  `INSERT INTO "hero_slides"
+    ("imageUrl", "alt", "eyebrow", "title", "subtitle", "ctaLabel", "ctaTarget", "ctaHref", "published", "sortOrder")
+   SELECT v."imageUrl", v."alt", v."eyebrow", v."title", v."subtitle", v."ctaLabel", v."ctaTarget", v."ctaHref", v."published", v."sortOrder"
+   FROM (VALUES
+     ('/assets/hc01.webp', 'Housses a chaussures impermeables Deco Shop Plus', 'Offre du moment', 'Promotions maison', 'Housses, coussins et rangement a prix reduit, livrés partout en Tunisie.', 'Voir les promotions', 'promotions', '', true, 0),
+     ('/assets/img_9756-1.webp', 'Nouveaux coussins Deco Shop Plus', 'Cite El Waha · Bizerte', 'Derniers articles', 'Les nouvelles pieces deco viennent d arriver en boutique.', 'Voir les nouveautes', 'nouveautes', '', true, 1),
+     ('/assets/photo-output-1-2.jpeg.webp', 'Salon Deco Shop Plus', 'Selection clients', 'Les plus vendus', 'Les pieces que nos clientes emportent le plus souvent.', 'Voir les plus vendus', 'best-sellers', '', true, 2)
+   ) AS v("imageUrl", "alt", "eyebrow", "title", "subtitle", "ctaLabel", "ctaTarget", "ctaHref", "published", "sortOrder")
+   WHERE NOT EXISTS (SELECT 1 FROM "hero_slides")`,
 ]
 
 try {

@@ -119,11 +119,29 @@ export const carouselVideos = pgTable('carousel_videos', {
   updatedAt: timestamp('updatedAt').notNull().defaultNow(),
 })
 
-/** Fixed homepage hero collage slots (0–3). */
+/** Fixed homepage hero collage slots (0–3). Kept for fallback assets. */
 export const heroImages = pgTable('hero_images', {
   slot: integer('slot').primaryKey(),
   imageUrl: text('imageUrl').notNull(),
   alt: text('alt').notNull().default(''),
+  updatedAt: timestamp('updatedAt').notNull().defaultNow(),
+})
+
+/** Homepage hero carousel slides, fully editable from admin. */
+export const heroSlides = pgTable('hero_slides', {
+  id: serial('id').primaryKey(),
+  imageUrl: text('imageUrl').notNull(),
+  alt: text('alt').notNull().default(''),
+  eyebrow: text('eyebrow').notNull().default(''),
+  title: text('title').notNull().default(''),
+  subtitle: text('subtitle').notNull().default(''),
+  ctaLabel: text('ctaLabel').notNull().default(''),
+  /** promotions | nouveautes | best-sellers | products | custom */
+  ctaTarget: text('ctaTarget').notNull().default('products'),
+  ctaHref: text('ctaHref').notNull().default(''),
+  published: boolean('published').notNull().default(true),
+  sortOrder: integer('sortOrder').notNull().default(0),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
   updatedAt: timestamp('updatedAt').notNull().defaultNow(),
 })
 
@@ -139,12 +157,18 @@ export const products = pgTable('products', {
   imageUrl: text('imageUrl'),
   images: text('images').notNull().default('[]'),
   sizes: text('sizes').notNull().default('[]'),
+  /** JSON array of { name, hex } color options. Empty = no color picker. */
+  colors: text('colors').notNull().default('[]'),
   /** JSON array of product ids curated by the admin. Empty = fall back to the
    *  same category on the storefront. */
   relatedProductIds: text('relatedProductIds').notNull().default('[]'),
   inStock: boolean('inStock').notNull().default(true),
   featured: boolean('featured').notNull().default(false),
   published: boolean('published').notNull().default(true),
+  promoEnabled: boolean('promoEnabled').notNull().default(false),
+  promoLabel: text('promoLabel').notNull().default('Promotion'),
+  promoBgColor: text('promoBgColor').notNull().default('#e85d04'),
+  promoTextColor: text('promoTextColor').notNull().default('#ffffff'),
   createdAt: timestamp('createdAt').notNull().defaultNow(),
   updatedAt: timestamp('updatedAt').notNull().defaultNow(),
 })
@@ -175,6 +199,7 @@ export const orderItems = pgTable('order_items', {
   productName: text('productName').notNull(),
   productBrand: text('productBrand').notNull(),
   size: text('size').notNull(),
+  color: text('color').notNull().default(''),
   quantity: integer('quantity').notNull().default(1),
   price: numeric('price', { precision: 10, scale: 3 }).notNull(),
 })

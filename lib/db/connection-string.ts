@@ -3,7 +3,11 @@
  * `verify-full`, but a future major will not — pin explicitly to silence the
  * warning and keep certificate verification.
  */
-export function resolveDatabaseUrl(url = process.env.DATABASE_URL) {
+export function pickDatabaseUrl() {
+  return process.env.DATABASE_URL?.trim() || undefined
+}
+
+export function resolveDatabaseUrl(url = pickDatabaseUrl()) {
   if (!url) return url
 
   try {

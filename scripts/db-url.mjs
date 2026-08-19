@@ -1,5 +1,17 @@
+export function pickDatabaseUrl() {
+  return process.env.DATABASE_URL?.trim() || undefined
+}
+
+export function databaseHost(url) {
+  try {
+    return new URL(url).host
+  } catch {
+    return '(invalid)'
+  }
+}
+
 /** Pin Neon-style sslmode so `pg` stops warning about require/prefer/verify-ca. */
-export function resolveDatabaseUrl(url = process.env.DATABASE_URL) {
+export function resolveDatabaseUrl(url = pickDatabaseUrl()) {
   if (!url) return url
 
   try {
