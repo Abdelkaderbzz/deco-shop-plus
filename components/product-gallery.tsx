@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useState, type ReactNode } from 'react'
 
 export function ProductGallery({
@@ -27,10 +28,14 @@ export function ProductGallery({
   return (
     <div className="space-y-4">
       <div className="group/image relative aspect-square overflow-hidden border border-border bg-secondary">
-        <img
+        <Image
+          key={activeImage}
           src={activeImage}
           alt={alt}
-          className="h-full w-full object-cover transition-transform duration-700 ease-out will-change-transform group-hover/image:scale-110"
+          fill
+          priority
+          sizes="(max-width: 768px) 100vw, 50vw"
+          className="object-cover transition-transform duration-700 ease-out will-change-transform group-hover/image:scale-110"
         />
         {badge}
       </div>
@@ -42,11 +47,17 @@ export function ProductGallery({
               key={`${url}-${index}`}
               type="button"
               onClick={() => setActiveIndex(index)}
-              className={`aspect-square overflow-hidden border transition-colors ${
+              className={`relative aspect-square overflow-hidden border transition-colors ${
                 index === activeIndex ? 'border-primary' : 'border-border hover:border-primary/40'
               }`}
             >
-              <img src={url} alt={`${alt} ${index + 1}`} className="h-full w-full object-cover" />
+              <Image
+                src={url}
+                alt={`${alt} ${index + 1}`}
+                fill
+                sizes="80px"
+                className="object-cover"
+              />
             </button>
           ))}
         </div>

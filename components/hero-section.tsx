@@ -60,7 +60,8 @@ export function HeroSection({ slides }: { slides: HeroSlide[] }) {
               alt={slide.alt || slide.title}
               fill
               priority={slideIndex === 0}
-              sizes="(max-width: 1024px) 100vw, 64rem"
+              fetchPriority={slideIndex === 0 ? 'high' : 'auto'}
+              sizes="(max-width: 1024px) 100vw, 80rem"
               className="hero-ken hero-ken-slow object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/45 to-black/15" />

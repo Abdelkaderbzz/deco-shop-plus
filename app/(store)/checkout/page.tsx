@@ -15,6 +15,7 @@ import { GOVERNORATE_SELECT_OPTIONS } from '@/lib/tunisia-governorates'
 import { checkoutSchema, type CheckoutFormValues } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -148,10 +149,13 @@ export default function CheckoutPage() {
               className="flex gap-4 rounded-2xl border border-border bg-card p-4"
             >
               {item.imageUrl && (
-                <img
+                <Image
                   src={item.imageUrl}
                   alt={item.productName}
-                  className="h-20 w-16 object-cover shrink-0"
+                  width={80}
+                  height={100}
+                  sizes="80px"
+                  className="h-20 w-16 shrink-0 object-cover"
                 />
               )}
               <div className="flex flex-1 flex-col justify-between">

@@ -139,7 +139,7 @@ export function ProductCard({
   }
 
   return (
-    <Link href={`/products/${product.id}`} prefetch={false} className="group/card block">
+    <Link href={`/products/${product.id}`} className="group/card block">
       <div className="relative overflow-hidden rounded-md border border-border bg-card transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10">
         <div className="relative aspect-[4/5] overflow-hidden bg-secondary">
           {product.imageUrl ? (
