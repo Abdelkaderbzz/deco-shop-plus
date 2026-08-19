@@ -36,6 +36,7 @@ export default function OpenGraphImage() {
         >
           <div
             style={{
+              display: 'flex',
               fontSize: 22,
               letterSpacing: '0.28em',
               textTransform: 'uppercase',
@@ -47,6 +48,7 @@ export default function OpenGraphImage() {
           </div>
           <div
             style={{
+              display: 'flex',
               fontSize: 64,
               fontWeight: 500,
               letterSpacing: '-0.03em',
@@ -58,6 +60,7 @@ export default function OpenGraphImage() {
           </div>
           <div
             style={{
+              display: 'flex',
               marginTop: 22,
               fontSize: 22,
               letterSpacing: '0.08em',
@@ -68,6 +71,7 @@ export default function OpenGraphImage() {
           </div>
           <div
             style={{
+              display: 'flex',
               marginTop: 28,
               fontSize: 20,
               letterSpacing: '0.16em',
@@ -75,7 +79,7 @@ export default function OpenGraphImage() {
               color: '#3d9aa0',
             }}
           >
-            {SITE.city}, Tunisie · {SITE.phoneDisplay}
+            {`${SITE.city}, Tunisie · ${SITE.phoneDisplay}`}
           </div>
         </div>
       </div>
