@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import { phoneHref, type Boutique } from '@/lib/boutiques'
-import { FACEBOOK_URL } from '@/lib/social-links'
+import { WHATSAPP_URL } from '@/lib/social-links'
 import { Reveal } from '@/components/reveal'
 
 function StarIcon({ className }: { className?: string }) {
@@ -46,16 +46,16 @@ function PhoneIcon({ className }: { className?: string }) {
   )
 }
 
-function FacebookIcon({ className }: { className?: string }) {
+function WhatsAppIcon({ className }: { className?: string }) {
   return (
     <svg className={className} width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-      <path d="M14.5 8.5h2.5V5.2c-.4-.06-1.4-.2-2.6-.2-2.6 0-4.3 1.6-4.3 4.6V12H7.5v3.6h2.6V22h3.6v-6.4h2.6l.4-3.6h-3V9.9c0-1 .3-1.4 1.3-1.4z" />
+      <path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.4-1.47-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.61-.92-2.21-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.07c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.62.71.23 1.36.2 1.87.12.57-.08 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35z" />
     </svg>
   )
 }
 
 const actionCls =
-  'inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-[11px] font-light tracking-[0.18em] text-muted-foreground transition-all hover:border-primary hover:bg-primary/5 hover:text-primary'
+  'inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-xs font-medium text-muted-foreground transition-all hover:border-primary hover:bg-primary/5 hover:text-primary'
 
 function BoutiqueHero({ boutique }: { boutique: Boutique }) {
   const badge = (boutique.region || boutique.city).toUpperCase()
@@ -102,7 +102,7 @@ function BoutiqueCard({ boutique }: { boutique: Boutique }) {
 
       <div className="p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h3 className="font-serif text-2xl font-light tracking-wide text-foreground">
+          <h3 className="font-serif text-2xl font-medium tracking-tight text-foreground">
             {boutique.city}
           </h3>
           {boutique.rating != null ? (
@@ -164,18 +164,18 @@ function BoutiqueCard({ boutique }: { boutique: Boutique }) {
               className={actionCls}
             >
               <PinIcon />
-              ITINERAIRE
+              Itineraire
             </a>
           ) : null}
           {boutique.phone ? (
             <a href={phoneHref(boutique.phone)} className={actionCls}>
               <PhoneIcon />
-              APPELER
+              Appeler
             </a>
           ) : null}
-          <a href={FACEBOOK_URL} target="_blank" rel="noopener noreferrer" className={actionCls}>
-            <FacebookIcon />
-            FACEBOOK
+          <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className={actionCls}>
+            <WhatsAppIcon />
+            WhatsApp
           </a>
         </div>
       </div>
@@ -186,22 +186,22 @@ function BoutiqueCard({ boutique }: { boutique: Boutique }) {
 function buildTagline(boutiques: Boutique[]) {
   const cities = [...new Set(boutiques.map((boutique) => boutique.city))]
   if (cities.length === 0) return ''
-  if (cities.length === 1) return `Venez decouvrir nos parfums a ${cities[0]}.`
+  if (cities.length === 1) return `Venez decouvrir la boutique a ${cities[0]}.`
 
   const last = cities[cities.length - 1]
-  return `Retrouvez nos parfums a ${cities.slice(0, -1).join(', ')} et ${last}.`
+  return `Retrouvez-nous a ${cities.slice(0, -1).join(', ')} et ${last}.`
 }
 
 export function BoutiquesSection({ boutiques }: { boutiques: Boutique[] }) {
   if (boutiques.length === 0) return null
 
   return (
-    <section id="boutiques" className="scroll-mt-16 border-t border-border bg-secondary/20 py-12 md:py-14">
-      <div className="mx-auto max-w-6xl px-4">
-        <Reveal className="mb-8 text-center">
-          <p className="text-[10px] font-light tracking-[0.4em] text-primary">NOS ADRESSES</p>
-          <h2 className="mt-2 font-serif text-2xl font-light tracking-widest text-foreground">
-            NOS BOUTIQUES
+    <section id="boutique" className="scroll-mt-16 border-t border-border bg-secondary/35 py-14 md:py-16">
+      <div className="mx-auto max-w-7xl px-2 sm:px-3">
+        <Reveal className="mb-10 text-center">
+          <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-primary">Adresse</p>
+          <h2 className="mt-2 font-serif text-3xl font-medium tracking-tight text-foreground">
+            La boutique
           </h2>
           <p className="mx-auto mt-3 max-w-lg text-sm font-light text-muted-foreground">
             {buildTagline(boutiques)}

@@ -1,12 +1,14 @@
 import { getProductById, getRelatedProducts } from '@/app/actions/products'
 import { getCategories } from '@/app/actions/categories'
-import { getDeliveryFee } from '@/app/actions/settings'
 import { ProductCard } from '@/components/product-card'
 import { ProductGallery } from '@/components/product-gallery'
 import { ProductPrice } from '@/components/product-price'
+import { PromoBadge } from '@/components/promo-badge'
+import { EpuiseBadge } from '@/components/epuise-badge'
+import { ProductTrustBox } from '@/components/product-trust-box'
 import { Reveal } from '@/components/reveal'
+import { parseProductColors, isPromoActive } from '@/lib/product-colors'
 import { parseProductImages } from '@/lib/product-images'
-import { formatPriceTnd } from '@/lib/product-price'
 import { getCategoryLabel } from '@/lib/store-categories'
 import { AddToCartButton } from './add-to-cart-button'
 import { notFound } from 'next/navigation'
@@ -20,9 +22,8 @@ export default async function ProductDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const [product, deliveryFee, categories, relatedProducts] = await Promise.all([
+  const [product, categories, relatedProducts] = await Promise.all([
     getProductById(Number(id)),
-    getDeliveryFee(),
     getCategories(),
     getRelatedProducts(Number(id)),
   ])
@@ -31,17 +32,19 @@ export default async function ProductDetailPage({
   const categoryLabel = getCategoryLabel(product.category, categories)
 
   const sizes: string[] = JSON.parse(product.sizes || '[]')
+  const colors = parseProductColors(product)
   const images = parseProductImages(product)
+  const promo = isPromoActive(product)
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
+    <div className="mx-auto max-w-7xl px-2 py-8 sm:px-3">
       <Reveal className="mb-8">
-        <nav className="flex items-center gap-2 text-[11px] font-light tracking-widest text-muted-foreground">
-          <Link href="/" className="hover:text-primary transition-colors">ACCUEIL</Link>
+        <nav className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+          <Link href="/" className="hover:text-primary transition-colors">Accueil</Link>
           <span>/</span>
-          <Link href="/products" className="hover:text-primary transition-colors">BOUTIQUE</Link>
+          <Link href="/products" className="hover:text-primary transition-colors">Boutique</Link>
           <span>/</span>
-          <span className="text-foreground">{product.name.toUpperCase()}</span>
+          <span className="text-foreground">{product.name}</span>
         </nav>
       </Reveal>
 
@@ -50,19 +53,22 @@ export default async function ProductDetailPage({
           <ProductGallery
             images={images}
             alt={`${product.brand} ${product.name}`}
+            badge={
+              !product.inStock ? <EpuiseBadge /> : <PromoBadge product={product} />
+            }
           />
         </Reveal>
 
         <Reveal variant="right" className="flex flex-col gap-4">
           <div>
-            <p className="text-[10px] font-light tracking-[0.4em] text-primary">
-              {product.brand.toUpperCase()}
+            <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-primary">
+              {product.brand}
             </p>
-            <h1 className="mt-2 font-serif text-2xl font-light tracking-wide text-foreground leading-tight md:text-3xl">
+            <h1 className="mt-2 font-serif text-3xl font-medium tracking-tight text-foreground leading-tight md:text-4xl">
               {product.name}
             </h1>
-            <p className="mt-1 text-[10px] font-light tracking-widest text-muted-foreground">
-              {categoryLabel.toUpperCase()}
+            <p className="mt-1 text-xs font-medium text-muted-foreground">
+              {categoryLabel}
             </p>
           </div>
 
@@ -72,6 +78,7 @@ export default async function ProductDetailPage({
             price={product.price}
             compareAtPrice={product.compareAtPrice}
             size="lg"
+            accentColor={promo ? product.promoBgColor : null}
           />
 
           {product.description && (
@@ -81,32 +88,28 @@ export default async function ProductDetailPage({
           )}
 
           {!product.inStock ? (
-            <div className="border border-border px-4 py-3 text-center text-xs font-light tracking-widest text-muted-foreground">
-              RUPTURE DE STOCK
+            <div className="rounded-full bg-black px-4 py-3 text-center text-sm font-semibold tracking-wide text-white">
+              Épuisé
             </div>
           ) : (
-            <AddToCartButton product={product} sizes={sizes} />
+            <AddToCartButton product={product} sizes={sizes} colors={colors} />
           )}
 
-          <div className="border-t border-border pt-4 text-[11px] font-light tracking-wider text-muted-foreground">
-            <p>Livraison disponible en Tunisie, {formatPriceTnd(deliveryFee)} TND</p>
-          </div>
+          <ProductTrustBox className="mt-1" />
         </Reveal>
       </div>
 
       {relatedProducts.length > 0 && (
-        <section className="mt-12 border-t border-border pt-8">
-          <Reveal className="mb-6 text-center">
-            <p className="text-[10px] font-light tracking-[0.4em] text-primary">SELECTION</p>
-            <h2 className="mt-2 font-serif text-2xl font-light tracking-widest text-foreground">
-              VOUS AIMEREZ AUSSI
+        <section className="mt-10 border-t border-border pt-6">
+          <Reveal className="mb-4">
+            <p className="text-[10px] font-medium uppercase tracking-[0.24em] text-primary">Selection</p>
+            <h2 className="mt-1 text-lg font-medium tracking-tight text-foreground">
+              Vous aimerez aussi
             </h2>
           </Reveal>
-          <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
-            {relatedProducts.map((related, index) => (
-              <Reveal key={related.id} delay={(index % 4) * 80}>
-                <ProductCard product={related} categories={categories} />
-              </Reveal>
+          <div className="-mx-2 flex gap-3 overflow-x-auto px-2 pb-2 sm:-mx-3 sm:px-3 [scrollbar-width:thin]">
+            {relatedProducts.map((related) => (
+              <ProductCard key={related.id} product={related} categories={categories} variant="list" />
             ))}
           </div>
         </section>

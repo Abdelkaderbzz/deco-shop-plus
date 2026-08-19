@@ -17,6 +17,10 @@ type Product = {
   imageUrl: string | null
   category: string
   inStock: boolean
+  promoEnabled?: boolean | null
+  promoLabel?: string | null
+  promoBgColor?: string | null
+  promoTextColor?: string | null
 }
 
 export function ProductsClient({
@@ -50,10 +54,10 @@ export function ProductsClient({
 
   const allCategories = useMemo(
     () => [
-      { value: 'all', label: 'TOUS' },
+      { value: 'all', label: 'Tous' },
       ...storeCategories.map((item) => ({
         value: item.slug,
-        label: item.name.toUpperCase(),
+        label: item.name,
       })),
     ],
     [storeCategories],
@@ -114,7 +118,7 @@ export function ProductsClient({
               type="button"
               onClick={() => selectCategory(cat.value)}
               disabled={isPending}
-              className={`rounded-full border px-3 py-2 text-center text-[10px] font-light tracking-[0.2em] transition-colors disabled:opacity-60 ${
+              className={`rounded-full border px-3 py-2 text-center text-xs font-medium transition-colors disabled:opacity-60 ${
                 category === cat.value
                   ? 'border-primary bg-primary text-primary-foreground shadow-sm shadow-primary/20'
                   : 'border-border text-muted-foreground hover:border-primary/40 hover:bg-primary/5 hover:text-primary'

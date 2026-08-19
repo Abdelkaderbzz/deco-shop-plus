@@ -1,6 +1,6 @@
 export default function ProductsLoading() {
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
+    <div className="mx-auto max-w-7xl px-2 py-8 sm:px-3">
       <div className="mb-8 h-40 animate-pulse rounded-2xl bg-muted/60" />
       <div className="mb-8 flex flex-col gap-4 lg:flex-row">
         <div className="h-11 w-full animate-pulse rounded-xl bg-muted/50 lg:w-72" />

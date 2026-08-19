@@ -7,16 +7,25 @@ export type CartItem = {
   productName: string
   productBrand: string
   size: string
+  color?: string
   quantity: number
   price: number
   imageUrl?: string
 }
 
+function sameLine(a: Pick<CartItem, 'productId' | 'size' | 'color'>, b: Pick<CartItem, 'productId' | 'size' | 'color'>) {
+  return a.productId === b.productId && a.size === b.size && (a.color || '') === (b.color || '')
+}
+
+export function cartLineKey(item: Pick<CartItem, 'productId' | 'size' | 'color'>) {
+  return `${item.productId}::${item.size}::${item.color || ''}`
+}
+
 type CartContextType = {
   items: CartItem[]
   addItem: (item: CartItem) => void
-  removeItem: (productId: number, size: string) => void
-  updateQuantity: (productId: number, size: string, quantity: number) => void
+  removeItem: (item: Pick<CartItem, 'productId' | 'size' | 'color'>) => void
+  updateQuantity: (item: Pick<CartItem, 'productId' | 'size' | 'color'>, quantity: number) => void
   clearCart: () => void
   total: number
   count: number
@@ -29,39 +38,32 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addItem = useCallback((item: CartItem) => {
     setItems((prev) => {
-      const existing = prev.find(
-        (i) => i.productId === item.productId && i.size === item.size
-      )
+      const existing = prev.find((line) => sameLine(line, item))
       if (existing) {
-        return prev.map((i) =>
-          i.productId === item.productId && i.size === item.size
-            ? { ...i, quantity: i.quantity + item.quantity }
-            : i
+        return prev.map((line) =>
+          sameLine(line, item) ? { ...line, quantity: line.quantity + item.quantity } : line,
         )
       }
-      return [...prev, item]
+      return [...prev, { ...item, color: item.color || '' }]
     })
   }, [])
 
-  const removeItem = useCallback((productId: number, size: string) => {
-    setItems((prev) =>
-      prev.filter((i) => !(i.productId === productId && i.size === size))
-    )
+  const removeItem = useCallback((item: Pick<CartItem, 'productId' | 'size' | 'color'>) => {
+    setItems((prev) => prev.filter((line) => !sameLine(line, item)))
   }, [])
 
-  const updateQuantity = useCallback((productId: number, size: string, quantity: number) => {
-    if (quantity <= 0) {
-      setItems((prev) =>
-        prev.filter((i) => !(i.productId === productId && i.size === size))
-      )
-    } else {
-      setItems((prev) =>
-        prev.map((i) =>
-          i.productId === productId && i.size === size ? { ...i, quantity } : i
+  const updateQuantity = useCallback(
+    (item: Pick<CartItem, 'productId' | 'size' | 'color'>, quantity: number) => {
+      if (quantity <= 0) {
+        setItems((prev) => prev.filter((line) => !sameLine(line, item)))
+      } else {
+        setItems((prev) =>
+          prev.map((line) => (sameLine(line, item) ? { ...line, quantity } : line)),
         )
-      )
-    }
-  }, [])
+      }
+    },
+    [],
+  )
 
   const clearCart = useCallback(() => setItems([]), [])
 

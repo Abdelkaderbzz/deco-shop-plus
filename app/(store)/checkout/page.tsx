@@ -4,7 +4,8 @@ import { getPickupBoutiques } from '@/app/actions/boutiques'
 import { createOrder } from '@/app/actions/orders'
 import { getDeliveryFee } from '@/app/actions/settings'
 import { StoreSelect } from '@/components/store-select'
-import { useCart } from '@/components/cart-context'
+import { cartLineKey, useCart } from '@/components/cart-context'
+import { ProductTrustBox } from '@/components/product-trust-box'
 import { Reveal } from '@/components/reveal'
 import { useToast } from '@/components/toast-provider'
 import { boutiqueLabel, phoneHref, type PickupBoutique } from '@/lib/boutiques'
@@ -105,6 +106,7 @@ export default function CheckoutPage() {
           productName: i.productName,
           productBrand: i.productBrand,
           size: i.size,
+          color: i.color || '',
           quantity: i.quantity,
           price: i.price,
         })),
@@ -132,7 +134,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
+    <div className="mx-auto max-w-7xl px-2 py-8 sm:px-3">
       <Reveal className="mb-8">
         <p className="text-sm font-semibold uppercase tracking-wide text-primary">Votre commande</p>
         <h1 className="mt-2 font-serif text-2xl font-semibold text-foreground">Panier</h1>
@@ -142,7 +144,7 @@ export default function CheckoutPage() {
         <div className="lg:col-span-3 space-y-4">
           {items.map((item) => (
             <div
-              key={`${item.productId}-${item.size}`}
+              key={cartLineKey(item)}
               className="flex gap-4 rounded-2xl border border-border bg-card p-4"
             >
               {item.imageUrl && (
@@ -156,13 +158,15 @@ export default function CheckoutPage() {
                 <div>
                   <p className="text-[10px] tracking-widest text-primary">{item.productBrand.toUpperCase()}</p>
                   <p className="text-sm font-light text-foreground">{item.productName}</p>
-                  <p className="text-[11px] text-muted-foreground">{item.size}</p>
+                  <p className="text-[11px] text-muted-foreground">
+                    {[item.size, item.color].filter(Boolean).join(' · ')}
+                  </p>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 border border-border">
                     <button
                       type="button"
-                      onClick={() => updateQuantity(item.productId, item.size, item.quantity - 1)}
+                      onClick={() => updateQuantity(item, item.quantity - 1)}
                       className="px-3 py-1 text-muted-foreground hover:text-primary transition-colors"
                     >
                       &minus;
@@ -172,7 +176,7 @@ export default function CheckoutPage() {
                     </span>
                     <button
                       type="button"
-                      onClick={() => updateQuantity(item.productId, item.size, item.quantity + 1)}
+                      onClick={() => updateQuantity(item, item.quantity + 1)}
                       className="px-3 py-1 text-muted-foreground hover:text-primary transition-colors"
                     >
                       +
@@ -185,7 +189,7 @@ export default function CheckoutPage() {
               </div>
               <button
                 type="button"
-                onClick={() => removeItem(item.productId, item.size)}
+                onClick={() => removeItem(item)}
                 className="self-start text-border hover:text-destructive transition-colors"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -395,6 +399,8 @@ export default function CheckoutPage() {
               </span>
             </div>
           </div>
+
+          <ProductTrustBox />
 
           <button
             type="submit"

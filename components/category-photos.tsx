@@ -14,10 +14,10 @@ export function CategoryPhotos({
     return (
       <div className="mb-10">
         <Reveal className="mb-8 text-center">
-          <p className="text-[10px] font-light tracking-[0.4em] text-primary">NOTRE BOUTIQUE</p>
-          <h1 className="mt-2 font-serif text-3xl font-light tracking-widest text-foreground">Boutique</h1>
-          <p className="mx-auto mt-3 max-w-md text-sm font-light text-muted-foreground">
-            Parfums femme et homme, de longue tenue
+          <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-primary">Catalogue</p>
+          <h1 className="mt-2 font-serif text-4xl font-medium tracking-tight text-foreground">Boutique</h1>
+          <p className="mx-auto mt-3 max-w-md text-sm text-muted-foreground">
+            Coussins, accessoires, rangement et literie
           </p>
         </Reveal>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
@@ -25,7 +25,7 @@ export function CategoryPhotos({
             <Reveal key={cat.slug} variant="zoom" delay={index * 70}>
               <Link
                 href={`/products?category=${cat.slug}`}
-                className="group overflow-hidden rounded-2xl border border-border/60 transition-all hover:border-primary/30 hover:shadow-md hover:shadow-primary/10"
+                className="group overflow-hidden rounded-[1.5rem] border border-border/60 transition-all hover:border-primary/30 hover:shadow-md hover:shadow-primary/10"
               >
                 <div className="relative aspect-square overflow-hidden bg-secondary">
                   {cat.image ? (
@@ -38,8 +38,8 @@ export function CategoryPhotos({
                     />
                   ) : null}
                 </div>
-                <p className="bg-card py-2.5 text-center text-[10px] font-light tracking-[0.2em] text-muted-foreground group-hover:text-primary">
-                  {cat.name.toUpperCase()}
+                <p className="bg-card py-2.5 text-center text-xs font-medium text-muted-foreground group-hover:text-primary">
+                  {cat.name}
                 </p>
               </Link>
             </Reveal>
@@ -54,7 +54,7 @@ export function CategoryPhotos({
 
   return (
     <Reveal className="mb-10" variant="fade">
-      <div className="overflow-hidden rounded-3xl border border-border/60 bg-card">
+      <div className="overflow-hidden rounded-[1.75rem] border border-border/60 bg-card">
         <div className="relative aspect-[21/9] overflow-hidden bg-secondary md:aspect-[3/1]">
           {storeCategory.image ? (
             <Image
@@ -68,10 +68,10 @@ export function CategoryPhotos({
           ) : null}
           <div className="absolute inset-0 bg-gradient-to-r from-foreground/60 via-foreground/25 to-transparent" />
           <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-10">
-            <p className="text-[10px] font-light tracking-[0.4em] text-primary-foreground/80">
-              {storeCategory.tagline.toUpperCase()}
+            <p className="text-[11px] font-medium tracking-wide text-primary-foreground/80">
+              {storeCategory.tagline}
             </p>
-            <h1 className="mt-2 font-serif text-3xl font-light tracking-wide text-primary-foreground md:text-4xl">
+            <h1 className="mt-2 font-serif text-3xl font-medium tracking-tight text-primary-foreground md:text-4xl">
               {storeCategory.name}
             </h1>
           </div>

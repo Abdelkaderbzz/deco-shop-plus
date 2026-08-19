@@ -16,8 +16,8 @@ export default async function SuccessPage({
         </svg>
       </div>
       <div>
-        <p className="text-[10px] font-light tracking-[0.4em] text-primary">MERCI</p>
-        <h1 className="mt-2 font-serif text-3xl font-light tracking-widest text-foreground">COMMANDE CONFIRMEE</h1>
+        <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-primary">Merci</p>
+        <h1 className="mt-2 font-serif text-3xl font-medium tracking-tight text-foreground">Commande confirmee</h1>
         {orderId && (
           <p className="mt-3 text-sm font-light text-muted-foreground">
             Commande #{orderId}

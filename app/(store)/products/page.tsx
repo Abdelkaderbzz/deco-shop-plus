@@ -26,7 +26,7 @@ export default async function ProductsPage({
   const storeCategories = mergeStoreCategories(categories)
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
+    <div className="mx-auto max-w-7xl px-2 py-8 sm:px-3">
       <ProductsClient
         products={productPage.items}
         total={productPage.total}

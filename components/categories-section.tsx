@@ -4,19 +4,19 @@ import type { StoreCategory } from '@/lib/store-categories'
 
 export function CategoriesSection({ categories }: { categories: StoreCategory[] }) {
   return (
-    <section className="border-t border-border bg-secondary/20 py-12 md:py-14">
-      <div className="mx-auto max-w-6xl px-4">
-        <Reveal className="mb-8 text-center">
-          <p className="text-[10px] font-light tracking-[0.4em] text-primary">NOS UNIVERS</p>
-          <h2 className="mt-2 font-serif text-2xl font-light tracking-widest text-foreground">
-            NOS PARFUMS
+    <section className="border-t border-border bg-secondary/35 py-14 md:py-16">
+      <div className="mx-auto max-w-7xl px-2 sm:px-3">
+        <Reveal className="mb-10 text-center">
+          <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-primary">Univers</p>
+          <h2 className="mt-2 font-serif text-3xl font-medium tracking-tight text-foreground">
+            Pour la maison
           </h2>
-          <p className="mx-auto mt-3 max-w-lg text-sm font-light text-muted-foreground">
-            Fragrances inspirees et de longue tenue, pour femmes et hommes.
+          <p className="mx-auto mt-3 max-w-lg text-sm text-muted-foreground">
+            Coussins, accessoires, rangement et literie choisis a Bizerte.
           </p>
         </Reveal>
 
-        <div className="mx-auto grid max-w-3xl grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           {categories.map((category, index) => (
             <Reveal key={category.slug} variant="zoom" delay={index * 90}>
               <CategoryCard category={category} />

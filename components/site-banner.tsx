@@ -17,7 +17,7 @@ function storageKey(banner: ActiveBanner) {
   for (let index = 0; index < banner.message.length; index += 1) {
     hash = (hash * 31 + banner.message.charCodeAt(index)) | 0
   }
-  return `wog-banner-dismissed-${banner.id}-${hash}`
+  return `dsp-banner-dismissed-${banner.id}-${hash}`
 }
 
 export function SiteBanner({ banner }: { banner: ActiveBanner }) {
@@ -60,7 +60,7 @@ export function SiteBanner({ banner }: { banner: ActiveBanner }) {
         fontSize: `${banner.fontSize}px`,
       }}
     >
-      <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-2">
+      <div className="mx-auto flex max-w-7xl items-center gap-3 px-2 py-2 sm:px-3">
         <span className="hidden shrink-0 rounded-full bg-current/15 px-2 py-0.5 text-[0.7em] font-medium tracking-[0.2em] sm:inline-block">
           {VARIANT_LABELS[banner.variant]}
         </span>

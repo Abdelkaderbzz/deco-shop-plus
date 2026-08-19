@@ -3,7 +3,8 @@
 import { Logo } from '@/components/logo'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { useCart } from '@/components/cart-context'
-import { INSTAGRAM_URL, TIKTOK_URL } from '@/lib/social-links'
+import { PHONE_HREF } from '@/lib/social-links'
+import { SITE } from '@/lib/site'
 import type { StoreCategory } from '@/lib/store-categories'
 import Link from 'next/link'
 import { useState } from 'react'
@@ -13,17 +14,28 @@ export function Navbar({ storeCategories }: { storeCategories: StoreCategory[] }
   const [menuOpen, setMenuOpen] = useState(false)
 
   const navLinks = [
-    { href: '/products', label: 'BOUTIQUE' },
+    { href: '/products', label: 'Boutique' },
     ...storeCategories.map((category) => ({
       href: `/products?category=${category.slug}`,
-      label: category.name.toUpperCase(),
+      label: category.name,
     })),
   ]
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/80 bg-card/95 backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-2">
-        <Link href="/" className="flex items-center gap-3" aria-label="Water of Gold — Accueil">
+    <header className="sticky top-0 z-50 border-b border-border/80 bg-card/90 backdrop-blur-md">
+      <div className="hidden border-b border-border/60 bg-primary text-primary-foreground sm:block">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-2 py-1.5 text-[11px] tracking-[0.14em] sm:px-3">
+          <p>
+            {SITE.neighborhood}, {SITE.city}
+          </p>
+          <a href={PHONE_HREF} className="transition-opacity hover:opacity-80">
+            {SITE.phoneDisplay}
+          </a>
+        </div>
+      </div>
+
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-2 py-2.5 sm:px-3">
+        <Link href="/" className="flex items-center gap-3" aria-label={`${SITE.name} — Accueil`}>
           <Logo size="sm" priority />
         </Link>
 
@@ -32,26 +44,16 @@ export function Navbar({ storeCategories }: { storeCategories: StoreCategory[] }
             <Link
               key={link.href}
               href={link.href}
-              className="text-[11px] font-light tracking-[0.25em] text-muted-foreground transition-colors hover:text-primary"
+              className="text-[13px] font-medium text-muted-foreground transition-colors hover:text-primary"
             >
               {link.label}
             </Link>
           ))}
           <a
-            href={INSTAGRAM_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[11px] font-light tracking-[0.25em] text-muted-foreground transition-colors hover:text-primary"
+            href="#boutique"
+            className="text-[13px] font-medium text-muted-foreground transition-colors hover:text-primary"
           >
-            INSTAGRAM
-          </a>
-          <a
-            href={TIKTOK_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[11px] font-light tracking-[0.25em] text-muted-foreground transition-colors hover:text-primary"
-          >
-            TIKTOK
+            Adresse
           </a>
         </nav>
 
@@ -60,7 +62,7 @@ export function Navbar({ storeCategories }: { storeCategories: StoreCategory[] }
           <Link
             href="/checkout"
             aria-label={count > 0 ? `Panier, ${count} article${count > 1 ? 's' : ''}` : 'Panier'}
-            className="relative flex min-h-11 min-w-11 items-center justify-center gap-2 text-sm font-light tracking-widest text-foreground transition-colors hover:text-primary"
+            className="relative flex min-h-11 min-w-11 items-center justify-center gap-2 text-sm font-medium text-foreground transition-colors hover:text-primary"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
               <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
@@ -90,33 +92,27 @@ export function Navbar({ storeCategories }: { storeCategories: StoreCategory[] }
       </div>
 
       {menuOpen && (
-        <div className="border-t border-border bg-card px-4 py-6 lg:hidden">
+        <div className="border-t border-border bg-card px-2 py-6 sm:px-3 lg:hidden">
           <nav className="flex flex-col gap-5">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
-                className="text-sm font-light tracking-widest text-muted-foreground hover:text-primary"
+                className="text-base font-medium text-muted-foreground hover:text-primary"
               >
                 {link.label}
               </Link>
             ))}
             <a
-              href={INSTAGRAM_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm font-light tracking-widest text-muted-foreground hover:text-primary"
+              href="#boutique"
+              onClick={() => setMenuOpen(false)}
+              className="text-base font-medium text-muted-foreground hover:text-primary"
             >
-              INSTAGRAM
+              Adresse
             </a>
-            <a
-              href={TIKTOK_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm font-light tracking-widest text-muted-foreground hover:text-primary"
-            >
-              TIKTOK
+            <a href={PHONE_HREF} className="text-base font-medium text-primary">
+              {SITE.phoneDisplay}
             </a>
           </nav>
         </div>

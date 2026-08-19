@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { InstagramCommentCard, WhatsAppCommentCard } from '@/components/testimonial-cards'
+import { GoogleReviewCard, InstagramCommentCard, WhatsAppCommentCard } from '@/components/testimonial-cards'
 import { Reveal } from '@/components/reveal'
 import {
   TESTIMONIAL_SOURCES,
@@ -20,7 +20,7 @@ function repeatsFor(count: number) {
 }
 
 /** Shared by every card so both rows line up and nothing shrinks mid-animation. */
-const ITEM_CLS = 'h-36 shrink-0 overflow-hidden sm:h-40 lg:h-46'
+const ITEM_CLS = 'h-40 shrink-0 overflow-hidden sm:h-44 lg:h-48'
 
 /** Comments are HTML, so unlike screenshots they need an explicit width. */
 const COMMENT_WIDTH_CLS = 'w-72 sm:w-80 lg:w-96'
@@ -36,12 +36,17 @@ function TestimonialItemCard({ item, decorative }: { item: TestimonialItem; deco
           height={item.height}
           sizes="(max-width: 640px) 400px, (max-width: 1024px) 460px, 540px"
           draggable={false}
-          // Lazy loading never fires reliably inside the animated track, which
-          // leaves blank cards drifting into view. These are a few KB each and
-          // repeat across both rows, so the browser fetches them once.
           loading="eager"
           className="block h-full w-auto select-none"
         />
+      </li>
+    )
+  }
+
+  if (item.source === 'google') {
+    return (
+      <li className={`${ITEM_CLS} w-72 bg-secondary px-2 py-2 sm:w-80 lg:w-[22rem]`}>
+        <GoogleReviewCard item={item} />
       </li>
     )
   }
@@ -99,14 +104,14 @@ export function TestimonialsSection() {
 
   return (
     <section className="border-t border-border bg-secondary py-12 md:py-14">
-      <div className="mx-auto mb-8 max-w-6xl px-4 text-center">
+      <div className="mx-auto mb-8 max-w-7xl px-2 text-center sm:px-3">
         <Reveal>
-          <p className="text-[10px] font-light tracking-[0.4em] text-primary">TEMOIGNAGES</p>
-          <h2 className="mt-2 font-serif text-2xl font-light tracking-widest text-foreground">
-            ELLES NOUS FONT CONFIANCE
+          <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-primary">Avis</p>
+          <h2 className="mt-2 font-serif text-3xl font-medium tracking-tight text-foreground">
+            Elles nous font confiance
           </h2>
-          <p className="mx-auto mt-3 max-w-lg text-sm font-light text-muted-foreground">
-            Avis Google, commentaires Instagram et messages WhatsApp de nos clientes.
+          <p className="mx-auto mt-3 max-w-lg text-sm text-muted-foreground">
+            Avis Google, messages WhatsApp et retours de clientes a Bizerte.
           </p>
         </Reveal>
       </div>

@@ -1,8 +1,16 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 
-export function ProductGallery({ images, alt }: { images: string[]; alt: string }) {
+export function ProductGallery({
+  images,
+  alt,
+  badge,
+}: {
+  images: string[]
+  alt: string
+  badge?: ReactNode
+}) {
   const [activeIndex, setActiveIndex] = useState(0)
   const activeImage = images[activeIndex]
 
@@ -18,8 +26,13 @@ export function ProductGallery({ images, alt }: { images: string[]; alt: string 
 
   return (
     <div className="space-y-4">
-      <div className="aspect-square overflow-hidden border border-border bg-secondary">
-        <img src={activeImage} alt={alt} className="h-full w-full object-cover" />
+      <div className="group/image relative aspect-square overflow-hidden border border-border bg-secondary">
+        <img
+          src={activeImage}
+          alt={alt}
+          className="h-full w-full object-cover transition-transform duration-700 ease-out will-change-transform group-hover/image:scale-110"
+        />
+        {badge}
       </div>
 
       {images.length > 1 && (

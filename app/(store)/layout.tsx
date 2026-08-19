@@ -3,10 +3,11 @@ import { getCategories } from '@/app/actions/categories'
 import { CartProvider } from '@/components/cart-context'
 import { SiteBanner } from '@/components/site-banner'
 import { WhatsAppButton } from '@/components/whatsapp-button'
-import { FACEBOOK_URL, INSTAGRAM_URL, TIKTOK_URL } from '@/lib/social-links'
+import { FACEBOOK_URL, PHONE_HREF, WHATSAPP_URL } from '@/lib/social-links'
 import { Logo } from '@/components/logo'
 import { Navbar } from '@/components/navbar'
 import { Reveal } from '@/components/reveal'
+import { SITE } from '@/lib/site'
 import { mergeStoreCategories } from '@/lib/store-categories'
 
 export default async function StoreLayout({ children }: { children: React.ReactNode }) {
@@ -18,42 +19,33 @@ export default async function StoreLayout({ children }: { children: React.ReactN
       {banner && <SiteBanner banner={banner} />}
       <Navbar storeCategories={storeCategories} />
       <main className="min-h-screen">{children}</main>
-      <footer className="border-t border-border bg-card py-8">
-        <Reveal className="mx-auto max-w-6xl px-4 text-center">
-          <Logo size="lg" className="mx-auto mb-4" />
-          <p className="text-xs font-light tracking-widest text-primary">
-            PARFUMERIE &middot; FEMME &amp; HOMME
-          </p>
-          <p className="mt-1 text-[11px] font-light tracking-widest text-muted-foreground">
-            SOUSSE, TUNISIE
-          </p>
-          <div className="mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
-            <a
-              href={INSTAGRAM_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs font-light tracking-widest text-primary hover:underline"
-            >
-              @waterofgold
+      <footer className="border-t border-border bg-card py-12">
+        <Reveal className="mx-auto max-w-7xl px-2 text-center sm:px-3">
+          <Logo size="lg" className="mx-auto mb-5 justify-center" />
+          <p className="text-sm font-medium text-primary">{SITE.tagline}</p>
+          <p className="mt-2 text-sm text-muted-foreground">{SITE.address}</p>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+            <a href={PHONE_HREF} className="text-sm font-medium text-foreground hover:text-primary">
+              {SITE.phoneDisplay}
             </a>
             <a
-              href={TIKTOK_URL}
+              href={WHATSAPP_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs font-light tracking-widest text-primary hover:underline"
+              className="text-sm font-medium text-primary hover:underline"
             >
-              @waterofgold
+              WhatsApp
             </a>
             <a
               href={FACEBOOK_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs font-light tracking-widest text-primary hover:underline"
+              className="text-sm font-medium text-primary hover:underline"
             >
               Facebook
             </a>
           </div>
-          <p className="mt-4 text-sm font-light tracking-wider text-muted-foreground">
+          <p className="mt-6 text-sm text-muted-foreground">
             Site web cree par{' '}
             <a
               href="https://www.revixa.agency/"
