@@ -2,7 +2,7 @@
 
 import { requireAdminId } from '@/lib/admin-auth'
 import { db } from '@/lib/db'
-import { products } from '@/lib/db/schema'
+import { orderItems, products } from '@/lib/db/schema'
 import {
   ADMIN_PAGE_SIZE,
   buildPaginatedResult,
@@ -11,6 +11,13 @@ import {
   paginationOffset,
   type PaginatedResult,
 } from '@/lib/pagination'
+import {
+  DEFAULT_PROMO_BG,
+  DEFAULT_PROMO_LABEL,
+  DEFAULT_PROMO_TEXT,
+  serializeProductColors,
+  type ProductColor,
+} from '@/lib/product-colors'
 import { getPrimaryImage, serializeProductImages } from '@/lib/product-images'
 import {
   RELATED_PRODUCTS_SHOWN,
@@ -148,6 +155,67 @@ export async function getFeaturedProducts() {
   return getFeaturedProductsCached()
 }
 
+const getPromoProductsCached = unstable_cache(
+  async () =>
+    db
+      .select()
+      .from(products)
+      .where(and(eq(products.promoEnabled, true), eq(products.published, true)))
+      .orderBy(desc(products.updatedAt))
+      .limit(8),
+  ['promo-products'],
+  { revalidate: 120, tags: ['products'] },
+)
+
+export async function getPromoProducts() {
+  return getPromoProductsCached()
+}
+
+const getLatestProductsCached = unstable_cache(
+  async () =>
+    db
+      .select()
+      .from(products)
+      .where(eq(products.published, true))
+      .orderBy(desc(products.createdAt))
+      .limit(8),
+  ['latest-products'],
+  { revalidate: 120, tags: ['products'] },
+)
+
+export async function getLatestProducts() {
+  return getLatestProductsCached()
+}
+
+const getBestSellerProductsCached = unstable_cache(
+  async () => {
+    const ranked = await db
+      .select({
+        id: products.id,
+        sold: sql<number>`coalesce(sum(${orderItems.quantity}), 0)::int`,
+      })
+      .from(products)
+      .leftJoin(orderItems, eq(orderItems.productId, products.id))
+      .where(eq(products.published, true))
+      .groupBy(products.id)
+      .orderBy(desc(sql`coalesce(sum(${orderItems.quantity}), 0)`), desc(products.createdAt))
+      .limit(8)
+
+    if (ranked.length === 0) return []
+
+    const ids = ranked.map((row) => row.id)
+    const rows = await db.select().from(products).where(inArray(products.id, ids))
+    const byId = new Map(rows.map((row) => [row.id, row]))
+    return ids.map((id) => byId.get(id)).filter((row): row is typeof products.$inferSelect => Boolean(row))
+  },
+  ['best-seller-products'],
+  { revalidate: 120, tags: ['products'] },
+)
+
+export async function getBestSellerProducts() {
+  return getBestSellerProductsCached()
+}
+
 export async function getProductById(id: number) {
   return unstable_cache(
     async () => {
@@ -237,10 +305,15 @@ export async function addProduct(data: {
   category: string
   images: string[]
   sizes: string[]
+  colors?: ProductColor[]
   relatedProductIds?: number[]
   inStock: boolean
   featured: boolean
   published: boolean
+  promoEnabled?: boolean
+  promoLabel?: string
+  promoBgColor?: string
+  promoTextColor?: string
 }) {
   await requireAdminId()
   const imageData = normalizeProductImages(data.images)
@@ -256,10 +329,15 @@ export async function addProduct(data: {
     imageUrl: imageData.imageUrl,
     images: imageData.images,
     sizes: JSON.stringify(data.sizes),
+    colors: serializeProductColors(data.colors ?? []),
     relatedProductIds: serializeRelatedProductIds(data.relatedProductIds ?? []),
     inStock: data.inStock,
     featured: data.featured,
     published: data.published,
+    promoEnabled: data.promoEnabled ?? false,
+    promoLabel: data.promoLabel?.trim() || DEFAULT_PROMO_LABEL,
+    promoBgColor: data.promoBgColor?.trim() || DEFAULT_PROMO_BG,
+    promoTextColor: data.promoTextColor?.trim() || DEFAULT_PROMO_TEXT,
   })
   revalidatePath('/admin')
   revalidatePath('/admin/products')
@@ -279,16 +357,22 @@ export async function updateProduct(
     category?: string
     images?: string[]
     sizes?: string[]
+    colors?: ProductColor[]
     relatedProductIds?: number[]
     inStock?: boolean
     featured?: boolean
     published?: boolean
+    promoEnabled?: boolean
+    promoLabel?: string
+    promoBgColor?: string
+    promoTextColor?: string
   },
 ) {
   await requireAdminId()
   const updateData: Record<string, unknown> = { ...data, updatedAt: new Date() }
 
   if (data.sizes) updateData.sizes = JSON.stringify(data.sizes)
+  if (Array.isArray(data.colors)) updateData.colors = serializeProductColors(data.colors)
   if (data.relatedProductIds) {
     updateData.relatedProductIds = serializeRelatedProductIds(data.relatedProductIds)
   }
@@ -299,6 +383,15 @@ export async function updateProduct(
   }
   if ('compareAtPrice' in data) {
     updateData.compareAtPrice = data.compareAtPrice?.trim() || null
+  }
+  if ('promoLabel' in data) {
+    updateData.promoLabel = data.promoLabel?.trim() || DEFAULT_PROMO_LABEL
+  }
+  if ('promoBgColor' in data) {
+    updateData.promoBgColor = data.promoBgColor?.trim() || DEFAULT_PROMO_BG
+  }
+  if ('promoTextColor' in data) {
+    updateData.promoTextColor = data.promoTextColor?.trim() || DEFAULT_PROMO_TEXT
   }
 
   await db.update(products).set(updateData).where(eq(products.id, id))

@@ -39,6 +39,7 @@ export type CartItem = {
   productName: string
   productBrand: string
   size: string
+  color?: string
   quantity: number
   price: number
 }
@@ -107,6 +108,7 @@ async function insertOrderWithItems(data: CreateOrderInput) {
       productName: item.productName,
       productBrand: item.productBrand,
       size: item.size,
+      color: item.color?.trim() || '',
       quantity: item.quantity,
       price: item.price.toFixed(3),
     })),
