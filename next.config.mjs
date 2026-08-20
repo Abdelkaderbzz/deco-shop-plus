@@ -20,6 +20,8 @@ const nextConfig = {
       dynamic: 30,
       static: 180,
     },
+    optimisticRouting: true,
+    dynamicOnHover: true,
     serverActions: {
       bodySizeLimit: '6mb',
     },

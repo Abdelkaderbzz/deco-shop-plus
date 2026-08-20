@@ -19,6 +19,7 @@ import { getCategoryLabel } from '@/lib/store-categories'
 import { AddToCartButton } from './add-to-cart-button'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import { Suspense } from 'react'
 
 export const revalidate = 120
 export const dynamicParams = true
@@ -77,10 +78,9 @@ export default async function ProductDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const [product, categories, relatedProducts] = await Promise.all([
+  const [product, categories] = await Promise.all([
     getProductById(Number(id)),
     getCategories(),
-    getRelatedProducts(Number(id)),
   ])
   if (!product) notFound()
 
@@ -176,21 +176,36 @@ export default async function ProductDetailPage({
         </Reveal>
       </div>
 
-      {relatedProducts.length > 0 && (
-        <section className="mt-10 border-t border-border pt-6">
-          <Reveal className="mb-4">
-            <p className="text-[10px] font-medium uppercase tracking-[0.24em] text-primary">Selection</p>
-            <h2 className="mt-1 text-lg font-medium tracking-tight text-foreground">
-              Vous aimerez aussi
-            </h2>
-          </Reveal>
-          <div className="-mx-2 flex gap-3 overflow-x-auto px-2 pb-2 sm:-mx-3 sm:px-3 [scrollbar-width:thin]">
-            {relatedProducts.map((related) => (
-              <ProductCard key={related.id} product={related} categories={categories} variant="list" />
-            ))}
-          </div>
-        </section>
-      )}
+      <Suspense fallback={null}>
+        <RelatedProducts productId={product.id} categories={categories} />
+      </Suspense>
     </div>
+  )
+}
+
+async function RelatedProducts({
+  productId,
+  categories,
+}: {
+  productId: number
+  categories: { slug: string; name: string }[]
+}) {
+  const relatedProducts = await getRelatedProducts(productId)
+  if (relatedProducts.length === 0) return null
+
+  return (
+    <section className="mt-10 border-t border-border pt-6">
+      <Reveal className="mb-4">
+        <p className="text-[10px] font-medium uppercase tracking-[0.24em] text-primary">Selection</p>
+        <h2 className="mt-1 text-lg font-medium tracking-tight text-foreground">
+          Vous aimerez aussi
+        </h2>
+      </Reveal>
+      <div className="-mx-2 flex gap-3 overflow-x-auto px-2 pb-2 sm:-mx-3 sm:px-3 [scrollbar-width:thin]">
+        {relatedProducts.map((related) => (
+          <ProductCard key={related.id} product={related} categories={categories} variant="list" />
+        ))}
+      </div>
+    </section>
   )
 }
