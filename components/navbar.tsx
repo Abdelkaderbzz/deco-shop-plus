@@ -50,12 +50,6 @@ export function Navbar({ storeCategories }: { storeCategories: StoreCategory[] }
               {link.label}
             </Link>
           ))}
-          <a
-            href="#boutique"
-            className="text-[13px] font-medium text-muted-foreground transition-colors hover:text-primary"
-          >
-            Adresse
-          </a>
         </nav>
 
         <div className="flex items-center gap-1 sm:gap-2">
@@ -105,13 +99,6 @@ export function Navbar({ storeCategories }: { storeCategories: StoreCategory[] }
                 {link.label}
               </Link>
             ))}
-            <a
-              href="#boutique"
-              onClick={() => setMenuOpen(false)}
-              className="text-base font-medium text-muted-foreground hover:text-primary"
-            >
-              Adresse
-            </a>
             <a href={PHONE_HREF} className="text-base font-medium text-primary">
               {SITE.phoneDisplay}
             </a>

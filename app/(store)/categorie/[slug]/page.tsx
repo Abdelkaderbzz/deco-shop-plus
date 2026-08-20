@@ -48,7 +48,7 @@ export async function generateMetadata({
   }
 
   const title = `${category.name} à ${SITE.city}`
-  const description = `${category.name} chez ${SITE.name} à ${SITE.neighborhood}, ${SITE.city}. ${category.tagline}. Retrait en boutique et livraison en Tunisie.`
+  const description = `${category.name} chez ${SITE.name} à ${SITE.neighborhood}, ${SITE.city}. ${category.tagline}. Livraison partout en Tunisie.`
 
   return {
     title,

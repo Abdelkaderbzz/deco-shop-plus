@@ -2,9 +2,9 @@
 
 import { requireAdminId } from '@/lib/admin-auth'
 import { db } from '@/lib/db'
-import { boutiques, orderItems, orders, products } from '@/lib/db/schema'
+import { orderItems, orders, products } from '@/lib/db/schema'
 import { and, desc, eq, ilike, or, sql } from 'drizzle-orm'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { getDeliveryFee } from './settings'
 import {
   ADMIN_PAGE_SIZE,
@@ -32,6 +32,67 @@ function mapOrderError(error: unknown, fallback: string) {
 async function revalidateOrderPaths() {
   revalidatePath('/admin')
   revalidatePath('/admin/orders')
+  revalidatePath('/admin/products')
+}
+
+function revalidateStockPaths(productIds: number[]) {
+  revalidateTag('products', 'max')
+  revalidatePath('/products')
+  revalidatePath('/')
+  for (const id of productIds) {
+    revalidateTag(`product-${id}`, 'max')
+    revalidatePath(`/products/${id}`)
+  }
+}
+
+function aggregateItemQuantities(items: { productId: number; quantity: number }[]) {
+  const quantities = new Map<number, number>()
+  for (const item of items) {
+    if (!item.productId || item.quantity <= 0) continue
+    quantities.set(item.productId, (quantities.get(item.productId) ?? 0) + item.quantity)
+  }
+  return quantities
+}
+
+function orderConsumesStock(status?: string | null) {
+  return status !== 'cancelled'
+}
+
+async function decrementStock(
+  tx: Parameters<Parameters<typeof db.transaction>[0]>[0],
+  quantities: Map<number, number>,
+) {
+  for (const [productId, quantity] of quantities) {
+    const [updated] = await tx
+      .update(products)
+      .set({
+        stock: sql`${products.stock} - ${quantity}`,
+        inStock: sql`(${products.stock} - ${quantity}) > 0`,
+        updatedAt: new Date(),
+      })
+      .where(and(eq(products.id, productId), sql`${products.stock} >= ${quantity}`))
+      .returning({ id: products.id, name: products.name })
+
+    if (!updated) {
+      throw new Error('Stock insuffisant pour un des produits.')
+    }
+  }
+}
+
+async function incrementStock(
+  tx: Parameters<Parameters<typeof db.transaction>[0]>[0],
+  quantities: Map<number, number>,
+) {
+  for (const [productId, quantity] of quantities) {
+    await tx
+      .update(products)
+      .set({
+        stock: sql`${products.stock} + ${quantity}`,
+        inStock: true,
+        updatedAt: new Date(),
+      })
+      .where(eq(products.id, productId))
+  }
 }
 
 export type CartItem = {
@@ -49,30 +110,9 @@ type CreateOrderInput = {
   customerPhone: string
   customerGovernorate?: string
   customerAddress?: string
-  orderType: 'delivery' | 'boutique'
-  pickupBoutiqueId?: number | null
   status?: string
   notes?: string
   items: CartItem[]
-}
-
-/** Resolves the chosen pickup shop and snapshots its name onto the order. */
-async function resolvePickupBoutique(orderType: string, boutiqueId?: number | null) {
-  if (orderType !== 'boutique' || !boutiqueId) {
-    return { pickupBoutiqueId: null, pickupBoutiqueName: null }
-  }
-
-  const [row] = await db
-    .select({ id: boutiques.id, name: boutiques.name, city: boutiques.city })
-    .from(boutiques)
-    .where(eq(boutiques.id, boutiqueId))
-    .limit(1)
-
-  if (!row) {
-    throw new Error('Boutique de retrait introuvable.')
-  }
-
-  return { pickupBoutiqueId: row.id, pickupBoutiqueName: `${row.name} (${row.city})` }
 }
 
 async function insertOrderWithItems(data: CreateOrderInput) {
@@ -80,41 +120,52 @@ async function insertOrderWithItems(data: CreateOrderInput) {
     throw new Error('Ajoutez au moins un article.')
   }
 
-  const deliveryFeeValue = data.orderType === 'delivery' ? await getDeliveryFee() : 0
+  const deliveryFeeValue = await getDeliveryFee()
   const subtotal = data.items.reduce((acc, item) => acc + item.price * item.quantity, 0)
   const totalAmount = subtotal + deliveryFeeValue
-  const pickup = await resolvePickupBoutique(data.orderType, data.pickupBoutiqueId)
+  const status = data.status || 'pending'
+  const stockQuantities = aggregateItemQuantities(data.items)
 
-  const [order] = await db
-    .insert(orders)
-    .values({
-      customerName: data.customerName,
-      customerPhone: data.customerPhone,
-      customerGovernorate: data.customerGovernorate || null,
-      customerAddress: data.customerAddress || null,
-      orderType: data.orderType,
-      ...pickup,
-      status: data.status || 'pending',
-      totalAmount: totalAmount.toFixed(3),
-      deliveryFee: deliveryFeeValue.toFixed(3),
-      notes: data.notes || null,
-    })
-    .returning()
+  const order = await db.transaction(async (tx) => {
+    if (orderConsumesStock(status)) {
+      await decrementStock(tx, stockQuantities)
+    }
 
-  await db.insert(orderItems).values(
-    data.items.map((item) => ({
-      orderId: order.id,
-      productId: item.productId,
-      productName: item.productName,
-      productBrand: item.productBrand,
-      size: item.size,
-      color: item.color?.trim() || '',
-      quantity: item.quantity,
-      price: item.price.toFixed(3),
-    })),
-  )
+    const [created] = await tx
+      .insert(orders)
+      .values({
+        customerName: data.customerName,
+        customerPhone: data.customerPhone,
+        customerGovernorate: data.customerGovernorate || null,
+        customerAddress: data.customerAddress || null,
+        orderType: 'delivery',
+        pickupBoutiqueId: null,
+        pickupBoutiqueName: null,
+        status,
+        totalAmount: totalAmount.toFixed(3),
+        deliveryFee: deliveryFeeValue.toFixed(3),
+        notes: data.notes || null,
+      })
+      .returning()
+
+    await tx.insert(orderItems).values(
+      data.items.map((item) => ({
+        orderId: created.id,
+        productId: item.productId,
+        productName: item.productName,
+        productBrand: item.productBrand,
+        size: item.size,
+        color: item.color?.trim() || '',
+        quantity: item.quantity,
+        price: item.price.toFixed(3),
+      })),
+    )
+
+    return created
+  })
 
   await revalidateOrderPaths()
+  revalidateStockPaths([...stockQuantities.keys()])
   return order
 }
 
@@ -124,7 +175,7 @@ export async function createOrder(data: Omit<CreateOrderInput, 'status'>) {
   return order.id
 }
 
-/** Admin-created order (phone / boutique). */
+/** Admin-created order. */
 export async function adminCreateOrder(
   data: CreateOrderInput,
 ): Promise<OrderActionResult<{ id: number }>> {
@@ -264,17 +315,41 @@ export async function updateOrderStatus(id: number, status: string): Promise<Ord
   try {
     await requireAdminId()
 
-    const [updated] = await db
-      .update(orders)
-      .set({ status, updatedAt: new Date() })
-      .where(eq(orders.id, id))
-      .returning({ id: orders.id })
+    const result = await db.transaction(async (tx) => {
+      const [[existing], items] = await Promise.all([
+        tx.select().from(orders).where(eq(orders.id, id)).limit(1),
+        tx.select().from(orderItems).where(eq(orderItems.orderId, id)),
+      ])
 
-    if (!updated) {
+      if (!existing) {
+        throw new Error('Order not found')
+      }
+
+      const quantities = aggregateItemQuantities(items)
+      const wasConsuming = orderConsumesStock(existing.status)
+      const willConsume = orderConsumesStock(status)
+
+      if (wasConsuming && !willConsume) {
+        await incrementStock(tx, quantities)
+      } else if (!wasConsuming && willConsume) {
+        await decrementStock(tx, quantities)
+      }
+
+      const [updated] = await tx
+        .update(orders)
+        .set({ status, updatedAt: new Date() })
+        .where(eq(orders.id, id))
+        .returning({ id: orders.id })
+
+      return { updated, productIds: [...quantities.keys()] }
+    })
+
+    if (!result.updated) {
       return { success: false, error: 'Commande introuvable.' }
     }
 
     await revalidateOrderPaths()
+    revalidateStockPaths(result.productIds)
     return { success: true, data: undefined }
   } catch (error) {
     return {
@@ -291,8 +366,6 @@ export async function updateOrder(
     customerPhone?: string
     customerGovernorate?: string
     customerAddress?: string
-    orderType?: 'delivery' | 'boutique'
-    pickupBoutiqueId?: number | null
     status?: string
     notes?: string
   },
@@ -309,38 +382,49 @@ export async function updateOrder(
       return { success: false, error: 'Commande introuvable.' }
     }
 
-    const orderType = (data.orderType ?? existing.orderType) as 'delivery' | 'boutique'
     const deliveryFeeValue =
-      orderType === 'delivery'
-        ? existing.orderType === 'delivery' && parseFloat(existing.deliveryFee) > 0
-          ? parseFloat(existing.deliveryFee)
-          : await getDeliveryFee()
-        : 0
+      existing.orderType === 'delivery' && parseFloat(existing.deliveryFee) > 0
+        ? parseFloat(existing.deliveryFee)
+        : await getDeliveryFee()
 
     const subtotal = items.reduce((acc, item) => acc + parseFloat(item.price) * item.quantity, 0)
     const totalAmount = subtotal + deliveryFeeValue
-    const pickup = await resolvePickupBoutique(
-      orderType,
-      'pickupBoutiqueId' in data ? data.pickupBoutiqueId : existing.pickupBoutiqueId,
-    )
+    const quantities = aggregateItemQuantities(items)
+    const nextStatus = data.status ?? existing.status
 
-    const [updated] = await db
-      .update(orders)
-      .set({
-        ...data,
-        ...pickup,
-        deliveryFee: deliveryFeeValue.toFixed(3),
-        totalAmount: totalAmount.toFixed(3),
-        updatedAt: new Date(),
-      })
-      .where(eq(orders.id, id))
-      .returning()
+    const updated = await db.transaction(async (tx) => {
+      const wasConsuming = orderConsumesStock(existing.status)
+      const willConsume = orderConsumesStock(nextStatus)
+
+      if (wasConsuming && !willConsume) {
+        await incrementStock(tx, quantities)
+      } else if (!wasConsuming && willConsume) {
+        await decrementStock(tx, quantities)
+      }
+
+      const [row] = await tx
+        .update(orders)
+        .set({
+          ...data,
+          orderType: 'delivery',
+          pickupBoutiqueId: null,
+          pickupBoutiqueName: null,
+          deliveryFee: deliveryFeeValue.toFixed(3),
+          totalAmount: totalAmount.toFixed(3),
+          updatedAt: new Date(),
+        })
+        .where(eq(orders.id, id))
+        .returning()
+
+      return row
+    })
 
     if (!updated) {
       return { success: false, error: 'Commande introuvable.' }
     }
 
     await revalidateOrderPaths()
+    revalidateStockPaths([...quantities.keys()])
 
     return { success: true, data: { ...updated, items } }
   } catch (error) {
@@ -355,12 +439,31 @@ export async function deleteOrder(id: number): Promise<OrderActionResult> {
   try {
     await requireAdminId()
 
-    const [deleted] = await db.delete(orders).where(eq(orders.id, id)).returning({ id: orders.id })
-    if (!deleted) {
-      return { success: false, error: 'Commande introuvable.' }
-    }
+    const productIds = await db.transaction(async (tx) => {
+      const [[existing], items] = await Promise.all([
+        tx.select().from(orders).where(eq(orders.id, id)).limit(1),
+        tx.select().from(orderItems).where(eq(orderItems.orderId, id)),
+      ])
+
+      if (!existing) {
+        throw new Error('Order not found')
+      }
+
+      const quantities = aggregateItemQuantities(items)
+      if (orderConsumesStock(existing.status)) {
+        await incrementStock(tx, quantities)
+      }
+
+      const [deleted] = await tx.delete(orders).where(eq(orders.id, id)).returning({ id: orders.id })
+      if (!deleted) {
+        throw new Error('Order not found')
+      }
+
+      return [...quantities.keys()]
+    })
 
     await revalidateOrderPaths()
+    revalidateStockPaths(productIds)
     return { success: true, data: undefined }
   } catch (error) {
     return {

@@ -162,6 +162,7 @@ export const products = pgTable('products', {
   /** JSON array of product ids curated by the admin. Empty = fall back to the
    *  same category on the storefront. */
   relatedProductIds: text('relatedProductIds').notNull().default('[]'),
+  stock: integer('stock').notNull().default(0),
   inStock: boolean('inStock').notNull().default(true),
   featured: boolean('featured').notNull().default(false),
   published: boolean('published').notNull().default(true),

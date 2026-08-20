@@ -1,6 +1,5 @@
 'use client'
 
-import { getPickupBoutiques } from '@/app/actions/boutiques'
 import { createOrder } from '@/app/actions/orders'
 import { getDeliveryFee } from '@/app/actions/settings'
 import { StoreSelect } from '@/components/store-select'
@@ -8,7 +7,6 @@ import { cartLineKey, useCart } from '@/components/cart-context'
 import { ProductTrustBox } from '@/components/product-trust-box'
 import { Reveal } from '@/components/reveal'
 import { useToast } from '@/components/toast-provider'
-import { boutiqueLabel, phoneHref, type PickupBoutique } from '@/lib/boutiques'
 import { getErrorMessage } from '@/lib/get-error-message'
 import { formatPriceTnd } from '@/lib/product-price'
 import { GOVERNORATE_SELECT_OPTIONS } from '@/lib/tunisia-governorates'
@@ -27,14 +25,6 @@ const storeInputCls =
 const storeInputErrorCls =
   'w-full rounded-xl border-2 border-destructive bg-card px-4 py-3 text-base text-foreground outline-none focus:border-destructive focus:ring-2 focus:ring-destructive/20'
 
-function modeCardCls(selected: boolean) {
-  return `rounded-xl border-2 p-4 text-left transition-all ${
-    selected
-      ? 'border-primary bg-primary/15 ring-2 ring-primary/25'
-      : 'border-border hover:border-primary/50'
-  }`
-}
-
 function StoreFieldError({ message }: { message?: string }) {
   if (!message) return null
   return <p className="mt-1.5 text-sm font-medium text-destructive">{message}</p>
@@ -45,47 +35,28 @@ export default function CheckoutPage() {
   const router = useRouter()
   const toast = useToast()
   const [deliveryFee, setDeliveryFee] = useState(7)
-  const [boutiques, setBoutiques] = useState<PickupBoutique[]>([])
 
   const {
     register,
     handleSubmit,
     control,
-    watch,
-    setValue,
     formState: { errors, isSubmitting },
   } = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
-      orderType: 'delivery',
       customerName: '',
       customerPhone: '',
       customerGovernorate: '',
       customerAddress: '',
-      pickupBoutiqueId: null,
       notes: '',
     },
   })
 
-  const orderType = watch('orderType')
-  const pickupBoutiqueId = watch('pickupBoutiqueId')
-  const isPickup = orderType === 'boutique'
-
   useEffect(() => {
     getDeliveryFee().then(setDeliveryFee).catch(() => setDeliveryFee(7))
-    getPickupBoutiques().then(setBoutiques).catch(() => setBoutiques([]))
   }, [])
 
-  const shippingCost = isPickup ? 0 : deliveryFee
-  const grandTotal = total + shippingCost
-  const selectedBoutique = boutiques.find((boutique) => boutique.id === pickupBoutiqueId)
-
-  function chooseOrderType(next: CheckoutFormValues['orderType']) {
-    setValue('orderType', next, { shouldValidate: false })
-    if (next === 'boutique' && boutiques.length === 1) {
-      setValue('pickupBoutiqueId', boutiques[0].id, { shouldValidate: false })
-    }
-  }
+  const grandTotal = total + deliveryFee
 
   async function onSubmit(values: CheckoutFormValues) {
     if (items.length === 0) {
@@ -99,8 +70,6 @@ export default function CheckoutPage() {
         customerPhone: values.customerPhone,
         customerGovernorate: values.customerGovernorate || undefined,
         customerAddress: values.customerAddress || undefined,
-        orderType: values.orderType,
-        pickupBoutiqueId: values.orderType === 'boutique' ? values.pickupBoutiqueId : null,
         notes: values.notes || undefined,
         items: items.map((i) => ({
           productId: i.productId,
@@ -204,87 +173,18 @@ export default function CheckoutPage() {
           ))}
 
           <div className="mt-6 rounded-2xl border-2 border-primary/20 bg-card p-6">
-            <p className={storeSectionCls}>Mode de reception</p>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <button type="button" onClick={() => chooseOrderType('delivery')} className={modeCardCls(!isPickup)}>
-                <span className="text-sm font-semibold text-foreground">Livraison a domicile</span>
-                <span className="mt-1 block text-sm font-medium text-primary">
-                  {formatPriceTnd(deliveryFee)} TND
-                </span>
-                <span className="mt-1 block text-xs text-muted-foreground">
-                  Partout en Tunisie, paiement a la livraison.
-                </span>
-              </button>
-
-              {boutiques.length > 0 && (
-                <button type="button" onClick={() => chooseOrderType('boutique')} className={modeCardCls(isPickup)}>
-                  <span className="text-sm font-semibold text-foreground">Retrait en boutique</span>
-                  <span className="mt-1 block text-sm font-medium text-primary">Gratuit</span>
-                  <span className="mt-1 block text-xs text-muted-foreground">
-                    Reservez en ligne, payez et recuperez sur place.
-                  </span>
-                </button>
-              )}
-            </div>
-
-            {isPickup && (
-              <div className="mt-5">
-                <p className="mb-3 text-sm font-semibold text-foreground">
-                  Boutique de retrait <span className="text-primary">*</span>
-                </p>
-                <div className="space-y-3">
-                  {boutiques.map((boutique) => {
-                    const selected = boutique.id === pickupBoutiqueId
-                    return (
-                      <label
-                        key={boutique.id}
-                        className={`flex cursor-pointer gap-3 rounded-xl border-2 p-4 transition-all ${
-                          selected
-                            ? 'border-primary bg-primary/10 ring-2 ring-primary/25'
-                            : 'border-border hover:border-primary/50'
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="pickupBoutiqueId"
-                          value={boutique.id}
-                          checked={selected}
-                          onChange={() =>
-                            setValue('pickupBoutiqueId', boutique.id, { shouldValidate: true })
-                          }
-                          className="mt-1 shrink-0 accent-primary"
-                        />
-                        <span className="min-w-0">
-                          <span className="block text-sm font-semibold text-foreground">
-                            {boutique.name}
-                          </span>
-                          <span className="mt-0.5 block text-xs text-muted-foreground">
-                            {boutiqueLabel(boutique)}
-                            {boutique.address ? ` · ${boutique.address}` : ''}
-                          </span>
-                          {boutique.phone && (
-                            <span className="mt-0.5 block text-xs text-muted-foreground">
-                              +216 {boutique.phone}
-                            </span>
-                          )}
-                        </span>
-                      </label>
-                    )
-                  })}
-                </div>
-                <StoreFieldError message={errors.pickupBoutiqueId?.message} />
-                <p className="mt-3 text-xs text-muted-foreground">
-                  Nous vous appelons des que votre commande est prete a etre retiree.
-                </p>
-              </div>
-            )}
+            <p className={storeSectionCls}>Livraison</p>
+            <p className="text-sm font-semibold text-foreground">Livraison a domicile</p>
+            <p className="mt-1 text-sm font-medium text-primary">
+              {formatPriceTnd(deliveryFee)} TND
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Partout en Tunisie, paiement a la livraison.
+            </p>
           </div>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="lg:col-span-2 space-y-6">
-          <input type="hidden" {...register('orderType')} />
-
           <div className="rounded-2xl border-2 border-primary/20 bg-card p-6">
             <p className={storeSectionCls}>Vos coordonnees</p>
             <div className="space-y-5">
@@ -312,64 +212,37 @@ export default function CheckoutPage() {
                 />
                 <StoreFieldError message={errors.customerPhone?.message} />
               </div>
-              {isPickup ? (
-                selectedBoutique && (
-                  <div className="rounded-xl border-2 border-primary/30 bg-primary/5 p-4">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-primary">
-                      Retrait en boutique
-                    </p>
-                    <p className="mt-2 text-sm font-semibold text-foreground">
-                      {selectedBoutique.name}
-                    </p>
-                    <p className="mt-0.5 text-sm text-muted-foreground">
-                      {boutiqueLabel(selectedBoutique)}
-                      {selectedBoutique.address ? ` · ${selectedBoutique.address}` : ''}
-                    </p>
-                    {selectedBoutique.phone && (
-                      <a
-                        href={phoneHref(selectedBoutique.phone)}
-                        className="mt-1 inline-block text-sm text-muted-foreground transition-colors hover:text-primary hover:underline"
-                      >
-                        +216 {selectedBoutique.phone}
-                      </a>
-                    )}
-                  </div>
-                )
-              ) : (
-                <>
-                  <div>
-                    <label className={storeLabelCls}>
-                      Gouvernorat <span className="text-primary">*</span>
-                    </label>
-                    <Controller
-                      control={control}
-                      name="customerGovernorate"
-                      render={({ field }) => (
-                        <StoreSelect
-                          value={field.value}
-                          onChange={field.onChange}
-                          options={GOVERNORATE_SELECT_OPTIONS}
-                          placeholder="Choisir votre gouvernorat"
-                          hasError={!!errors.customerGovernorate}
-                        />
-                      )}
+              <div>
+                <label className={storeLabelCls}>
+                  Gouvernorat <span className="text-primary">*</span>
+                </label>
+                <Controller
+                  control={control}
+                  name="customerGovernorate"
+                  render={({ field }) => (
+                    <StoreSelect
+                      value={field.value}
+                      onChange={field.onChange}
+                      options={GOVERNORATE_SELECT_OPTIONS}
+                      placeholder="Choisir votre gouvernorat"
+                      hasError={!!errors.customerGovernorate}
                     />
-                    <StoreFieldError message={errors.customerGovernorate?.message} />
-                  </div>
-                  <div>
-                    <label className={storeLabelCls}>
-                      Adresse de livraison <span className="text-primary">*</span>
-                    </label>
-                    <textarea
-                      rows={3}
-                      placeholder="Rue, ville, point de repere..."
-                      className={`${errors.customerAddress ? storeInputErrorCls : storeInputCls} resize-none`}
-                      {...register('customerAddress')}
-                    />
-                    <StoreFieldError message={errors.customerAddress?.message} />
-                  </div>
-                </>
-              )}
+                  )}
+                />
+                <StoreFieldError message={errors.customerGovernorate?.message} />
+              </div>
+              <div>
+                <label className={storeLabelCls}>
+                  Adresse de livraison <span className="text-primary">*</span>
+                </label>
+                <textarea
+                  rows={3}
+                  placeholder="Rue, ville, point de repere..."
+                  className={`${errors.customerAddress ? storeInputErrorCls : storeInputCls} resize-none`}
+                  {...register('customerAddress')}
+                />
+                <StoreFieldError message={errors.customerAddress?.message} />
+              </div>
               <div>
                 <label className={storeLabelCls}>Notes (optionnel)</label>
                 <textarea
@@ -390,10 +263,8 @@ export default function CheckoutPage() {
               <span className="font-medium">{formatPriceTnd(total)} TND</span>
             </div>
             <div className="flex justify-between text-base text-foreground">
-              <span>{isPickup ? 'Retrait en boutique' : 'Livraison'}</span>
-              <span className="font-medium">
-                {isPickup ? 'Gratuit' : `${formatPriceTnd(deliveryFee)} TND`}
-              </span>
+              <span>Livraison</span>
+              <span className="font-medium">{formatPriceTnd(deliveryFee)} TND</span>
             </div>
             <div className="h-px bg-primary/20" />
             <div className="flex justify-between items-center text-foreground">
@@ -411,11 +282,7 @@ export default function CheckoutPage() {
             disabled={isSubmitting}
             className="w-full rounded-full bg-primary py-4 text-sm font-semibold tracking-wide text-primary-foreground shadow-md shadow-primary/30 transition-all hover:opacity-95 disabled:opacity-60"
           >
-            {isSubmitting
-              ? 'Envoi en cours...'
-              : isPickup
-                ? 'Reserver et retirer en boutique'
-                : 'Confirmer la commande'}
+            {isSubmitting ? 'Envoi en cours...' : 'Confirmer la commande'}
           </button>
         </form>
       </div>

@@ -62,11 +62,6 @@ export default async function AdminDashboardPage() {
           description="Organiser coussins, accessoires, rangement et literie."
         />
         <AdminQuickLink
-          href="/admin/boutiques"
-          title="Gerer les boutiques"
-          description="Adresses affichees en accueil et points de retrait des commandes."
-        />
-        <AdminQuickLink
           href="/admin/hero"
           title="Carrousel hero"
           description="Slides, textes et boutons animes du bandeau d accueil."

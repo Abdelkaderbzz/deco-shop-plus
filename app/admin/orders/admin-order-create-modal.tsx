@@ -2,8 +2,13 @@
 
 import { adminCreateOrder, type CartItem } from '@/app/actions/orders'
 import { useToast } from '@/components/toast-provider'
-import { boutiqueLabel, type PickupBoutique } from '@/lib/boutiques'
 import { parseProductColors } from '@/lib/product-colors'
+import {
+  hasVariableSizePrices,
+  parseProductSizes,
+  priceForSize,
+  type ProductSize,
+} from '@/lib/product-sizes'
 import { GOVERNORATE_SELECT_OPTIONS } from '@/lib/tunisia-governorates'
 import { orderCreateSchema, type OrderCreateFormValues } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -30,27 +35,18 @@ export type CreateOrderProduct = {
   sizes: string
   colors: string
   inStock: boolean
+  stock: number
 }
-
-const ORDER_TYPE_OPTIONS = [
-  { value: 'delivery', label: 'Livraison' },
-  { value: 'boutique', label: 'Retrait boutique' },
-]
 
 const STATUS_SELECT_OPTIONS = ORDER_STATUS_OPTIONS.map((status) => ({
   value: status.value,
   label: status.label,
 }))
 
-function parseProductSizes(sizesJson: string): string[] {
-  try {
-    const parsed = JSON.parse(sizesJson || '[]') as unknown
-    if (!Array.isArray(parsed)) return ['Standard']
-    const sizes = parsed.map(String).filter(Boolean)
-    return sizes.length > 0 ? sizes : ['Standard']
-  } catch {
-    return ['Standard']
-  }
+function sizesForProduct(product: CreateOrderProduct): ProductSize[] {
+  const fallback = parseFloat(product.price) || 0
+  const sizes = parseProductSizes(product.sizes, fallback)
+  return sizes.length > 0 ? sizes : [{ name: 'Standard', price: fallback }]
 }
 
 type DraftLine = CartItem & { key: string }
@@ -58,13 +54,11 @@ type DraftLine = CartItem & { key: string }
 export function AdminOrderCreateModal({
   products,
   deliveryFee,
-  pickupBoutiques,
   onClose,
   onCreated,
 }: {
   products: CreateOrderProduct[]
   deliveryFee: number
-  pickupBoutiques: PickupBoutique[]
   onClose: () => void
   onCreated: () => void
 }) {
@@ -80,7 +74,6 @@ export function AdminOrderCreateModal({
   const {
     register,
     handleSubmit,
-    watch,
     control,
     setValue,
     formState: { errors },
@@ -91,21 +84,17 @@ export function AdminOrderCreateModal({
       customerPhone: '',
       customerGovernorate: '',
       customerAddress: '',
-      orderType: 'delivery',
-      pickupBoutiqueId: null,
       status: 'confirmed',
       notes: '',
       items: [],
     },
   })
 
-  const orderType = watch('orderType')
-
   const productOptions = useMemo(
     () =>
       products.map((product) => ({
         value: String(product.id),
-        label: `${product.brand} — ${product.name} (${parseFloat(product.price).toFixed(3)} TND)`,
+        label: `${product.brand} — ${product.name} (${parseFloat(product.price).toFixed(3)} TND · ${product.stock} en stock)`,
       })),
     [products],
   )
@@ -113,7 +102,12 @@ export function AdminOrderCreateModal({
   const selectedProduct = products.find((product) => String(product.id) === productId) ?? null
   const sizeOptions = useMemo(() => {
     if (!selectedProduct) return []
-    return parseProductSizes(selectedProduct.sizes).map((value) => ({ value, label: value }))
+    const sizes = sizesForProduct(selectedProduct)
+    const showPrices = hasVariableSizePrices(sizes)
+    return sizes.map((size) => ({
+      value: size.name,
+      label: showPrices ? `${size.name} — ${size.price.toFixed(3)} TND` : size.name,
+    }))
   }, [selectedProduct])
   const colorOptions = useMemo(() => {
     if (!selectedProduct) return []
@@ -124,8 +118,7 @@ export function AdminOrderCreateModal({
   }, [selectedProduct])
 
   const subtotal = lines.reduce((acc, line) => acc + line.price * line.quantity, 0)
-  const fee = orderType === 'delivery' ? deliveryFee : 0
-  const total = subtotal + fee
+  const total = subtotal + deliveryFee
 
   function syncItems(nextLines: DraftLine[]) {
     setLines(nextLines)
@@ -148,8 +141,8 @@ export function AdminOrderCreateModal({
     setProductId(nextId)
     setItemError(null)
     const product = products.find((item) => String(item.id) === nextId)
-    const sizes = product ? parseProductSizes(product.sizes) : []
-    setSize(sizes[0] ?? '')
+    const sizes = product ? sizesForProduct(product) : []
+    setSize(sizes[0]?.name ?? '')
     setColor(parseProductColors(product).at(0)?.name ?? '')
   }
 
@@ -172,6 +165,16 @@ export function AdminOrderCreateModal({
       return
     }
 
+    const already = lines
+      .filter((line) => line.productId === selectedProduct.id)
+      .reduce((sum, line) => sum + line.quantity, 0)
+    const room = Math.max(0, selectedProduct.stock - already)
+    if (room <= 0) {
+      setItemError('Stock insuffisant pour ce produit.')
+      return
+    }
+    const addQty = Math.min(qty, room)
+
     const existingIndex = lines.findIndex(
       (line) =>
         line.productId === selectedProduct.id &&
@@ -181,7 +184,7 @@ export function AdminOrderCreateModal({
     if (existingIndex >= 0) {
       const next = lines.map((line, index) =>
         index === existingIndex
-          ? { ...line, quantity: Math.min(99, line.quantity + qty) }
+          ? { ...line, quantity: line.quantity + addQty }
           : line,
       )
       syncItems(next)
@@ -195,8 +198,12 @@ export function AdminOrderCreateModal({
           productBrand: selectedProduct.brand,
           size,
           color,
-          quantity: qty,
-          price: parseFloat(selectedProduct.price),
+          quantity: addQty,
+          price: priceForSize(
+            sizesForProduct(selectedProduct),
+            size,
+            parseFloat(selectedProduct.price) || 0,
+          ),
         },
       ])
     }
@@ -212,9 +219,15 @@ export function AdminOrderCreateModal({
   function updateLineQuantity(key: string, nextQty: number) {
     if (!Number.isFinite(nextQty) || nextQty < 1) return
     syncItems(
-      lines.map((line) =>
-        line.key === key ? { ...line, quantity: Math.min(99, nextQty) } : line,
-      ),
+      lines.map((line) => {
+        if (line.key !== key) return line
+        const product = products.find((item) => item.id === line.productId)
+        const others = lines
+          .filter((item) => item.productId === line.productId && item.key !== key)
+          .reduce((sum, item) => sum + item.quantity, 0)
+        const max = Math.max(1, (product?.stock ?? 99) - others)
+        return { ...line, quantity: Math.min(max, nextQty) }
+      }),
     )
   }
 
@@ -225,8 +238,6 @@ export function AdminOrderCreateModal({
         customerPhone: values.customerPhone,
         customerGovernorate: values.customerGovernorate || undefined,
         customerAddress: values.customerAddress || undefined,
-        orderType: values.orderType,
-        pickupBoutiqueId: values.orderType === 'boutique' ? values.pickupBoutiqueId : null,
         status: values.status,
         notes: values.notes || undefined,
         items: values.items,
@@ -272,23 +283,6 @@ export function AdminOrderCreateModal({
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className={adminLabelCls}>TYPE</label>
-            <Controller
-              control={control}
-              name="orderType"
-              render={({ field }) => (
-                <AdminSelect
-                  value={field.value}
-                  onValueChange={field.onChange}
-                  items={ORDER_TYPE_OPTIONS}
-                  error={!!errors.orderType}
-                  disabled={isPending}
-                />
-              )}
-            />
-            <AdminFieldError message={errors.orderType?.message} />
-          </div>
-          <div>
             <label className={adminLabelCls}>STATUT</label>
             <Controller
               control={control}
@@ -308,66 +302,35 @@ export function AdminOrderCreateModal({
           </div>
         </div>
 
-        {orderType === 'delivery' && (
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label className={adminLabelCls}>GOUVERNORAT *</label>
-              <Controller
-                control={control}
-                name="customerGovernorate"
-                render={({ field }) => (
-                  <AdminSelect
-                    value={field.value}
-                    onValueChange={field.onChange}
-                    items={GOVERNORATE_SELECT_OPTIONS}
-                    error={!!errors.customerGovernorate}
-                    disabled={isPending}
-                  />
-                )}
-              />
-              <AdminFieldError message={errors.customerGovernorate?.message} />
-            </div>
-            <div>
-              <label className={adminLabelCls}>ADRESSE *</label>
-              <textarea
-                rows={3}
-                className={`${adminInputWithError(!!errors.customerAddress)} resize-none`}
-                disabled={isPending}
-                {...register('customerAddress')}
-              />
-              <AdminFieldError message={errors.customerAddress?.message} />
-            </div>
-          </div>
-        )}
-
-        {orderType === 'boutique' && (
+        <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className={adminLabelCls}>BOUTIQUE DE RETRAIT *</label>
+            <label className={adminLabelCls}>GOUVERNORAT *</label>
             <Controller
               control={control}
-              name="pickupBoutiqueId"
+              name="customerGovernorate"
               render={({ field }) => (
                 <AdminSelect
-                  value={field.value == null ? '' : String(field.value)}
-                  onValueChange={(value) => field.onChange(value ? Number(value) : null)}
-                  items={pickupBoutiques.map((boutique) => ({
-                    value: String(boutique.id),
-                    label: `${boutique.name} — ${boutiqueLabel(boutique)}`,
-                  }))}
-                  placeholder="Choisir une boutique"
-                  error={!!errors.pickupBoutiqueId}
-                  disabled={isPending || pickupBoutiques.length === 0}
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  items={GOVERNORATE_SELECT_OPTIONS}
+                  error={!!errors.customerGovernorate}
+                  disabled={isPending}
                 />
               )}
             />
-            <AdminFieldError message={errors.pickupBoutiqueId?.message} />
-            {pickupBoutiques.length === 0 && (
-              <p className="mt-1 text-xs text-slate-500">
-                Activez le retrait sur au moins une boutique dans l onglet Boutiques.
-              </p>
-            )}
+            <AdminFieldError message={errors.customerGovernorate?.message} />
           </div>
-        )}
+          <div>
+            <label className={adminLabelCls}>ADRESSE *</label>
+            <textarea
+              rows={3}
+              className={`${adminInputWithError(!!errors.customerAddress)} resize-none`}
+              disabled={isPending}
+              {...register('customerAddress')}
+            />
+            <AdminFieldError message={errors.customerAddress?.message} />
+          </div>
+        </div>
 
         <div>
           <label className={adminLabelCls}>NOTES</label>
@@ -481,7 +444,7 @@ export function AdminOrderCreateModal({
             <div className="flex justify-between text-slate-500">
               <span>Livraison</span>
               <span className="tabular-nums">
-                {fee === 0 ? 'Gratuit' : `${fee.toFixed(3)} TND`}
+                {deliveryFee === 0 ? 'Gratuit' : `${deliveryFee.toFixed(3)} TND`}
               </span>
             </div>
             <div className="flex justify-between font-semibold text-slate-900">

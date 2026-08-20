@@ -1,4 +1,3 @@
-import { getBoutiques } from '@/app/actions/boutiques'
 import { getCategories } from '@/app/actions/categories'
 import { getHeroSlides } from '@/app/actions/hero'
 import {
@@ -7,7 +6,6 @@ import {
   getLatestProducts,
   getPromoProducts,
 } from '@/app/actions/products'
-import { BoutiquesSection } from '@/components/boutiques-section'
 import { CategoriesSection } from '@/components/categories-section'
 import { HeroSection } from '@/components/hero-section'
 import { ProductCard } from '@/components/product-card'
@@ -16,12 +14,17 @@ import {
   InstagramSectionHeader,
 } from '@/components/instagram-section-static'
 import { Reveal } from '@/components/reveal'
+import {
+  CategoriesSkeleton,
+  HeroSkeleton,
+  ProductGridSkeleton,
+} from '@/components/store-skeletons'
 import { TestimonialsSection } from '@/components/testimonials-section'
 import { mergeStoreCategories } from '@/lib/store-categories'
 import { SITE } from '@/lib/site'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import type { ReactNode } from 'react'
+import { Suspense, type ReactNode } from 'react'
 
 export const revalidate = 120
 
@@ -63,10 +66,8 @@ function HomeProductSection({
         </h2>
       </Reveal>
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 lg:grid-cols-4">
-        {products.map((product, index) => (
-          <Reveal key={product.id} delay={(index % 4) * 80}>
-            <ProductCard product={product} categories={categories} />
-          </Reveal>
+        {products.map((product) => (
+          <ProductCard key={product.id} product={product} categories={categories} />
         ))}
       </div>
       {action ? (
@@ -78,70 +79,106 @@ function HomeProductSection({
   )
 }
 
+async function HomeHero() {
+  const slides = await getHeroSlides()
+  return <HeroSection slides={slides} />
+}
+
+async function HomeCategories() {
+  const categories = await getCategories()
+  return <CategoriesSection categories={mergeStoreCategories(categories)} />
+}
+
+async function HomePromotions({ categories }: { categories: { slug: string; name: string }[] }) {
+  const products = await getPromoProducts()
+  return (
+    <HomeProductSection
+      id="promotions"
+      eyebrow="Offres"
+      title="Promotions"
+      products={products}
+      categories={categories}
+    />
+  )
+}
+
+async function HomeLatest({ categories }: { categories: { slug: string; name: string }[] }) {
+  const products = await getLatestProducts()
+  return (
+    <HomeProductSection
+      id="nouveautes"
+      eyebrow="Arrivees"
+      title="Derniers articles"
+      products={products}
+      categories={categories}
+    />
+  )
+}
+
+async function HomeBestSellers({ categories }: { categories: { slug: string; name: string }[] }) {
+  const products = await getBestSellerProducts()
+  return (
+    <HomeProductSection
+      id="best-sellers"
+      eyebrow="Selection clients"
+      title="Les plus vendus"
+      products={products}
+      categories={categories}
+    />
+  )
+}
+
+async function HomeFeatured({ categories }: { categories: { slug: string; name: string }[] }) {
+  const products = await getFeaturedProducts()
+  return (
+    <HomeProductSection
+      id="coups-de-coeur"
+      eyebrow="Selection"
+      title="Coups de coeur"
+      products={products}
+      categories={categories}
+      action={
+        <Link
+          href="/products"
+          className="rounded-full border border-border px-8 py-3 text-sm font-medium text-muted-foreground transition-all hover:border-primary hover:bg-primary/5 hover:text-primary"
+        >
+          Toute la boutique
+        </Link>
+      }
+    />
+  )
+}
+
 export default async function HomePage() {
-  const [featured, promotions, latest, bestSellers, categories, heroSlides, boutiques] =
-    await Promise.all([
-      getFeaturedProducts(),
-      getPromoProducts(),
-      getLatestProducts(),
-      getBestSellerProducts(),
-      getCategories(),
-      getHeroSlides(),
-      getBoutiques(),
-    ])
-  const storeCategories = mergeStoreCategories(categories)
+  const categories = await getCategories()
 
   return (
     <div>
-      <HeroSection slides={heroSlides} />
+      <Suspense fallback={<HeroSkeleton />}>
+        <HomeHero />
+      </Suspense>
 
-      <CategoriesSection categories={storeCategories} />
+      <Suspense fallback={<CategoriesSkeleton />}>
+        <HomeCategories />
+      </Suspense>
 
-      <HomeProductSection
-        id="promotions"
-        eyebrow="Offres"
-        title="Promotions"
-        products={promotions}
-        categories={categories}
-      />
+      <Suspense fallback={<ProductGridSkeleton count={4} />}>
+        <HomePromotions categories={categories} />
+      </Suspense>
 
-      <HomeProductSection
-        id="nouveautes"
-        eyebrow="Arrivees"
-        title="Derniers articles"
-        products={latest}
-        categories={categories}
-      />
+      <Suspense fallback={<ProductGridSkeleton count={4} />}>
+        <HomeLatest categories={categories} />
+      </Suspense>
 
-      <HomeProductSection
-        id="best-sellers"
-        eyebrow="Selection clients"
-        title="Les plus vendus"
-        products={bestSellers}
-        categories={categories}
-      />
+      <Suspense fallback={<ProductGridSkeleton count={4} />}>
+        <HomeBestSellers categories={categories} />
+      </Suspense>
 
-      {featured.length > 0 && (
-        <HomeProductSection
-          id="coups-de-coeur"
-          eyebrow="Selection"
-          title="Coups de coeur"
-          products={featured}
-          categories={categories}
-          action={
-            <Link
-              href="/products"
-              className="rounded-full border border-border px-8 py-3 text-sm font-medium text-muted-foreground transition-all hover:border-primary hover:bg-primary/5 hover:text-primary"
-            >
-              Toute la boutique
-            </Link>
-          }
-        />
-      )}
+      <Suspense fallback={<ProductGridSkeleton count={4} />}>
+        <HomeFeatured categories={categories} />
+      </Suspense>
 
       <TestimonialsSection />
-
-      <BoutiquesSection boutiques={boutiques} />
 
       <section className="border-t border-border bg-secondary/40 py-14 md:py-16">
         <div className="mx-auto max-w-7xl px-2 sm:px-3">

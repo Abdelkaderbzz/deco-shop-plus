@@ -9,7 +9,6 @@ import {
 } from '@/app/actions/orders'
 import { useToast } from '@/components/toast-provider'
 import { useConfirm } from '@/components/confirm-provider'
-import { boutiqueLabel, type PickupBoutique } from '@/lib/boutiques'
 import { formatDateFr } from '@/lib/locale'
 import { GOVERNORATE_SELECT_OPTIONS, getGovernorateLabel } from '@/lib/tunisia-governorates'
 import { orderEditSchema, type OrderEditFormValues } from '@/lib/validations'
@@ -66,22 +65,10 @@ type Order = {
 
 const STATUS_OPTIONS = ORDER_STATUS_OPTIONS
 
-const ORDER_TYPE_OPTIONS = [
-  { value: 'delivery', label: 'Livraison' },
-  { value: 'boutique', label: 'Retrait boutique' },
-]
-
 const STATUS_SELECT_OPTIONS = STATUS_OPTIONS.map((status) => ({
   value: status.value,
   label: status.label,
 }))
-
-function boutiqueSelectOptions(boutiques: PickupBoutique[]) {
-  return boutiques.map((boutique) => ({
-    value: String(boutique.id),
-    label: `${boutique.name} — ${boutiqueLabel(boutique)}`,
-  }))
-}
 
 function buildOrdersUrl(search: string, status: string, page: number) {
   const params = new URLSearchParams()
@@ -114,7 +101,6 @@ export function AdminOrdersClient({
   statusCounts: initialStatusCounts,
   products,
   deliveryFee,
-  pickupBoutiques,
 }: {
   orders: Order[]
   total: number
@@ -124,7 +110,6 @@ export function AdminOrdersClient({
   statusCounts: Record<string, number>
   products: CreateOrderProduct[]
   deliveryFee: number
-  pickupBoutiques: PickupBoutique[]
 }) {
   const { isPending: isNavigating, push, refresh } = useRouteTransition()
   const toast = useToast()
@@ -152,7 +137,6 @@ export function AdminOrdersClient({
     register,
     handleSubmit,
     reset,
-    watch,
     control,
     formState: { errors },
   } = useForm<OrderEditFormValues>({
@@ -162,14 +146,10 @@ export function AdminOrdersClient({
       customerPhone: '',
       customerGovernorate: '',
       customerAddress: '',
-      orderType: 'delivery',
-      pickupBoutiqueId: null,
       status: 'pending',
       notes: '',
     },
   })
-
-  const orderType = watch('orderType')
 
   async function openOrder(id: number) {
     setLoadingOrderId(id)
@@ -194,8 +174,6 @@ export function AdminOrdersClient({
       customerPhone: order.customerPhone,
       customerGovernorate: order.customerGovernorate ?? '',
       customerAddress: order.customerAddress ?? '',
-      orderType: order.orderType as 'delivery' | 'boutique',
-      pickupBoutiqueId: order.pickupBoutiqueId,
       status: order.status,
       notes: order.notes ?? '',
     })
@@ -238,8 +216,6 @@ export function AdminOrdersClient({
         customerPhone: values.customerPhone,
         customerGovernorate: values.customerGovernorate || undefined,
         customerAddress: values.customerAddress || undefined,
-        orderType: values.orderType,
-        pickupBoutiqueId: values.orderType === 'boutique' ? values.pickupBoutiqueId : null,
         status: values.status,
         notes: values.notes || undefined,
       })
@@ -495,7 +471,6 @@ export function AdminOrdersClient({
         <AdminOrderCreateModal
           products={products}
           deliveryFee={deliveryFee}
-          pickupBoutiques={pickupBoutiques}
           onClose={() => setCreating(false)}
           onCreated={() => {
             setCreating(false)
@@ -634,78 +609,32 @@ export function AdminOrdersClient({
               <AdminFieldError message={errors.customerPhone?.message} />
             </div>
             <div>
-              <label className={adminLabelCls}>TYPE</label>
+              <label className={adminLabelCls}>GOUVERNORAT *</label>
               <Controller
                 control={control}
-                name="orderType"
+                name="customerGovernorate"
                 render={({ field }) => (
                   <AdminSelect
                     value={field.value}
                     onValueChange={field.onChange}
-                    items={ORDER_TYPE_OPTIONS}
-                    error={!!errors.orderType}
+                    items={GOVERNORATE_SELECT_OPTIONS}
+                    error={!!errors.customerGovernorate}
                     disabled={isPending}
                   />
                 )}
               />
-              <AdminFieldError message={errors.orderType?.message} />
+              <AdminFieldError message={errors.customerGovernorate?.message} />
             </div>
-            {orderType === 'delivery' && (
-              <>
-                <div>
-                  <label className={adminLabelCls}>GOUVERNORAT *</label>
-                  <Controller
-                    control={control}
-                    name="customerGovernorate"
-                    render={({ field }) => (
-                      <AdminSelect
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        items={GOVERNORATE_SELECT_OPTIONS}
-                        error={!!errors.customerGovernorate}
-                        disabled={isPending}
-                      />
-                    )}
-                  />
-                  <AdminFieldError message={errors.customerGovernorate?.message} />
-                </div>
-                <div>
-                  <label className={adminLabelCls}>ADRESSE</label>
-                  <textarea
-                    rows={3}
-                    className={`${adminInputWithError(!!errors.customerAddress)} resize-none`}
-                    disabled={isPending}
-                    {...register('customerAddress')}
-                  />
-                  <AdminFieldError message={errors.customerAddress?.message} />
-                </div>
-              </>
-            )}
-            {orderType === 'boutique' && (
-              <div>
-                <label className={adminLabelCls}>BOUTIQUE DE RETRAIT *</label>
-                <Controller
-                  control={control}
-                  name="pickupBoutiqueId"
-                  render={({ field }) => (
-                    <AdminSelect
-                      value={field.value == null ? '' : String(field.value)}
-                      onValueChange={(value) => field.onChange(value ? Number(value) : null)}
-                      items={boutiqueSelectOptions(pickupBoutiques)}
-                      placeholder="Choisir une boutique"
-                      error={!!errors.pickupBoutiqueId}
-                      disabled={isPending || pickupBoutiques.length === 0}
-                    />
-                  )}
-                />
-                <AdminFieldError message={errors.pickupBoutiqueId?.message} />
-                {pickupBoutiques.length === 0 && (
-                  <p className="mt-1 text-xs text-slate-500">
-                    Activez le retrait sur au moins une boutique dans l onglet Boutiques.
-                  </p>
-                )}
-              </div>
-            )}
+            <div>
+              <label className={adminLabelCls}>ADRESSE</label>
+              <textarea
+                rows={3}
+                className={`${adminInputWithError(!!errors.customerAddress)} resize-none`}
+                disabled={isPending}
+                {...register('customerAddress')}
+              />
+              <AdminFieldError message={errors.customerAddress?.message} />
+            </div>
             <div>
               <label className={adminLabelCls}>STATUT</label>
               <Controller

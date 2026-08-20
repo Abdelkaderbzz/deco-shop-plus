@@ -84,6 +84,7 @@ const statements = [
     "imageUrl" text,
     "images" text NOT NULL DEFAULT '[]',
     "sizes" text NOT NULL DEFAULT '[]',
+    "stock" integer NOT NULL DEFAULT 0,
     "inStock" boolean NOT NULL DEFAULT true,
     "featured" boolean NOT NULL DEFAULT false,
     "createdAt" timestamp NOT NULL DEFAULT now(),
@@ -268,6 +269,16 @@ const statements = [
      ('/assets/photo-output-1-2.jpeg.webp', 'Salon Deco Shop Plus', 'Selection clients', 'Les plus vendus', 'Les pieces que nos clientes emportent le plus souvent.', 'Voir les plus vendus', 'best-sellers', '', true, 2)
    ) AS v("imageUrl", "alt", "eyebrow", "title", "subtitle", "ctaLabel", "ctaTarget", "ctaHref", "published", "sortOrder")
    WHERE NOT EXISTS (SELECT 1 FROM "hero_slides")`,
+  `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "stock" integer NOT NULL DEFAULT 0`,
+  `UPDATE "products" SET "stock" = 10 WHERE "inStock" = true AND "stock" = 0`,
+  `UPDATE "products" SET "inStock" = ("stock" > 0)`,
+  `CREATE INDEX IF NOT EXISTS products_published_created_idx ON products (published, "createdAt" DESC)`,
+  `CREATE INDEX IF NOT EXISTS products_published_category_idx ON products (published, category)`,
+  `CREATE INDEX IF NOT EXISTS products_published_featured_idx ON products (published, featured) WHERE published = true AND featured = true`,
+  `CREATE INDEX IF NOT EXISTS products_published_promo_idx ON products (published, "promoEnabled") WHERE published = true AND "promoEnabled" = true`,
+  `CREATE INDEX IF NOT EXISTS order_items_product_id_idx ON "order_items" ("productId")`,
+  `CREATE INDEX IF NOT EXISTS banners_active_idx ON banners (active) WHERE active = true`,
+  `CREATE INDEX IF NOT EXISTS hero_slides_published_sort_idx ON hero_slides (published, "sortOrder")`,
 ]
 
 try {

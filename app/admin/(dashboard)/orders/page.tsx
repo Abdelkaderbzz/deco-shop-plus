@@ -1,4 +1,3 @@
-import { getPickupBoutiques } from '@/app/actions/boutiques'
 import { getOrderStatusCounts, getOrdersPaginated } from '@/app/actions/orders'
 import { getAdminProducts } from '@/app/actions/products'
 import { getDeliveryFee } from '@/app/actions/settings'
@@ -16,12 +15,11 @@ export default async function AdminOrdersPage({
   const search = params.search?.trim() ?? ''
   const status = params.status?.trim() || 'all'
 
-  const [orderPage, statusCounts, products, deliveryFee, pickupBoutiques] = await Promise.all([
+  const [orderPage, statusCounts, products, deliveryFee] = await Promise.all([
     getOrdersPaginated({ page, pageSize: ADMIN_PAGE_SIZE, search, status }),
     getOrderStatusCounts(),
     getAdminProducts(),
     getDeliveryFee(),
-    getPickupBoutiques(),
   ])
 
   return (
@@ -46,9 +44,9 @@ export default async function AdminOrdersPage({
           sizes: product.sizes,
           colors: product.colors ?? '[]',
           inStock: product.inStock,
+          stock: product.stock,
         }))}
         deliveryFee={deliveryFee}
-        pickupBoutiques={pickupBoutiques}
       />
     </div>
   )
