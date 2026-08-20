@@ -177,6 +177,7 @@ html {
 
 .marquee-track {
   display: flex;
+  align-items: stretch;
   width: max-content;
   will-change: transform;
   animation: marquee-drift-left var(--marquee-duration, 70s) linear infinite;

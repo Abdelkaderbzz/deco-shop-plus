@@ -1,9 +1,9 @@
 import Image from 'next/image'
-import { GoogleReviewCard, InstagramCommentCard, WhatsAppCommentCard } from '@/components/testimonial-cards'
+import { FacebookCommentCard, InstagramCommentCard, WhatsAppCommentCard } from '@/components/testimonial-cards'
 import { Reveal } from '@/components/reveal'
 import {
   TESTIMONIAL_SOURCES,
-  googleTestimonials,
+  facebookTestimonials,
   socialTestimonials,
   usedTestimonialSources,
   type TestimonialItem,
@@ -14,46 +14,39 @@ const ROW_DURATION_SECONDS = { top: 78, bottom: 94 } as const
 
 /** How many times the item list repeats inside a single pass. One pass must be
  *  wider than the viewport or a gap opens at the trailing edge. Short rows
- *  (Google screenshots) need more copies than the mixed social row. */
+ *  (Facebook comments) need more copies than the mixed social row. */
 function repeatsFor(count: number) {
   return Math.max(2, Math.ceil(8 / Math.max(count, 1)))
 }
 
-/** Shared by every card so both rows line up and nothing shrinks mid-animation. */
-const ITEM_CLS = 'h-40 shrink-0 overflow-hidden sm:h-44 lg:h-48'
-
-/** Comments are HTML, so unlike screenshots they need an explicit width. */
-const COMMENT_WIDTH_CLS = 'w-72 sm:w-80 lg:w-96'
+/** Shared by every card so both rows stretch to the tallest review. */
+const ITEM_CLS = 'flex w-72 shrink-0 px-1 py-1 sm:w-80 lg:w-[22rem]'
 
 function TestimonialItemCard({ item, decorative }: { item: TestimonialItem; decorative: boolean }) {
   if (item.kind === 'screenshot') {
     return (
-      <li className={`${ITEM_CLS} border-r border-black/5 bg-white`}>
-        <Image
-          src={item.src}
-          alt={decorative ? '' : item.alt}
-          width={item.width}
-          height={item.height}
-          sizes="(max-width: 640px) 400px, (max-width: 1024px) 460px, 540px"
-          draggable={false}
-          loading="eager"
-          className="block h-full w-auto select-none"
-        />
-      </li>
-    )
-  }
-
-  if (item.source === 'google') {
-    return (
-      <li className={`${ITEM_CLS} w-72 bg-secondary px-2 py-2 sm:w-80 lg:w-[22rem]`}>
-        <GoogleReviewCard item={item} />
+      <li className={ITEM_CLS}>
+        <div className="flex min-h-full flex-1 overflow-hidden rounded-xl bg-white shadow-[0_8px_24px_-16px_rgba(15,23,42,0.45)]">
+          <Image
+            src={item.src}
+            alt={decorative ? '' : item.alt}
+            width={item.width}
+            height={item.height}
+            sizes="(max-width: 640px) 400px, (max-width: 1024px) 460px, 540px"
+            draggable={false}
+            loading="lazy"
+            className="block h-full w-full object-cover select-none"
+          />
+        </div>
       </li>
     )
   }
 
   return (
-    <li className={`${ITEM_CLS} ${COMMENT_WIDTH_CLS} border-r border-white/5`}>
-      {item.source === 'instagram' ? (
+    <li className={ITEM_CLS}>
+      {item.source === 'facebook' ? (
+        <FacebookCommentCard item={item} />
+      ) : item.source === 'instagram' ? (
         <InstagramCommentCard item={item} />
       ) : (
         <WhatsAppCommentCard item={item} />
@@ -111,7 +104,7 @@ export function TestimonialsSection() {
             Elles nous font confiance
           </h2>
           <p className="mx-auto mt-3 max-w-lg text-sm text-muted-foreground">
-            Avis Google, messages WhatsApp et retours de clientes a Bizerte.
+            Commentaires Facebook, messages WhatsApp et Instagram a Bizerte.
           </p>
         </Reveal>
       </div>
@@ -119,7 +112,7 @@ export function TestimonialsSection() {
       <Reveal variant="fade">
         <div className="relative border-y border-border/60">
           <MarqueeRow
-            items={googleTestimonials()}
+            items={facebookTestimonials()}
             direction="left"
             duration={ROW_DURATION_SECONDS.top}
           />
