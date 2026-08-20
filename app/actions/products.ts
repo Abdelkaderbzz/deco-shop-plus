@@ -77,7 +77,6 @@ type ProductListOptions = {
   search?: string
   category?: string
   publishedOnly?: boolean
-  compact?: boolean
 }
 
 function buildProductConditions(options: ProductListOptions) {
@@ -106,7 +105,14 @@ function buildProductConditions(options: ProductListOptions) {
   return conditions
 }
 
-async function queryProductsPaginated(options: ProductListOptions) {
+async function queryProductPage<T>(
+  options: ProductListOptions,
+  loadItems: (
+    whereClause: ReturnType<typeof and> | undefined,
+    pageSize: number,
+    offset: number,
+  ) => Promise<T[]>,
+) {
   const page = normalizePage(options.page)
   const pageSize = normalizePageSize(options.pageSize, ADMIN_PAGE_SIZE)
   const offset = paginationOffset(page, pageSize)
@@ -119,24 +125,34 @@ async function queryProductsPaginated(options: ProductListOptions) {
       .from(products)
       .where(whereClause)
       .then((rows) => rows[0]),
-    options.compact
-      ? db
-          .select(storeProductCardSelect)
-          .from(products)
-          .where(whereClause)
-          .orderBy(desc(products.createdAt))
-          .limit(pageSize)
-          .offset(offset)
-      : db
-          .select()
-          .from(products)
-          .where(whereClause)
-          .orderBy(desc(products.createdAt))
-          .limit(pageSize)
-          .offset(offset),
+    loadItems(whereClause, pageSize, offset),
   ])
 
   return buildPaginatedResult(items, countRow?.count ?? 0, page, pageSize)
+}
+
+async function queryProductsPaginated(options: ProductListOptions) {
+  return queryProductPage(options, (whereClause, pageSize, offset) =>
+    db
+      .select()
+      .from(products)
+      .where(whereClause)
+      .orderBy(desc(products.createdAt))
+      .limit(pageSize)
+      .offset(offset),
+  )
+}
+
+async function queryStoreProductsPaginated(options: ProductListOptions) {
+  return queryProductPage(options, (whereClause, pageSize, offset) =>
+    db
+      .select(storeProductCardSelect)
+      .from(products)
+      .where(whereClause)
+      .orderBy(desc(products.createdAt))
+      .limit(pageSize)
+      .offset(offset),
+  )
 }
 
 export async function getAdminProductsPaginated(options: {
@@ -160,13 +176,12 @@ export const getStoreProductsPaginated = cache(async (options: {
   const category = options.category?.trim() || 'all'
 
   const run = () =>
-    queryProductsPaginated({
+    queryStoreProductsPaginated({
       page,
       pageSize,
       search,
       category,
       publishedOnly: true,
-      compact: true,
     })
 
   if (search) return run()
