@@ -3,7 +3,9 @@ import { redirect } from 'next/navigation'
 import { catalogHref } from '@/lib/catalog-href'
 import { SITE } from '@/lib/site'
 import { normalizePage } from '@/lib/pagination'
+import { CatalogSkeleton } from '@/components/store-skeletons'
 import { CatalogPage } from './catalog-page'
+import { Suspense } from 'react'
 
 export const revalidate = 120
 
@@ -54,7 +56,9 @@ export default async function ProductsPage({
 
   return (
     <div className="mx-auto max-w-7xl px-2 py-8 sm:px-3">
-      <CatalogPage category={search ? category : 'all'} search={search} page={page} />
+      <Suspense fallback={<CatalogSkeleton />}>
+        <CatalogPage category={search ? category : 'all'} search={search} page={page} />
+      </Suspense>
     </div>
   )
 }

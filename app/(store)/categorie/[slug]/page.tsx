@@ -5,7 +5,9 @@ import { catalogHref } from '@/lib/catalog-href'
 import { SITE } from '@/lib/site'
 import { getMergedCategoryBySlug, STORE_CATEGORIES } from '@/lib/store-categories'
 import { normalizePage } from '@/lib/pagination'
+import { CatalogSkeleton } from '@/components/store-skeletons'
 import { CatalogPage } from '../../products/catalog-page'
+import { Suspense } from 'react'
 
 export const revalidate = 120
 export const dynamicParams = true
@@ -77,11 +79,13 @@ export default async function CategoryPage({
 
   return (
     <div className="mx-auto max-w-7xl px-2 py-8 sm:px-3">
-      <CatalogPage
-        category={slug}
-        search={query.search?.trim() ?? ''}
-        page={normalizePage(query.page)}
-      />
+      <Suspense fallback={<CatalogSkeleton />}>
+        <CatalogPage
+          category={slug}
+          search={query.search?.trim() ?? ''}
+          page={normalizePage(query.page)}
+        />
+      </Suspense>
     </div>
   )
 }

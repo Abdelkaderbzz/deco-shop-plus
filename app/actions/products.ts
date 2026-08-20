@@ -325,7 +325,14 @@ export async function getProductOptions() {
 export const getRelatedProducts = cache(async (productId: number) =>
   unstable_cache(
     async () => {
-      const product = await getProductById(productId)
+      const [product] = await db
+        .select({
+          category: products.category,
+          relatedProductIds: products.relatedProductIds,
+        })
+        .from(products)
+        .where(and(eq(products.id, productId), eq(products.published, true)))
+        .limit(1)
       if (!product) return []
 
       const curatedIds = parseRelatedProductIds(product).filter((id) => id !== productId)
