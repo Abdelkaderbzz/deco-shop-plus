@@ -13,6 +13,7 @@ import {
 import { heroSlideSchema } from '@/lib/validations'
 import { asc, desc, eq } from 'drizzle-orm'
 import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
+import { cache } from 'react'
 
 export type HeroActionResult =
   | { success: true; images: HeroImageSlot[] }
@@ -90,13 +91,9 @@ const getHeroSlidesCached = unstable_cache(
   { revalidate: 120, tags: ['hero-slides'] },
 )
 
-export async function getHeroImages(): Promise<HeroImageSlot[]> {
-  return getHeroImagesCached()
-}
+export const getHeroImages = cache(async (): Promise<HeroImageSlot[]> => getHeroImagesCached())
 
-export async function getHeroSlides(): Promise<HeroSlide[]> {
-  return getHeroSlidesCached()
-}
+export const getHeroSlides = cache(async (): Promise<HeroSlide[]> => getHeroSlidesCached())
 
 export async function getAdminHeroImages(): Promise<HeroImageSlot[]> {
   await requireAdminId()

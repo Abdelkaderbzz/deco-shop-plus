@@ -5,6 +5,7 @@ import { db } from '@/lib/db'
 import { categories, products } from '@/lib/db/schema'
 import { asc, eq, sql } from 'drizzle-orm'
 import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
+import { cache } from 'react'
 
 export type CategoryRow = {
   id: number
@@ -48,13 +49,13 @@ function revalidateCategoryPaths() {
   revalidatePath('/')
 }
 
-export async function getCategories() {
-  return unstable_cache(
-    async () => db.select().from(categories).orderBy(asc(categories.name)),
-    ['categories-list'],
-    { revalidate: 300, tags: ['categories'] },
-  )()
-}
+const getCategoriesCached = unstable_cache(
+  async () => db.select().from(categories).orderBy(asc(categories.name)),
+  ['categories-list'],
+  { revalidate: 300, tags: ['categories'] },
+)
+
+export const getCategories = cache(async () => getCategoriesCached())
 
 export async function addCategory(data: {
   name: string

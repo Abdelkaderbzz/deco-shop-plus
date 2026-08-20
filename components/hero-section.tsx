@@ -47,26 +47,35 @@ export function HeroSection({ slides }: { slides: HeroSlide[] }) {
     >
       <div className="mx-auto max-w-7xl px-2 py-4 sm:px-3 md:py-5">
         <div className="relative min-h-[56vh] overflow-hidden rounded-2xl border border-border/60 bg-foreground md:min-h-[64vh]">
-        {slides.map((slide, slideIndex) => (
+        {slides.map((slide, slideIndex) => {
+          const isActive = slideIndex === index
+          const isNearby =
+            isActive ||
+            slideIndex === (index + 1) % total ||
+            slideIndex === (index - 1 + total) % total
+          if (!isNearby) return null
+
+          return (
           <div
             key={slide.id}
             className={`absolute inset-0 transition-opacity duration-700 ${
-              slideIndex === index ? 'opacity-100' : 'opacity-0'
+              isActive ? 'opacity-100' : 'opacity-0'
             }`}
-            aria-hidden={slideIndex !== index}
+            aria-hidden={!isActive}
           >
             <Image
               src={slide.imageUrl}
               alt={slide.alt || slide.title}
               fill
               priority={slideIndex === 0}
-              fetchPriority={slideIndex === 0 ? 'high' : 'auto'}
+              fetchPriority={slideIndex === 0 ? 'high' : 'low'}
               sizes="(max-width: 1024px) 100vw, 80rem"
               className="hero-ken hero-ken-slow object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/45 to-black/15" />
           </div>
-        ))}
+          )
+        })}
 
         <div className="relative z-10 mx-auto flex min-h-[56vh] max-w-7xl flex-col justify-end px-4 py-10 md:min-h-[64vh] md:justify-center md:px-6 md:py-14">
           <div key={current.id} className="max-w-xl text-white">

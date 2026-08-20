@@ -89,8 +89,8 @@ async function HomeCategories() {
   return <CategoriesSection categories={mergeStoreCategories(categories)} />
 }
 
-async function HomePromotions({ categories }: { categories: { slug: string; name: string }[] }) {
-  const products = await getPromoProducts()
+async function HomePromotions() {
+  const [products, categories] = await Promise.all([getPromoProducts(), getCategories()])
   return (
     <HomeProductSection
       id="promotions"
@@ -102,8 +102,8 @@ async function HomePromotions({ categories }: { categories: { slug: string; name
   )
 }
 
-async function HomeLatest({ categories }: { categories: { slug: string; name: string }[] }) {
-  const products = await getLatestProducts()
+async function HomeLatest() {
+  const [products, categories] = await Promise.all([getLatestProducts(), getCategories()])
   return (
     <HomeProductSection
       id="nouveautes"
@@ -115,8 +115,8 @@ async function HomeLatest({ categories }: { categories: { slug: string; name: st
   )
 }
 
-async function HomeBestSellers({ categories }: { categories: { slug: string; name: string }[] }) {
-  const products = await getBestSellerProducts()
+async function HomeBestSellers() {
+  const [products, categories] = await Promise.all([getBestSellerProducts(), getCategories()])
   return (
     <HomeProductSection
       id="best-sellers"
@@ -128,8 +128,8 @@ async function HomeBestSellers({ categories }: { categories: { slug: string; nam
   )
 }
 
-async function HomeFeatured({ categories }: { categories: { slug: string; name: string }[] }) {
-  const products = await getFeaturedProducts()
+async function HomeFeatured() {
+  const [products, categories] = await Promise.all([getFeaturedProducts(), getCategories()])
   return (
     <HomeProductSection
       id="coups-de-coeur"
@@ -149,9 +149,7 @@ async function HomeFeatured({ categories }: { categories: { slug: string; name: 
   )
 }
 
-export default async function HomePage() {
-  const categories = await getCategories()
-
+export default function HomePage() {
   return (
     <div>
       <Suspense fallback={<HeroSkeleton />}>
@@ -163,19 +161,19 @@ export default async function HomePage() {
       </Suspense>
 
       <Suspense fallback={<ProductGridSkeleton count={4} />}>
-        <HomePromotions categories={categories} />
+        <HomePromotions />
       </Suspense>
 
       <Suspense fallback={<ProductGridSkeleton count={4} />}>
-        <HomeLatest categories={categories} />
+        <HomeLatest />
       </Suspense>
 
       <Suspense fallback={<ProductGridSkeleton count={4} />}>
-        <HomeBestSellers categories={categories} />
+        <HomeBestSellers />
       </Suspense>
 
       <Suspense fallback={<ProductGridSkeleton count={4} />}>
-        <HomeFeatured categories={categories} />
+        <HomeFeatured />
       </Suspense>
 
       <TestimonialsSection />

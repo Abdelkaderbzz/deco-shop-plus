@@ -6,6 +6,7 @@ import { Reveal } from '@/components/reveal'
 import { useRouteTransition } from '@/lib/use-route-transition'
 import type { StoreCategory } from '@/lib/store-categories'
 import { catalogHref } from '@/lib/catalog-href'
+import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 
 type Product = {
@@ -63,13 +64,8 @@ export function ProductsClient({
     [storeCategories],
   )
 
-  function syncUrl(newSearch: string, newCategory: string, newPage = 1) {
-    push(catalogHref({ search: newSearch, category: newCategory, page: newPage }))
-  }
-
-  function selectCategory(value: string) {
-    if (value === category || isPending) return
-    syncUrl(search, value, 1)
+  function submitSearch() {
+    push(catalogHref({ search, category, page: 1 }))
   }
 
   return (
@@ -97,7 +93,7 @@ export function ProductsClient({
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
-                syncUrl(search, category, 1)
+                submitSearch()
               }
             }}
             disabled={isPending}
@@ -106,21 +102,24 @@ export function ProductsClient({
         </div>
 
         <div className="flex w-full flex-1 flex-wrap gap-2">
-          {allCategories.map((cat) => (
-            <button
-              key={cat.value}
-              type="button"
-              onClick={() => selectCategory(cat.value)}
-              disabled={isPending}
-              className={`rounded-full border px-3 py-2 text-center text-xs font-medium transition-colors disabled:opacity-60 ${
-                category === cat.value
-                  ? 'border-primary bg-primary text-primary-foreground shadow-sm shadow-primary/20'
-                  : 'border-border text-muted-foreground hover:border-primary/40 hover:bg-primary/5 hover:text-primary'
-              }`}
-            >
-              {cat.label}
-            </button>
-          ))}
+          {allCategories.map((cat) => {
+            const href = catalogHref({ search: initialSearch, category: cat.value, page: 1 })
+            const active = category === cat.value
+            return (
+              <Link
+                key={cat.value}
+                href={href}
+                prefetch
+                className={`rounded-full border px-3 py-2 text-center text-xs font-medium transition-colors ${
+                  active
+                    ? 'border-primary bg-primary text-primary-foreground shadow-sm shadow-primary/20'
+                    : 'border-border text-muted-foreground hover:border-primary/40 hover:bg-primary/5 hover:text-primary'
+                }`}
+              >
+                {cat.label}
+              </Link>
+            )
+          })}
         </div>
       </Reveal>
 
@@ -148,12 +147,12 @@ export function ProductsClient({
           <>
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
               {products.map((product, index) => (
-                <Reveal key={product.id} delay={(index % 4) * 70}>
-                  <ProductCard
-                    product={product}
-                    categories={storeCategories.map((item) => ({ slug: item.slug, name: item.name }))}
-                  />
-                </Reveal>
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  categories={storeCategories.map((item) => ({ slug: item.slug, name: item.name }))}
+                  priority={index < 4}
+                />
               ))}
             </div>
 
@@ -163,28 +162,38 @@ export function ProductsClient({
                   Page {page} / {totalPages} · {total} produit{total > 1 ? 's' : ''}
                 </p>
                 <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    disabled={page <= 1 || isPending}
-                    onClick={() => syncUrl(search, category, page - 1)}
-                    className="inline-flex items-center gap-1 rounded-full border border-border px-4 py-2 text-xs font-light tracking-widest text-muted-foreground transition-colors hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-                      <path d="m15 18-6-6 6-6" />
-                    </svg>
-                    Precedent
-                  </button>
-                  <button
-                    type="button"
-                    disabled={page >= totalPages || isPending}
-                    onClick={() => syncUrl(search, category, page + 1)}
-                    className="inline-flex items-center gap-1 rounded-full border border-border px-4 py-2 text-xs font-light tracking-widest text-muted-foreground transition-colors hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
-                  >
-                    Suivant
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-                      <path d="m9 18 6-6-6-6" />
-                    </svg>
-                  </button>
+                  {page > 1 ? (
+                    <Link
+                      href={catalogHref({ search: initialSearch, category, page: page - 1 })}
+                      prefetch
+                      className="inline-flex items-center gap-1 rounded-full border border-border px-4 py-2 text-xs font-light tracking-widest text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+                        <path d="m15 18-6-6 6-6" />
+                      </svg>
+                      Precedent
+                    </Link>
+                  ) : (
+                    <span className="inline-flex cursor-not-allowed items-center gap-1 rounded-full border border-border px-4 py-2 text-xs font-light tracking-widest text-muted-foreground opacity-40">
+                      Precedent
+                    </span>
+                  )}
+                  {page < totalPages ? (
+                    <Link
+                      href={catalogHref({ search: initialSearch, category, page: page + 1 })}
+                      prefetch
+                      className="inline-flex items-center gap-1 rounded-full border border-border px-4 py-2 text-xs font-light tracking-widest text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+                    >
+                      Suivant
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+                        <path d="m9 18 6-6-6-6" />
+                      </svg>
+                    </Link>
+                  ) : (
+                    <span className="inline-flex cursor-not-allowed items-center gap-1 rounded-full border border-border px-4 py-2 text-xs font-light tracking-widest text-muted-foreground opacity-40">
+                      Suivant
+                    </span>
+                  )}
                 </div>
               </div>
             )}

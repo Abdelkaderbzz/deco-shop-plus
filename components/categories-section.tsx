@@ -17,10 +17,8 @@ export function CategoriesSection({ categories }: { categories: StoreCategory[] 
         </Reveal>
 
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          {categories.map((category, index) => (
-            <Reveal key={category.slug} variant="zoom" delay={index * 90}>
-              <CategoryCard category={category} />
-            </Reveal>
+          {categories.map((category) => (
+            <CategoryCard key={category.slug} category={category} />
           ))}
         </div>
       </div>

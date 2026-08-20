@@ -12,6 +12,7 @@ import {
 } from '@/lib/validations'
 import { and, desc, eq, ne } from 'drizzle-orm'
 import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
+import { cache } from 'react'
 
 export type BannerRow = typeof banners.$inferSelect
 
@@ -64,7 +65,7 @@ const getActiveBannerCached = unstable_cache(
 )
 
 /** Storefront read. Returns null when nothing is published. */
-export async function getActiveBanner(): Promise<ActiveBanner | null> {
+export const getActiveBanner = cache(async (): Promise<ActiveBanner | null> => {
   const row = await getActiveBannerCached()
   if (!row || row.message.trim() === '') return null
 
@@ -79,7 +80,7 @@ export async function getActiveBanner(): Promise<ActiveBanner | null> {
     linkHref: row.linkHref,
     dismissible: row.dismissible,
   }
-}
+})
 
 export async function getAdminBanners(): Promise<BannerRow[]> {
   await requireAdminId()

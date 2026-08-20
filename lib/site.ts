@@ -16,7 +16,8 @@ export const SITE = {
   facebookUrl: 'https://www.facebook.com/profile.php?id=61579741029151',
   mapsUrl:
     'https://www.google.com/maps/dir/?api=1&destination=Cite+El+Waha%2C+Bizerte%2C+Tunisie',
-  boutiqueSlug: 'cite-el-waha-bizerte',
+  footerAbout:
+    'Nous sommes un petit atelier. Nous concevons nos propres produits, les fabriquons avec des matières de haute qualité, et les réalisons avec soin et amour.',
 } as const
 
 export const SITE_KEYWORDS = [

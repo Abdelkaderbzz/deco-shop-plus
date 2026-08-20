@@ -23,27 +23,27 @@ export function CategoryPhotos({
         </Reveal>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {categories.map((cat, index) => (
-            <Reveal key={cat.slug} variant="zoom" delay={index * 70}>
-              <Link
-                href={catalogHref({ category: cat.slug })}
-                className="group overflow-hidden rounded-[1.5rem] border border-border/60 transition-all hover:border-primary/30 hover:shadow-md hover:shadow-primary/10"
-              >
-                <div className="relative aspect-square overflow-hidden bg-secondary">
-                  {cat.image ? (
-                    <Image
-                      src={cat.image}
-                      alt={cat.name}
-                      fill
-                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  ) : null}
-                </div>
-                <p className="bg-card py-2.5 text-center text-xs font-medium text-muted-foreground group-hover:text-primary">
-                  {cat.name}
-                </p>
-              </Link>
-            </Reveal>
+            <Link
+              key={cat.slug}
+              href={catalogHref({ category: cat.slug })}
+              className="group overflow-hidden rounded-[1.5rem] border border-border/60 transition-all hover:border-primary/30 hover:shadow-md hover:shadow-primary/10"
+            >
+              <div className="relative aspect-square overflow-hidden bg-secondary">
+                {cat.image ? (
+                  <Image
+                    src={cat.image}
+                    alt={cat.name}
+                    fill
+                    priority={index < 2}
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                ) : null}
+              </div>
+              <p className="bg-card py-2.5 text-center text-xs font-medium text-muted-foreground group-hover:text-primary">
+                {cat.name}
+              </p>
+            </Link>
           ))}
         </div>
       </div>

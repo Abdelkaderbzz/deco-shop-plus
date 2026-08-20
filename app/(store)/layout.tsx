@@ -3,34 +3,42 @@ import { getCategories } from '@/app/actions/categories'
 import { CartProvider } from '@/components/cart-context'
 import { JsonLd } from '@/components/json-ld'
 import { SiteBanner } from '@/components/site-banner'
+import { StoreRoutePrefetch } from '@/components/store-route-prefetch'
 import { WhatsAppButton } from '@/components/whatsapp-button'
-import { FACEBOOK_URL, PHONE_HREF, WHATSAPP_URL } from '@/lib/social-links'
+import { FACEBOOK_URL, WHATSAPP_URL } from '@/lib/social-links'
 import { Logo } from '@/components/logo'
 import { Navbar } from '@/components/navbar'
-import { Reveal } from '@/components/reveal'
 import { storeGraphJsonLd } from '@/lib/seo'
 import { SITE } from '@/lib/site'
+import { catalogHref } from '@/lib/catalog-href'
 import { mergeStoreCategories } from '@/lib/store-categories'
+import { preconnect } from 'react-dom'
 
 export default async function StoreLayout({ children }: { children: React.ReactNode }) {
+  preconnect('https://res.cloudinary.com')
+
   const [categories, banner] = await Promise.all([getCategories(), getActiveBanner()])
   const storeCategories = mergeStoreCategories(categories)
+  const prefetchHrefs = [
+    '/products',
+    '/checkout',
+    ...storeCategories.slice(0, 6).map((category) => catalogHref({ category: category.slug })),
+  ]
 
   return (
     <CartProvider>
+      <StoreRoutePrefetch hrefs={prefetchHrefs} />
       <JsonLd data={storeGraphJsonLd()} />
       {banner && <SiteBanner banner={banner} />}
       <Navbar storeCategories={storeCategories} />
       <main className="min-h-screen">{children}</main>
       <footer className="border-t border-border bg-card py-12">
-        <Reveal className="mx-auto max-w-7xl px-2 text-center sm:px-3">
+        <div className="mx-auto max-w-7xl px-2 text-center sm:px-3">
           <Logo size="lg" className="mx-auto mb-5 justify-center" />
-          <p className="text-sm font-medium text-primary">{SITE.tagline}</p>
-          <address className="mt-2 text-sm not-italic text-muted-foreground">{SITE.address}</address>
+          <p className="mx-auto max-w-lg text-sm leading-relaxed text-muted-foreground">
+            {SITE.footerAbout}
+          </p>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
-            <a href={PHONE_HREF} className="text-sm font-medium text-foreground hover:text-primary">
-              {SITE.phoneDisplay}
-            </a>
             <a
               href={WHATSAPP_URL}
               target="_blank"
@@ -59,7 +67,7 @@ export default async function StoreLayout({ children }: { children: React.ReactN
               Revixa Agency
             </a>
           </p>
-        </Reveal>
+        </div>
       </footer>
       <WhatsAppButton />
     </CartProvider>
