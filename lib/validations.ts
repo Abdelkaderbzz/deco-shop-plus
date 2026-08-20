@@ -33,7 +33,19 @@ export const productSchema = z
       ),
     category: z.string().min(1, 'Categorie requise'),
     images: z.array(z.string().url('URL invalide')).max(5, 'Maximum 5 images par produit'),
-    sizes: z.string(),
+    sizes: z
+      .array(
+        z.object({
+          name: z.string().min(1, 'Taille requise').max(40, 'Nom trop long'),
+          price: z
+            .string()
+            .min(1, 'Prix requis')
+            .refine((value) => !Number.isNaN(parseFloat(value)) && parseFloat(value) > 0, {
+              message: 'Prix invalide',
+            }),
+        }),
+      )
+      .max(12, 'Maximum 12 tailles'),
     colors: z
       .array(
         z.object({
@@ -47,7 +59,16 @@ export const productSchema = z
     relatedProductIds: z
       .array(z.number().int().positive())
       .max(8, 'Maximum 8 produits associes'),
-    inStock: z.boolean(),
+    stock: z
+      .string()
+      .min(1, 'Stock requis')
+      .refine(
+        (value) =>
+          Number.isInteger(Number(value)) && Number(value) >= 0 && Number(value) <= 9999,
+        {
+          message: 'Stock invalide (0 a 9999)',
+        },
+      ),
     featured: z.boolean(),
     published: z.boolean(),
     promoEnabled: z.boolean(),
@@ -60,15 +81,24 @@ export const productSchema = z
       .regex(/^#[0-9a-fA-F]{6}$/, 'Couleur invalide (format #rrggbb)'),
   })
   .superRefine((data, ctx) => {
-    if (!data.compareAtPrice || data.compareAtPrice === '') return
-    const price = parseFloat(data.price)
-    const compareAt = parseFloat(data.compareAtPrice)
-    if (Number.isNaN(price) || Number.isNaN(compareAt)) return
-    if (compareAt <= price) {
+    if (data.compareAtPrice && data.compareAtPrice !== '') {
+      const price = parseFloat(data.price)
+      const compareAt = parseFloat(data.compareAtPrice)
+      if (!Number.isNaN(price) && !Number.isNaN(compareAt) && compareAt <= price) {
+        ctx.addIssue({
+          code: 'custom',
+          message: "L'ancien prix doit etre superieur au prix actuel",
+          path: ['compareAtPrice'],
+        })
+      }
+    }
+
+    const names = data.sizes.map((size) => size.name.trim().toLowerCase()).filter(Boolean)
+    if (new Set(names).size !== names.length) {
       ctx.addIssue({
         code: 'custom',
-        message: "L'ancien prix doit etre superieur au prix actuel",
-        path: ['compareAtPrice'],
+        message: 'Chaque taille doit avoir un nom unique',
+        path: ['sizes'],
       })
     }
   })

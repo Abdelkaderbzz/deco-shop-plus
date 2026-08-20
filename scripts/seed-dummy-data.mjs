@@ -188,14 +188,15 @@ async function seedDemoProducts(count) {
     const featured = i % 5 === 0
     const published = i % 7 !== 0
     const inStock = i % 9 !== 0
+    const stock = inStock ? randomInt(3, 18) : 0
     const padded = String(i).padStart(2, '0')
 
     await pool.query(
       `INSERT INTO products (
         name, brand, description, price, category,
-        "imageUrl", images, sizes, "inStock", featured, published,
+        "imageUrl", images, sizes, "inStock", stock, featured, published,
         "createdAt", "updatedAt"
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW())`,
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW(), NOW())`,
       [
         `Demo Produit ${padded}`,
         DEMO_BRAND,
@@ -206,6 +207,7 @@ async function seedDemoProducts(count) {
         images,
         JSON.stringify(['Unique', '45x45']),
         inStock,
+        stock,
         featured,
         published,
       ],
@@ -247,9 +249,16 @@ async function seedDemoOrders(count) {
     for (let j = 0; j < itemCount; j += 1) {
       const product = products[(i + j) % products.length]
       const sizes = JSON.parse(product.sizes || '["Standard"]')
-      const size = sizes[0] ?? 'Standard'
+      const firstSize = sizes[0]
+      const size =
+        typeof firstSize === 'string'
+          ? firstSize
+          : firstSize?.name ?? 'Standard'
       const quantity = randomInt(1, 2)
-      const unitPrice = parseFloat(product.price)
+      const unitPrice =
+        firstSize && typeof firstSize === 'object' && Number(firstSize.price) > 0
+          ? Number(firstSize.price)
+          : parseFloat(product.price)
       subtotal += unitPrice * quantity
 
       lineItems.push({

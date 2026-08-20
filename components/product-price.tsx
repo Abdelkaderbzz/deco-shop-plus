@@ -11,6 +11,7 @@ type ProductPriceProps = {
   size?: 'xs' | 'sm' | 'lg'
   className?: string
   accentColor?: string | null
+  from?: boolean
 }
 
 export function ProductPrice({
@@ -19,28 +20,42 @@ export function ProductPrice({
   size = 'sm',
   className,
   accentColor,
+  from = false,
 }: ProductPriceProps) {
   const current = parsePrice(price) ?? 0
   const percent = getDiscountPercent(price, compareAtPrice)
   const compareAt = parsePrice(compareAtPrice)
 
+  const fromLabel = from ? (
+    <span
+      className={cn(
+        'mr-1 font-medium text-muted-foreground',
+        size === 'lg' ? 'text-sm' : size === 'xs' ? 'text-[10px]' : 'text-xs',
+      )}
+    >
+      À partir de
+    </span>
+  ) : null
+
   if (percent == null || compareAt == null) {
     return (
       <p
         className={cn(
+          'tabular-nums text-foreground',
           size === 'lg'
-            ? 'text-2xl font-medium tabular-nums tracking-normal text-foreground'
+            ? 'text-2xl font-semibold tracking-normal'
             : size === 'xs'
-              ? 'text-xs font-medium tabular-nums text-foreground'
-              : 'text-sm font-light text-foreground',
+              ? 'text-sm font-semibold'
+              : 'text-base font-semibold',
           className,
         )}
       >
+        {fromLabel}
         {formatPriceTnd(current)}{' '}
         <span
           className={cn(
-            'text-muted-foreground',
-            size === 'lg' ? 'text-sm font-normal' : size === 'xs' ? 'text-[9px]' : 'text-[10px]',
+            'font-medium text-foreground/70',
+            size === 'lg' ? 'text-sm' : size === 'xs' ? 'text-[10px]' : 'text-xs',
           )}
         >
           TND
@@ -67,6 +82,7 @@ export function ProductPrice({
         style={accentColor ? { color: accentColor } : undefined}
       >
         <span className={accentColor ? undefined : 'text-foreground'}>
+          {fromLabel}
           {formatPriceTnd(current)}
         </span>
       </p>

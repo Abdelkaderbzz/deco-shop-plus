@@ -10,7 +10,6 @@ import {
   normalizePage,
   normalizePageSize,
   paginationOffset,
-  type PaginatedResult,
 } from '@/lib/pagination'
 import {
   DEFAULT_PROMO_BG,
@@ -25,6 +24,14 @@ import {
   parseRelatedProductIds,
   serializeRelatedProductIds,
 } from '@/lib/product-relations'
+import { parsePrice } from '@/lib/product-price'
+import {
+  lowestSizePrice,
+  parseProductSizes,
+  serializeProductSizes,
+  type ProductSizeInput,
+} from '@/lib/product-sizes'
+import { isInStock, parseStock } from '@/lib/product-stock'
 import { and, asc, desc, eq, ilike, inArray, ne, notInArray, or, sql } from 'drizzle-orm'
 import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
 import { cache } from 'react'
@@ -48,12 +55,29 @@ function revalidateProductPage(id: number) {
   revalidatePath(`/products/${id}`)
 }
 
+const storeProductCardSelect = {
+  id: products.id,
+  name: products.name,
+  brand: products.brand,
+  price: products.price,
+  compareAtPrice: products.compareAtPrice,
+  imageUrl: products.imageUrl,
+  category: products.category,
+  inStock: products.inStock,
+  promoEnabled: products.promoEnabled,
+  promoLabel: products.promoLabel,
+  promoBgColor: products.promoBgColor,
+  promoTextColor: products.promoTextColor,
+  sizes: products.sizes,
+}
+
 type ProductListOptions = {
   page?: number
   pageSize?: number
   search?: string
   category?: string
   publishedOnly?: boolean
+  compact?: boolean
 }
 
 function buildProductConditions(options: ProductListOptions) {
@@ -82,7 +106,7 @@ function buildProductConditions(options: ProductListOptions) {
   return conditions
 }
 
-async function queryProductsPaginated(options: ProductListOptions): Promise<PaginatedResult<typeof products.$inferSelect>> {
+async function queryProductsPaginated(options: ProductListOptions) {
   const page = normalizePage(options.page)
   const pageSize = normalizePageSize(options.pageSize, ADMIN_PAGE_SIZE)
   const offset = paginationOffset(page, pageSize)
@@ -95,13 +119,21 @@ async function queryProductsPaginated(options: ProductListOptions): Promise<Pagi
       .from(products)
       .where(whereClause)
       .then((rows) => rows[0]),
-    db
-      .select()
-      .from(products)
-      .where(whereClause)
-      .orderBy(desc(products.createdAt))
-      .limit(pageSize)
-      .offset(offset),
+    options.compact
+      ? db
+          .select(storeProductCardSelect)
+          .from(products)
+          .where(whereClause)
+          .orderBy(desc(products.createdAt))
+          .limit(pageSize)
+          .offset(offset)
+      : db
+          .select()
+          .from(products)
+          .where(whereClause)
+          .orderBy(desc(products.createdAt))
+          .limit(pageSize)
+          .offset(offset),
   ])
 
   return buildPaginatedResult(items, countRow?.count ?? 0, page, pageSize)
@@ -116,12 +148,12 @@ export async function getAdminProductsPaginated(options: {
   return queryProductsPaginated({ ...options, publishedOnly: false })
 }
 
-export async function getStoreProductsPaginated(options: {
+export const getStoreProductsPaginated = cache(async (options: {
   page?: number
   pageSize?: number
   search?: string
   category?: string
-} = {}) {
+} = {}) => {
   const page = normalizePage(options.page)
   const pageSize = normalizePageSize(options.pageSize, STORE_PAGE_SIZE)
   const search = options.search?.trim() ?? ''
@@ -134,6 +166,7 @@ export async function getStoreProductsPaginated(options: {
       search,
       category,
       publishedOnly: true,
+      compact: true,
     })
 
   if (search) return run()
@@ -142,7 +175,7 @@ export async function getStoreProductsPaginated(options: {
     revalidate: 120,
     tags: ['products'],
   })()
-}
+})
 
 /** @deprecated Use getStoreProductsPaginated for paginated reads. */
 export async function getProducts(search?: string, category?: string) {
@@ -164,7 +197,7 @@ export async function getAdminProducts() {
 const getFeaturedProductsCached = unstable_cache(
   async () =>
     db
-      .select()
+      .select(storeProductCardSelect)
       .from(products)
       .where(and(eq(products.featured, true), eq(products.published, true)))
       .orderBy(desc(products.createdAt))
@@ -173,14 +206,12 @@ const getFeaturedProductsCached = unstable_cache(
   { revalidate: 120, tags: ['products'] },
 )
 
-export async function getFeaturedProducts() {
-  return getFeaturedProductsCached()
-}
+export const getFeaturedProducts = cache(async () => getFeaturedProductsCached())
 
 const getPromoProductsCached = unstable_cache(
   async () =>
     db
-      .select()
+      .select(storeProductCardSelect)
       .from(products)
       .where(and(eq(products.promoEnabled, true), eq(products.published, true)))
       .orderBy(desc(products.updatedAt))
@@ -189,14 +220,12 @@ const getPromoProductsCached = unstable_cache(
   { revalidate: 120, tags: ['products'] },
 )
 
-export async function getPromoProducts() {
-  return getPromoProductsCached()
-}
+export const getPromoProducts = cache(async () => getPromoProductsCached())
 
 const getLatestProductsCached = unstable_cache(
   async () =>
     db
-      .select()
+      .select(storeProductCardSelect)
       .from(products)
       .where(eq(products.published, true))
       .orderBy(desc(products.createdAt))
@@ -205,38 +234,43 @@ const getLatestProductsCached = unstable_cache(
   { revalidate: 120, tags: ['products'] },
 )
 
-export async function getLatestProducts() {
-  return getLatestProductsCached()
-}
+export const getLatestProducts = cache(async () => getLatestProductsCached())
 
 const getBestSellerProductsCached = unstable_cache(
   async () => {
-    const ranked = await db
+    const rows = await db
       .select({
-        id: products.id,
+        ...storeProductCardSelect,
         sold: sql<number>`coalesce(sum(${orderItems.quantity}), 0)::int`,
       })
       .from(products)
       .leftJoin(orderItems, eq(orderItems.productId, products.id))
       .where(eq(products.published, true))
-      .groupBy(products.id)
+      .groupBy(
+        products.id,
+        products.name,
+        products.brand,
+        products.price,
+        products.compareAtPrice,
+        products.imageUrl,
+        products.category,
+        products.inStock,
+        products.promoEnabled,
+        products.promoLabel,
+        products.promoBgColor,
+        products.promoTextColor,
+        products.sizes,
+      )
       .orderBy(desc(sql`coalesce(sum(${orderItems.quantity}), 0)`), desc(products.createdAt))
       .limit(8)
 
-    if (ranked.length === 0) return []
-
-    const ids = ranked.map((row) => row.id)
-    const rows = await db.select().from(products).where(inArray(products.id, ids))
-    const byId = new Map(rows.map((row) => [row.id, row]))
-    return ids.map((id) => byId.get(id)).filter((row): row is typeof products.$inferSelect => Boolean(row))
+    return rows.map(({ sold: _sold, ...product }) => product)
   },
   ['best-seller-products'],
   { revalidate: 120, tags: ['products'] },
 )
 
-export async function getBestSellerProducts() {
-  return getBestSellerProductsCached()
-}
+export const getBestSellerProducts = cache(async () => getBestSellerProductsCached())
 
 export const getProductById = cache(async (id: number) => {
   if (!Number.isFinite(id) || id < 1) return null
@@ -254,8 +288,8 @@ export const getProductById = cache(async (id: number) => {
   )()
 })
 
-export async function getPublishedProductsForSitemap() {
-  return unstable_cache(
+export const getPublishedProductsForSitemap = cache(async () =>
+  unstable_cache(
     async () =>
       db
         .select({
@@ -268,8 +302,8 @@ export async function getPublishedProductsForSitemap() {
         .orderBy(desc(products.updatedAt)),
     ['sitemap-products'],
     { revalidate: 300, tags: ['products'] },
-  )()
-}
+  )(),
+)
 
 /** Lightweight catalogue used by the related-products picker in the admin. */
 export async function getProductOptions() {
@@ -288,28 +322,24 @@ export async function getProductOptions() {
 
 /** Admin picks come first, in the order they were chosen; anything missing is
  *  filled with other products from the same category. */
-export async function getRelatedProducts(productId: number) {
-  return unstable_cache(
+export const getRelatedProducts = cache(async (productId: number) =>
+  unstable_cache(
     async () => {
-      const [product] = await db
-        .select()
-        .from(products)
-        .where(and(eq(products.id, productId), eq(products.published, true)))
-        .limit(1)
+      const product = await getProductById(productId)
       if (!product) return []
 
       const curatedIds = parseRelatedProductIds(product).filter((id) => id !== productId)
 
       const curatedRows = curatedIds.length
         ? await db
-            .select()
+            .select(storeProductCardSelect)
             .from(products)
             .where(and(inArray(products.id, curatedIds), eq(products.published, true)))
         : []
 
       const curated = curatedIds
         .map((id) => curatedRows.find((row) => row.id === id))
-        .filter((row): row is typeof products.$inferSelect => Boolean(row))
+        .filter((row): row is (typeof curatedRows)[number] => Boolean(row))
         .slice(0, RELATED_PRODUCTS_SHOWN)
 
       const missing = RELATED_PRODUCTS_SHOWN - curated.length
@@ -317,7 +347,7 @@ export async function getRelatedProducts(productId: number) {
 
       const excluded = [productId, ...curated.map((row) => row.id)]
       const fallback = await db
-        .select()
+        .select(storeProductCardSelect)
         .from(products)
         .where(
           and(
@@ -333,8 +363,8 @@ export async function getRelatedProducts(productId: number) {
     },
     ['related-products', String(productId)],
     { revalidate: 120, tags: ['products', `product-${productId}`] },
-  )()
-}
+  )(),
+)
 
 export async function addProduct(data: {
   name: string
@@ -344,10 +374,10 @@ export async function addProduct(data: {
   compareAtPrice?: string | null
   category: string
   images: string[]
-  sizes: string[]
+  sizes: ProductSizeInput[]
   colors?: ProductColor[]
   relatedProductIds?: number[]
-  inStock: boolean
+  stock: number
   featured: boolean
   published: boolean
   promoEnabled?: boolean
@@ -358,20 +388,25 @@ export async function addProduct(data: {
   await requireAdminId()
   const imageData = normalizeProductImages(data.images)
   const compareAtPrice = data.compareAtPrice?.trim() || null
+  const stock = parseStock(data.stock)
+  const fallbackPrice = parsePrice(data.price) ?? 0
+  const parsedSizes = parseProductSizes(serializeProductSizes(data.sizes), fallbackPrice)
+  const catalogPrice = lowestSizePrice(parsedSizes, fallbackPrice)
 
   await db.insert(products).values({
     name: data.name,
     brand: data.brand,
     description: data.description,
-    price: data.price,
+    price: catalogPrice > 0 ? catalogPrice.toFixed(3) : data.price,
     compareAtPrice,
     category: data.category,
     imageUrl: imageData.imageUrl,
     images: imageData.images,
-    sizes: JSON.stringify(data.sizes),
+    sizes: serializeProductSizes(data.sizes),
     colors: serializeProductColors(data.colors ?? []),
     relatedProductIds: serializeRelatedProductIds(data.relatedProductIds ?? []),
-    inStock: data.inStock,
+    stock,
+    inStock: isInStock(stock),
     featured: data.featured,
     published: data.published,
     promoEnabled: data.promoEnabled ?? false,
@@ -396,10 +431,10 @@ export async function updateProduct(
     compareAtPrice?: string | null
     category?: string
     images?: string[]
-    sizes?: string[]
+    sizes?: ProductSizeInput[]
     colors?: ProductColor[]
     relatedProductIds?: number[]
-    inStock?: boolean
+    stock?: number
     featured?: boolean
     published?: boolean
     promoEnabled?: boolean
@@ -411,7 +446,15 @@ export async function updateProduct(
   await requireAdminId()
   const updateData: Record<string, unknown> = { ...data, updatedAt: new Date() }
 
-  if (data.sizes) updateData.sizes = JSON.stringify(data.sizes)
+  if (data.sizes) {
+    updateData.sizes = serializeProductSizes(data.sizes)
+    const fallbackPrice = parsePrice(data.price) ?? 0
+    const parsedSizes = parseProductSizes(updateData.sizes as string, fallbackPrice)
+    const catalogPrice = lowestSizePrice(parsedSizes, fallbackPrice)
+    if (catalogPrice > 0) {
+      updateData.price = catalogPrice.toFixed(3)
+    }
+  }
   if (Array.isArray(data.colors)) updateData.colors = serializeProductColors(data.colors)
   if (data.relatedProductIds) {
     updateData.relatedProductIds = serializeRelatedProductIds(data.relatedProductIds)
@@ -432,6 +475,11 @@ export async function updateProduct(
   }
   if ('promoTextColor' in data) {
     updateData.promoTextColor = data.promoTextColor?.trim() || DEFAULT_PROMO_TEXT
+  }
+  if ('stock' in data && data.stock != null) {
+    const stock = parseStock(data.stock)
+    updateData.stock = stock
+    updateData.inStock = isInStock(stock)
   }
 
   await db.update(products).set(updateData).where(eq(products.id, id))

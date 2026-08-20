@@ -4,6 +4,8 @@ import { EpuiseBadge } from '@/components/epuise-badge'
 import { ProductPrice } from '@/components/product-price'
 import { PromoBadge } from '@/components/promo-badge'
 import { isPromoActive } from '@/lib/product-colors'
+import { parsePrice } from '@/lib/product-price'
+import { hasVariableSizePrices, parseProductSizes } from '@/lib/product-sizes'
 import { getCategoryLabel } from '@/lib/store-categories'
 
 type Product = {
@@ -19,6 +21,7 @@ type Product = {
   promoLabel?: string | null
   promoBgColor?: string | null
   promoTextColor?: string | null
+  sizes?: string | null
 }
 
 function EyeIcon({ className }: { className?: string }) {
@@ -88,13 +91,18 @@ export function ProductCard({
   product,
   categories,
   variant = 'grid',
+  priority = false,
 }: {
   product: Product
   categories?: { slug: string; name: string }[]
   variant?: 'grid' | 'list'
+  priority?: boolean
 }) {
   const categoryLabel = getCategoryLabel(product.category, categories)
   const promo = isPromoActive(product)
+  const from = hasVariableSizePrices(
+    parseProductSizes(product.sizes, parsePrice(product.price) ?? 0),
+  )
 
   if (variant === 'list') {
     return (
@@ -111,7 +119,7 @@ export function ProductCard({
                 alt={`${product.brand} ${product.name}`}
                 fill
                 sizes="(max-width: 640px) 184px, 216px"
-                className="object-cover transition-transform duration-700 ease-out will-change-transform group-hover/card:scale-110"
+                className="object-cover transition-transform duration-700 ease-out group-hover/card:scale-110"
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center">
@@ -131,6 +139,7 @@ export function ProductCard({
               size="xs"
               accentColor={promo ? product.promoBgColor : null}
               className="mt-1.5"
+              from={from}
             />
           </div>
         </div>
@@ -142,14 +151,15 @@ export function ProductCard({
     <Link href={`/products/${product.id}`} className="group/card block">
       <div className="relative overflow-hidden rounded-md border border-border bg-card transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10">
         <div className="relative aspect-[4/5] overflow-hidden bg-secondary">
-          {product.imageUrl ? (
-            <Image
-              src={product.imageUrl}
-              alt={`${product.brand} ${product.name}`}
-              fill
-              sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-              className="object-cover transition-transform duration-700 ease-out will-change-transform group-hover/card:scale-110"
-            />
+            {product.imageUrl ? (
+              <Image
+                src={product.imageUrl}
+                alt={`${product.brand} ${product.name}`}
+                fill
+                sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                priority={priority}
+                className="object-cover transition-transform duration-700 ease-out group-hover/card:scale-110"
+              />
           ) : (
             <div className="flex h-full w-full items-center justify-center">
               <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="text-border">
@@ -168,6 +178,7 @@ export function ProductCard({
             compareAtPrice={product.compareAtPrice}
             accentColor={promo ? product.promoBgColor : null}
             className="mt-3"
+            from={from}
           />
         </div>
       </div>

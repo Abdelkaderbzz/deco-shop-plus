@@ -13,6 +13,7 @@ import {
   parseProductColors,
 } from '@/lib/product-colors'
 import { formatPriceTnd, getDiscountPercent, parsePrice } from '@/lib/product-price'
+import { hasVariableSizePrices, parseProductSizes, sizesToFormValues } from '@/lib/product-sizes'
 import { productSchema, type ProductFormValues } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouteTransition } from '@/lib/use-route-transition'
@@ -37,6 +38,7 @@ import {
 import { AdminSelect } from './admin-select'
 import { ProductImagesField } from './product-images-field'
 import { ProductColorsField } from './product-colors-field'
+import { ProductSizesField } from './product-sizes-field'
 import { RelatedProductsField, type ProductOption } from './related-products-field'
 import { ADMIN_PAGE_SIZE, AdminPagination } from './admin-pagination'
 
@@ -53,6 +55,7 @@ type Product = {
   sizes: string
   colors?: string
   relatedProductIds: string
+  stock: number
   inStock: boolean
   featured: boolean
   published: boolean
@@ -76,10 +79,10 @@ const EMPTY_FORM: ProductFormValues = {
   compareAtPrice: '',
   category: 'coussins',
   images: [],
-  sizes: '',
+  sizes: [],
   colors: [],
   relatedProductIds: [],
-  inStock: true,
+  stock: '1',
   featured: false,
   published: true,
   promoEnabled: false,
@@ -142,6 +145,7 @@ export function AdminProductsClient({
   const images = watch('images')
   const relatedProductIds = watch('relatedProductIds')
   const colors = watch('colors')
+  const sizes = watch('sizes')
   const promoEnabled = watch('promoEnabled')
   const watchedPrice = watch('price')
   const watchedCompareAt = watch('compareAtPrice')
@@ -163,10 +167,10 @@ export function AdminProductsClient({
       compareAtPrice: product.compareAtPrice ?? '',
       category: product.category,
       images: parseProductImages(product),
-      sizes: JSON.parse(product.sizes || '[]').join(', '),
+      sizes: sizesToFormValues(product.sizes, parsePrice(product.price) ?? 0),
       colors: parseProductColors(product),
       relatedProductIds: parseRelatedProductIds(product),
-      inStock: product.inStock,
+      stock: String(product.stock ?? 0),
       featured: product.featured,
       published: product.published ?? true,
       promoEnabled: product.promoEnabled ?? false,
@@ -178,10 +182,6 @@ export function AdminProductsClient({
   }
 
   function onSubmit(form: ProductFormValues) {
-    const sizesArr = form.sizes
-      .split(',')
-      .map((s) => s.trim())
-      .filter(Boolean)
     const compareAtPrice = form.compareAtPrice?.trim() || null
 
     startTransition(async () => {
@@ -195,10 +195,10 @@ export function AdminProductsClient({
             compareAtPrice,
             category: form.category,
             images: form.images,
-            sizes: sizesArr,
+            sizes: form.sizes,
             colors: form.colors.filter((color) => color.name.trim()),
             relatedProductIds: form.relatedProductIds,
-            inStock: form.inStock,
+            stock: Number(form.stock),
             featured: form.featured,
             published: form.published,
             promoEnabled: form.promoEnabled,
@@ -216,10 +216,10 @@ export function AdminProductsClient({
             compareAtPrice,
             category: form.category,
             images: form.images,
-            sizes: sizesArr,
+            sizes: form.sizes,
             colors: form.colors.filter((color) => color.name.trim()),
             relatedProductIds: form.relatedProductIds,
-            inStock: form.inStock,
+            stock: Number(form.stock),
             featured: form.featured,
             published: form.published,
             promoEnabled: form.promoEnabled,
@@ -301,6 +301,9 @@ export function AdminProductsClient({
                 const imageCount = parseProductImages(p).length
                 const discount = getDiscountPercent(p.price, p.compareAtPrice)
                 const compareAt = parsePrice(p.compareAtPrice)
+                const fromPrice = hasVariableSizePrices(
+                  parseProductSizes(p.sizes, parsePrice(p.price) ?? 0),
+                )
 
                 return (
                 <tr key={p.id} className="transition-colors hover:bg-slate-50">
@@ -329,6 +332,7 @@ export function AdminProductsClient({
                   <td className={adminTableMutedCls}>{categoryLabel(p.category)}</td>
                   <td className={adminTableCellCls}>
                     <p className="font-semibold text-slate-900">
+                      {fromPrice ? 'À partir de ' : ''}
                       {formatPriceTnd(parseFloat(p.price))} TND
                     </p>
                     {discount != null && compareAt != null && (
@@ -339,8 +343,9 @@ export function AdminProductsClient({
                     )}
                   </td>
                   <td className={adminTableCellCls}>
-                    <AdminBadge tone={p.inStock ? 'success' : 'danger'}>
-                      {p.inStock ? 'En stock' : 'Épuisé'}
+                    <p className="font-semibold tabular-nums text-slate-900">{p.stock ?? 0}</p>
+                    <AdminBadge tone={p.stock > 0 ? 'success' : 'danger'}>
+                      {p.stock > 0 ? 'En stock' : 'Épuisé'}
                     </AdminBadge>
                   </td>
                   <td className={adminTableCellCls}>
@@ -413,6 +418,9 @@ export function AdminProductsClient({
                   {...register('price')}
                 />
                 <AdminFieldError message={errors.price?.message} />
+                <p className="mt-1 text-xs text-slate-500">
+                  Prix unique si aucune taille. Avec plusieurs tailles, chaque ligne a son prix et le catalogue affiche le plus bas.
+                </p>
               </div>
               <div>
                 <label className={adminLabelCls}>ANCIEN PRIX (TND)</label>
@@ -433,16 +441,31 @@ export function AdminProductsClient({
                 )}
               </div>
             </div>
+            <div>
+              <label className={adminLabelCls}>QUANTITE EN STOCK *</label>
+              <input
+                type="number"
+                min={0}
+                step={1}
+                className={adminInputWithError(!!errors.stock)}
+                {...register('stock')}
+              />
+              <AdminFieldError message={errors.stock?.message} />
+              <p className="mt-1 text-xs text-slate-500">
+                0 = produit epuise. Le stock baisse a chaque commande.
+              </p>
+            </div>
             <ProductImagesField
               value={images}
               onChange={(urls) => setValue('images', urls, { shouldValidate: true })}
               error={errors.images?.message}
             />
-            <div>
-              <label className={adminLabelCls}>TAILLES (ex: 45x45, Unique)</label>
-              <input type="text" className={adminInputWithError(!!errors.sizes)} {...register('sizes')} />
-              <AdminFieldError message={errors.sizes?.message} />
-            </div>
+            <ProductSizesField
+              value={sizes}
+              onChange={(next) => setValue('sizes', next, { shouldValidate: true, shouldDirty: true })}
+              defaultPrice={watchedPrice}
+              error={errors.sizes?.message || errors.sizes?.root?.message}
+            />
 
             <ProductColorsField
               value={colors}
@@ -567,10 +590,6 @@ export function AdminProductsClient({
             </div>
 
             <div className="flex gap-6">
-              <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-700">
-                <input type="checkbox" className="accent-amber-700" {...register('inStock')} />
-                En stock
-              </label>
               <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-700">
                 <input type="checkbox" className="accent-amber-700" {...register('featured')} />
                 Mis en avant

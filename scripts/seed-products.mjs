@@ -583,6 +583,7 @@ async function upsertProduct(product) {
         sizes = $8,
         colors = $9,
         "inStock" = true,
+        stock = 10,
         featured = $10,
         published = true,
         "promoEnabled" = $11,
@@ -615,10 +616,10 @@ async function upsertProduct(product) {
   const inserted = await pool.query(
     `INSERT INTO products (
       name, brand, description, price, "compareAtPrice", category,
-      "imageUrl", images, sizes, colors, "relatedProductIds", "inStock", featured, published,
+      "imageUrl", images, sizes, colors, "relatedProductIds", "inStock", stock, featured, published,
       "promoEnabled", "promoLabel", "promoBgColor", "promoTextColor",
       "createdAt", "updatedAt"
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, '[]', true, $11, true, $12, $13, $14, $15, NOW(), NOW())
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, '[]', true, 10, $11, true, $12, $13, $14, $15, NOW(), NOW())
     RETURNING id`,
     [
       product.name,

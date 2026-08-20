@@ -12,6 +12,7 @@ import { Reveal } from '@/components/reveal'
 import { productHref } from '@/lib/catalog-href'
 import { parseProductColors, isPromoActive } from '@/lib/product-colors'
 import { parseProductImages } from '@/lib/product-images'
+import { hasVariableSizePrices, parseProductSizes } from '@/lib/product-sizes'
 import { breadcrumbJsonLd, productJsonLd } from '@/lib/seo'
 import { SITE } from '@/lib/site'
 import { getCategoryLabel } from '@/lib/store-categories'
@@ -85,7 +86,7 @@ export default async function ProductDetailPage({
 
   const categoryLabel = getCategoryLabel(product.category, categories)
 
-  const sizes: string[] = JSON.parse(product.sizes || '[]')
+  const sizes = parseProductSizes(product.sizes, Number.parseFloat(product.price) || 0)
   const colors = parseProductColors(product)
   const images = parseProductImages(product)
   const promo = isPromoActive(product)
@@ -142,13 +143,6 @@ export default async function ProductDetailPage({
 
           <div className="h-px w-16 bg-primary/30" />
 
-          <ProductPrice
-            price={product.price}
-            compareAtPrice={product.compareAtPrice}
-            size="lg"
-            accentColor={promo ? product.promoBgColor : null}
-          />
-
           {product.description && (
             <p className="text-sm font-light leading-relaxed text-muted-foreground">
               {product.description}
@@ -156,11 +150,26 @@ export default async function ProductDetailPage({
           )}
 
           {!product.inStock ? (
-            <div className="rounded-full bg-black px-4 py-3 text-center text-sm font-semibold tracking-wide text-white">
-              Épuisé
-            </div>
+            <>
+              <ProductPrice
+                price={product.price}
+                compareAtPrice={product.compareAtPrice}
+                size="lg"
+                accentColor={promo ? product.promoBgColor : null}
+                from={hasVariableSizePrices(sizes)}
+              />
+              <div className="rounded-full bg-black px-4 py-3 text-center text-sm font-semibold tracking-wide text-white">
+                Épuisé
+              </div>
+            </>
           ) : (
-            <AddToCartButton product={product} sizes={sizes} colors={colors} />
+            <AddToCartButton
+              product={product}
+              sizes={sizes}
+              colors={colors}
+              stock={product.stock ?? 0}
+              accentColor={promo ? product.promoBgColor : null}
+            />
           )}
 
           <ProductTrustBox className="mt-1" />

@@ -1,5 +1,6 @@
 import { productHref } from '@/lib/catalog-href'
 import { parsePrice } from '@/lib/product-price'
+import { hasVariableSizePrices, lowestSizePrice, parseProductSizes } from '@/lib/product-sizes'
 import { SITE } from '@/lib/site'
 import { FACEBOOK_URL } from '@/lib/social-links'
 import { absoluteUrl, getSiteUrl } from '@/lib/site-url'
@@ -141,13 +142,23 @@ export function productJsonLd(product: {
   imageUrl: string | null
   inStock: boolean
   category: string
+  sizes?: string | null
 }) {
-  const price = parsePrice(product.price)
+  const fallback = parsePrice(product.price)
+  const sizes = parseProductSizes(product.sizes, fallback ?? 0)
+  const variable = hasVariableSizePrices(sizes)
+  const low = variable ? lowestSizePrice(sizes, fallback ?? 0) : fallback
+  const high = variable ? Math.max(...sizes.map((size) => size.price)) : fallback
   const image = product.imageUrl
     ? product.imageUrl.startsWith('http')
       ? product.imageUrl
       : absoluteUrl(product.imageUrl)
     : absoluteUrl('/assets/deco-shop-logo.webp')
+
+  const availability = product.inStock
+    ? 'https://schema.org/InStock'
+    : 'https://schema.org/OutOfStock'
+  const offerUrl = absoluteUrl(productHref(product.id))
 
   return {
     '@context': 'https://schema.org',
@@ -161,17 +172,27 @@ export function productJsonLd(product: {
       name: product.brand || SITE.name,
     },
     category: product.category,
-    offers: {
-      '@type': 'Offer',
-      url: absoluteUrl(productHref(product.id)),
-      priceCurrency: 'TND',
-      price: price != null ? price.toFixed(3) : undefined,
-      availability: product.inStock
-        ? 'https://schema.org/InStock'
-        : 'https://schema.org/OutOfStock',
-      itemCondition: 'https://schema.org/NewCondition',
-      seller: { '@id': localBusinessId() },
-    },
+    offers: variable
+      ? {
+          '@type': 'AggregateOffer',
+          url: offerUrl,
+          priceCurrency: 'TND',
+          lowPrice: low != null ? low.toFixed(3) : undefined,
+          highPrice: high != null ? high.toFixed(3) : undefined,
+          offerCount: sizes.length,
+          availability,
+          itemCondition: 'https://schema.org/NewCondition',
+          seller: { '@id': localBusinessId() },
+        }
+      : {
+          '@type': 'Offer',
+          url: offerUrl,
+          priceCurrency: 'TND',
+          price: fallback != null ? fallback.toFixed(3) : undefined,
+          availability,
+          itemCondition: 'https://schema.org/NewCondition',
+          seller: { '@id': localBusinessId() },
+        },
   }
 }
 

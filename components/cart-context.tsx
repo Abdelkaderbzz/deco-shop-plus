@@ -11,10 +11,19 @@ export type CartItem = {
   quantity: number
   price: number
   imageUrl?: string
+  stock?: number
 }
 
 function sameLine(a: Pick<CartItem, 'productId' | 'size' | 'color'>, b: Pick<CartItem, 'productId' | 'size' | 'color'>) {
   return a.productId === b.productId && a.size === b.size && (a.color || '') === (b.color || '')
+}
+
+function quantityForProduct(items: CartItem[], productId: number, except?: Pick<CartItem, 'productId' | 'size' | 'color'>) {
+  return items.reduce((sum, line) => {
+    if (line.productId !== productId) return sum
+    if (except && sameLine(line, except)) return sum
+    return sum + line.quantity
+  }, 0)
 }
 
 export function cartLineKey(item: Pick<CartItem, 'productId' | 'size' | 'color'>) {
@@ -38,13 +47,21 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addItem = useCallback((item: CartItem) => {
     setItems((prev) => {
+      const maxStock = item.stock ?? 99
+      const already = quantityForProduct(prev, item.productId)
+      const room = Math.max(0, maxStock - already)
+      if (room <= 0) return prev
+
+      const quantity = Math.min(item.quantity, room)
       const existing = prev.find((line) => sameLine(line, item))
       if (existing) {
         return prev.map((line) =>
-          sameLine(line, item) ? { ...line, quantity: line.quantity + item.quantity } : line,
+          sameLine(line, item)
+            ? { ...line, quantity: line.quantity + quantity, stock: item.stock ?? line.stock }
+            : line,
         )
       }
-      return [...prev, { ...item, color: item.color || '' }]
+      return [...prev, { ...item, color: item.color || '', quantity }]
     })
   }, [])
 
@@ -56,11 +73,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
     (item: Pick<CartItem, 'productId' | 'size' | 'color'>, quantity: number) => {
       if (quantity <= 0) {
         setItems((prev) => prev.filter((line) => !sameLine(line, item)))
-      } else {
-        setItems((prev) =>
-          prev.map((line) => (sameLine(line, item) ? { ...line, quantity } : line)),
-        )
+        return
       }
+
+      setItems((prev) =>
+        prev.map((line) => {
+          if (!sameLine(line, item)) return line
+          const maxStock = line.stock ?? 99
+          const others = quantityForProduct(prev, line.productId, line)
+          const capped = Math.min(quantity, Math.max(1, maxStock - others))
+          return { ...line, quantity: capped }
+        }),
+      )
     },
     [],
   )

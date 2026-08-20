@@ -21,6 +21,7 @@ type Product = {
   promoLabel?: string | null
   promoBgColor?: string | null
   promoTextColor?: string | null
+  sizes?: string | null
 }
 
 export function ProductsClient({
