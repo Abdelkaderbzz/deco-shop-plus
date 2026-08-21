@@ -17,15 +17,16 @@ export function CategoryCard({ category }: { category: StoreCategory }) {
             alt={category.name}
             fill
             sizes="(max-width: 768px) 50vw, 25vw"
-            className="object-cover transition-transform duration-700 group-hover:scale-105"
+            quality={70}
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : null}
-        <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/15 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/25 to-transparent" />
         <div className="absolute inset-x-0 bottom-0 p-4 text-left">
-          <p className="text-[11px] font-medium tracking-wide text-primary-foreground/80">
+          <p className="text-[11px] font-medium tracking-wide text-white">
             {category.tagline}
           </p>
-          <h3 className="mt-1 font-serif text-xl font-medium tracking-tight text-primary-foreground">
+          <h3 className="mt-1 font-serif text-xl font-medium tracking-tight text-white">
             {category.name}
           </h3>
         </div>

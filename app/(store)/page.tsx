@@ -13,7 +13,6 @@ import {
   InstagramFollowButton,
   InstagramSectionHeader,
 } from '@/components/instagram-section-static'
-import { Reveal } from '@/components/reveal'
 import {
   CategoriesSkeleton,
   HeroSkeleton,
@@ -58,23 +57,19 @@ function HomeProductSection({
   if (products.length === 0) return null
 
   return (
-    <section id={id} className="scroll-mt-24 mx-auto max-w-7xl px-2 py-14 sm:px-3 md:py-16">
-      <Reveal className="mb-10 text-center">
+    <section id={id} className="below-fold scroll-mt-24 mx-auto max-w-7xl px-2 py-14 sm:px-3 md:py-16">
+      <div className="mb-10 text-center">
         <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-primary">{eyebrow}</p>
         <h2 className="mt-2 font-serif text-3xl font-medium tracking-tight text-foreground">
           {title}
         </h2>
-      </Reveal>
+      </div>
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 lg:grid-cols-4">
         {products.map((product) => (
           <ProductCard key={product.id} product={product} categories={categories} />
         ))}
       </div>
-      {action ? (
-        <Reveal className="mt-10 text-center" delay={120}>
-          {action}
-        </Reveal>
-      ) : null}
+      {action ? <div className="mt-10 text-center">{action}</div> : null}
     </section>
   )
 }
@@ -140,7 +135,7 @@ async function HomeFeatured() {
       action={
         <Link
           href="/products"
-          className="rounded-full border border-border px-8 py-3 text-sm font-medium text-muted-foreground transition-all hover:border-primary hover:bg-primary/5 hover:text-primary"
+          className="inline-flex min-h-11 items-center rounded-full border border-border px-8 py-3 text-sm font-medium text-foreground transition-all hover:border-primary hover:bg-primary/5 hover:text-primary"
         >
           Toute la boutique
         </Link>
@@ -178,12 +173,10 @@ export default function HomePage() {
 
       <TestimonialsSection />
 
-      <section className="border-t border-border bg-secondary/40 py-14 md:py-16">
+      <section className="below-fold border-t border-border bg-secondary/40 py-14 md:py-16">
         <div className="mx-auto max-w-7xl px-2 sm:px-3">
           <InstagramSectionHeader />
-          <Reveal delay={80}>
-            <InstagramFollowButton />
-          </Reveal>
+          <InstagramFollowButton />
         </div>
       </section>
     </div>

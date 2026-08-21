@@ -216,7 +216,7 @@ const getFeaturedProductsCached = unstable_cache(
       .from(products)
       .where(and(eq(products.featured, true), eq(products.published, true)))
       .orderBy(desc(products.createdAt))
-      .limit(6),
+      .limit(4),
   ['featured-products'],
   { revalidate: 120, tags: ['products'] },
 )
@@ -230,7 +230,7 @@ const getPromoProductsCached = unstable_cache(
       .from(products)
       .where(and(eq(products.promoEnabled, true), eq(products.published, true)))
       .orderBy(desc(products.updatedAt))
-      .limit(8),
+      .limit(4),
   ['promo-products'],
   { revalidate: 120, tags: ['products'] },
 )
@@ -244,7 +244,7 @@ const getLatestProductsCached = unstable_cache(
       .from(products)
       .where(eq(products.published, true))
       .orderBy(desc(products.createdAt))
-      .limit(8),
+      .limit(4),
   ['latest-products'],
   { revalidate: 120, tags: ['products'] },
 )
@@ -277,7 +277,7 @@ const getBestSellerProductsCached = unstable_cache(
         products.sizes,
       )
       .orderBy(desc(sql`coalesce(sum(${orderItems.quantity}), 0)`), desc(products.createdAt))
-      .limit(8)
+      .limit(4)
 
     return rows.map(({ sold: _sold, ...product }) => product)
   },

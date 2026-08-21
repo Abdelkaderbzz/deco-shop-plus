@@ -119,7 +119,8 @@ export function ProductCard({
                 alt={`${product.brand} ${product.name}`}
                 fill
                 sizes="(max-width: 640px) 184px, 216px"
-                className="object-cover transition-transform duration-700 ease-out group-hover/card:scale-110"
+                quality={70}
+                className="object-cover transition-transform duration-500 ease-out group-hover/card:scale-105"
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center">
@@ -157,8 +158,9 @@ export function ProductCard({
               alt={`${product.brand} ${product.name}`}
               fill
               sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              quality={70}
               priority={priority}
-              className="object-cover transition-transform duration-700 ease-out group-hover/card:scale-110"
+              className="object-cover transition-transform duration-500 ease-out group-hover/card:scale-105"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center">
