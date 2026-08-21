@@ -309,6 +309,8 @@ export const getPublishedProductsForSitemap = cache(async () =>
       db
         .select({
           id: products.id,
+          name: products.name,
+          imageUrl: products.imageUrl,
           updatedAt: products.updatedAt,
           category: products.category,
         })
