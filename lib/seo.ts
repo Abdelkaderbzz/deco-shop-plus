@@ -1,8 +1,13 @@
-import { productHref } from '@/lib/catalog-href'
+import type { Metadata } from 'next'
+import { catalogHref, productHref } from '@/lib/catalog-href'
+import { DEFAULT_DELIVERY_FEE, DELIVERY_COUNTRY, DELIVERY_CURRENCY } from '@/lib/delivery'
+import { parseProductColors } from '@/lib/product-colors'
+import { parseProductImages } from '@/lib/product-images'
 import { parsePrice } from '@/lib/product-price'
 import { hasVariableSizePrices, lowestSizePrice, parseProductSizes } from '@/lib/product-sizes'
 import { SITE } from '@/lib/site'
-import { FACEBOOK_URL } from '@/lib/social-links'
+import { FACEBOOK_URL, MAPS_URL, WHATSAPP_URL } from '@/lib/social-links'
+import { STORE_CATEGORIES } from '@/lib/store-categories'
 import { absoluteUrl, getSiteUrl } from '@/lib/site-url'
 
 function orgId() {
@@ -17,22 +22,89 @@ function localBusinessId() {
   return `${getSiteUrl()}/#localbusiness`
 }
 
+export function absoluteImageUrl(url: string) {
+  return url.startsWith('http') ? url : absoluteUrl(url)
+}
+
+export function ogRemoteImage(url?: string | null) {
+  if (!url) return null
+  const absolute = absoluteImageUrl(url)
+  return absolute.startsWith('https://') ? absolute : null
+}
+
+export function pageAlternates(path: string): NonNullable<Metadata['alternates']> {
+  return {
+    canonical: path,
+    languages: {
+      'fr-TN': path,
+      fr: path,
+      'x-default': path,
+    },
+  }
+}
+
+function contactPoint() {
+  return {
+    '@type': 'ContactPoint',
+    telephone: SITE.phoneTel,
+    contactType: 'customer service',
+    areaServed: DELIVERY_COUNTRY,
+    availableLanguage: ['French', 'Arabic'],
+    url: WHATSAPP_URL,
+  }
+}
+
+function postalAddress() {
+  return {
+    '@type': 'PostalAddress',
+    streetAddress: SITE.neighborhood,
+    addressLocality: SITE.city,
+    addressRegion: SITE.region,
+    addressCountry: 'TN',
+  }
+}
+
+function logoImage() {
+  return {
+    '@type': 'ImageObject',
+    url: absoluteUrl('/assets/deco-shop-logo.webp'),
+  }
+}
+
+function offerShippingDetails() {
+  return {
+    '@type': 'OfferShippingDetails',
+    shippingDestination: {
+      '@type': 'DefinedRegion',
+      addressCountry: DELIVERY_COUNTRY,
+    },
+    shippingRate: {
+      '@type': 'MonetaryAmount',
+      value: DEFAULT_DELIVERY_FEE,
+      currency: DELIVERY_CURRENCY,
+    },
+  }
+}
+
+function priceValidUntil() {
+  const until = new Date()
+  until.setFullYear(until.getFullYear() + 1)
+  return until.toISOString().slice(0, 10)
+}
+
 export function organizationJsonLd() {
   return {
     '@type': 'Organization',
     '@id': orgId(),
     name: SITE.name,
+    alternateName: SITE.shortName,
     url: getSiteUrl(),
-    logo: absoluteUrl('/assets/deco-shop-logo.webp'),
+    logo: logoImage(),
+    image: logoImage(),
     sameAs: [FACEBOOK_URL],
     telephone: SITE.phoneTel,
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: SITE.neighborhood,
-      addressLocality: SITE.city,
-      addressRegion: SITE.region,
-      addressCountry: 'TN',
-    },
+    address: postalAddress(),
+    contactPoint: contactPoint(),
   }
 }
 
@@ -45,21 +117,27 @@ export function localBusinessJsonLd() {
     url: getSiteUrl(),
     telephone: SITE.phoneTel,
     priceRange: '$$',
-    currenciesAccepted: 'TND',
+    currenciesAccepted: DELIVERY_CURRENCY,
     paymentAccepted: 'Cash, Cash on delivery',
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: SITE.neighborhood,
-      addressLocality: SITE.city,
-      addressRegion: SITE.region,
-      addressCountry: 'TN',
-    },
-    areaServed: {
-      '@type': 'AdministrativeArea',
-      name: SITE.region,
-    },
+    address: postalAddress(),
+    hasMap: MAPS_URL,
+    contactPoint: contactPoint(),
+    areaServed: [
+      { '@type': 'City', name: SITE.city },
+      { '@type': 'Country', name: 'Tunisia' },
+    ],
+    knowsLanguage: ['fr', 'ar'],
     sameAs: [FACEBOOK_URL],
     parentOrganization: { '@id': orgId() },
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: `Boutique ${SITE.name}`,
+      itemListElement: STORE_CATEGORIES.map((category) => ({
+        '@type': 'OfferCatalog',
+        name: category.name,
+        url: absoluteUrl(catalogHref({ category: category.slug })),
+      })),
+    },
   }
 }
 
@@ -69,6 +147,8 @@ export function websiteJsonLd() {
     '@id': websiteId(),
     url: getSiteUrl(),
     name: SITE.name,
+    alternateName: `${SITE.name} ${SITE.city}`,
+    description: SITE.description,
     inLanguage: 'fr-TN',
     publisher: { '@id': orgId() },
     potentialAction: {
@@ -113,12 +193,15 @@ export function collectionPageJsonLd({
   path: string
   products: { id: number; name: string }[]
 }) {
+  const url = absoluteUrl(path)
   return {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
+    '@id': `${url}#webpage`,
     name,
     description,
-    url: absoluteUrl(path),
+    url,
+    inLanguage: 'fr-TN',
     isPartOf: { '@id': websiteId() },
     about: { '@id': localBusinessId() },
     mainEntity: {
@@ -139,60 +222,89 @@ export function productJsonLd(product: {
   brand: string
   description: string | null
   price: string
+  compareAtPrice?: string | null
   imageUrl: string | null
+  images?: string | null
+  colors?: string | null
   inStock: boolean
   category: string
   sizes?: string | null
 }) {
   const fallback = parsePrice(product.price)
   const sizes = parseProductSizes(product.sizes, fallback ?? 0)
+  const colors = parseProductColors(product)
+  const gallery = parseProductImages(product).map(absoluteImageUrl)
   const variable = hasVariableSizePrices(sizes)
   const low = variable ? lowestSizePrice(sizes, fallback ?? 0) : fallback
   const high = variable ? Math.max(...sizes.map((size) => size.price)) : fallback
-  const image = product.imageUrl
-    ? product.imageUrl.startsWith('http')
-      ? product.imageUrl
-      : absoluteUrl(product.imageUrl)
-    : absoluteUrl('/assets/deco-shop-logo.webp')
-
+  const image =
+    gallery.length > 0 ? gallery : [absoluteUrl('/assets/deco-shop-logo.webp')]
   const availability = product.inStock
     ? 'https://schema.org/InStock'
     : 'https://schema.org/OutOfStock'
   const offerUrl = absoluteUrl(productHref(product.id))
+  const validUntil = priceValidUntil()
+  const compareAt = parsePrice(product.compareAtPrice)
+
+  const offerBase = {
+    url: offerUrl,
+    priceCurrency: DELIVERY_CURRENCY,
+    availability,
+    itemCondition: 'https://schema.org/NewCondition',
+    seller: { '@id': localBusinessId() },
+    shippingDetails: offerShippingDetails(),
+    priceValidUntil: validUntil,
+  }
 
   return {
     '@context': 'https://schema.org',
     '@type': 'Product',
+    '@id': `${offerUrl}#product`,
     name: product.name,
-    description: product.description || `${product.name} chez ${SITE.name} à ${SITE.city}.`,
+    description:
+      product.description || `${product.name} chez ${SITE.name} à ${SITE.city}.`,
     sku: String(product.id),
+    mpn: String(product.id),
+    url: offerUrl,
     image,
     brand: {
       '@type': 'Brand',
       name: product.brand || SITE.name,
     },
     category: product.category,
+    color: colors.length > 0 ? colors.map((color) => color.name).join(', ') : undefined,
+    additionalProperty:
+      sizes.length > 0
+        ? sizes.map((size) => ({
+            '@type': 'PropertyValue',
+            name: 'Taille',
+            value: variable ? `${size.name} (${size.price.toFixed(3)} TND)` : size.name,
+          }))
+        : undefined,
     offers: variable
       ? {
           '@type': 'AggregateOffer',
-          url: offerUrl,
-          priceCurrency: 'TND',
+          ...offerBase,
           lowPrice: low != null ? low.toFixed(3) : undefined,
           highPrice: high != null ? high.toFixed(3) : undefined,
           offerCount: sizes.length,
-          availability,
-          itemCondition: 'https://schema.org/NewCondition',
-          seller: { '@id': localBusinessId() },
         }
       : {
           '@type': 'Offer',
-          url: offerUrl,
-          priceCurrency: 'TND',
+          ...offerBase,
           price: fallback != null ? fallback.toFixed(3) : undefined,
-          availability,
-          itemCondition: 'https://schema.org/NewCondition',
-          seller: { '@id': localBusinessId() },
+          priceSpecification:
+            compareAt != null && fallback != null && compareAt > fallback
+              ? {
+                  '@type': 'UnitPriceSpecification',
+                  price: fallback.toFixed(3),
+                  priceCurrency: DELIVERY_CURRENCY,
+                  referenceQuantity: {
+                    '@type': 'QuantitativeValue',
+                    value: 1,
+                  },
+                }
+              : undefined,
         },
   }
 }
-

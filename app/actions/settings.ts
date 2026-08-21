@@ -1,12 +1,11 @@
 'use server'
 
+import { DEFAULT_DELIVERY_FEE } from '@/lib/delivery'
 import { requireAdminId } from '@/lib/admin-auth'
 import { db } from '@/lib/db'
 import { settings } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
-
-const DEFAULT_DELIVERY_FEE = '7.000'
 
 export async function getDeliveryFee() {
   const [row] = await db.select().from(settings).where(eq(settings.id, 1)).limit(1)
