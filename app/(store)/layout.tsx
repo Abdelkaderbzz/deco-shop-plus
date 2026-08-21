@@ -43,7 +43,7 @@ export default async function StoreLayout({ children }: { children: React.ReactN
               href={WHATSAPP_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm font-medium text-primary hover:underline"
+              className="inline-flex min-h-11 items-center text-sm font-medium text-primary hover:underline"
             >
               WhatsApp
             </a>
@@ -51,7 +51,7 @@ export default async function StoreLayout({ children }: { children: React.ReactN
               href={FACEBOOK_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm font-medium text-primary hover:underline"
+              className="inline-flex min-h-11 items-center text-sm font-medium text-primary hover:underline"
             >
               Facebook
             </a>

@@ -1,6 +1,7 @@
 'use client'
 
 import type { ActiveBanner } from '@/app/actions/banners'
+import { readableForeground } from '@/lib/contrast'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
@@ -50,13 +51,15 @@ export function SiteBanner({ banner }: { banner: ActiveBanner }) {
   const linkCls =
     'hidden shrink-0 rounded-full border border-current/40 px-3 py-1 font-light tracking-[0.15em] transition-opacity hover:opacity-70 sm:inline-block'
 
+  const bannerColor = readableForeground(banner.backgroundColor, banner.textColor)
+
   return (
     <div
       role="region"
       aria-label="Annonce boutique"
       style={{
         backgroundColor: banner.backgroundColor,
-        color: banner.textColor,
+        color: bannerColor,
         fontSize: `${banner.fontSize}px`,
       }}
     >
@@ -65,7 +68,7 @@ export function SiteBanner({ banner }: { banner: ActiveBanner }) {
           {VARIANT_LABELS[banner.variant]}
         </span>
 
-        <p className="min-w-0 flex-1 truncate text-center font-light tracking-wider">
+        <p className="min-w-0 flex-1 truncate text-center font-medium tracking-wider">
           {banner.message}
         </p>
 
@@ -90,7 +93,7 @@ export function SiteBanner({ banner }: { banner: ActiveBanner }) {
             type="button"
             onClick={dismiss}
             aria-label="Fermer l'annonce"
-            className="shrink-0 opacity-60 transition-opacity hover:opacity-100"
+            className="flex min-h-11 min-w-11 shrink-0 items-center justify-center opacity-70 transition-opacity hover:opacity-100"
           >
             <svg
               width="14"

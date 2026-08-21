@@ -1,3 +1,4 @@
+import { readableForeground } from '@/lib/contrast'
 import {
   formatPriceTnd,
   getDiscountPercent,
@@ -54,7 +55,7 @@ export function ProductPrice({
         {formatPriceTnd(current)}{' '}
         <span
           className={cn(
-            'font-medium text-foreground/70',
+            'font-medium text-muted-foreground',
             size === 'lg' ? 'text-sm' : size === 'xs' ? 'text-[10px]' : 'text-xs',
           )}
         >
@@ -64,33 +65,39 @@ export function ProductPrice({
     )
   }
 
+  const tndCls = cn(
+    'font-medium text-muted-foreground',
+    size === 'lg' ? 'text-sm' : size === 'xs' ? 'text-[10px]' : 'text-xs',
+  )
+  const badgeBg = accentColor?.trim() || ''
+  const badgeColor = badgeBg ? readableForeground(badgeBg) : undefined
+
   return (
-    <div className={cn('flex flex-wrap items-baseline gap-x-2.5 gap-y-1', className)}>
+    <div className={cn('flex flex-wrap items-baseline gap-x-2 gap-y-1', className)}>
       <p
         className={cn(
-          'tabular-nums text-primary/55 line-through decoration-from-font',
-          size === 'lg' ? 'text-base font-light' : size === 'xs' ? 'text-[10px] font-light' : 'text-xs font-light',
+          'font-semibold tabular-nums text-foreground',
+          size === 'lg' ? 'text-3xl' : size === 'xs' ? 'text-sm' : 'text-lg',
         )}
       >
-        {formatPriceTnd(compareAt)}
+        {fromLabel}
+        {formatPriceTnd(current)} <span className={tndCls}>TND</span>
       </p>
       <p
         className={cn(
-          'font-semibold tabular-nums',
-          size === 'lg' ? 'text-3xl' : size === 'xs' ? 'text-sm' : 'text-lg',
+          'font-normal tabular-nums text-muted-foreground line-through decoration-1',
+          size === 'lg' ? 'text-base' : size === 'xs' ? 'text-xs' : 'text-sm',
         )}
-        style={accentColor ? { color: accentColor } : undefined}
       >
-        <span className={accentColor ? undefined : 'text-foreground'}>
-          {fromLabel}
-          {formatPriceTnd(current)}
-        </span>
+        {formatPriceTnd(compareAt)} <span className={tndCls}>TND</span>
       </p>
       <span
         className={cn(
-          'font-medium tracking-wide text-primary',
+          'rounded-md px-1.5 py-0.5 font-semibold tracking-wide',
+          badgeBg ? undefined : 'bg-muted text-foreground',
           size === 'lg' ? 'text-sm' : size === 'xs' ? 'text-[10px]' : 'text-[11px]',
         )}
+        style={badgeBg ? { backgroundColor: badgeBg, color: badgeColor } : undefined}
       >
         -{percent}%
       </span>

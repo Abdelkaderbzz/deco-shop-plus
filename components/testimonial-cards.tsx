@@ -76,7 +76,7 @@ const CHAT_WALLPAPER = `url("data:image/svg+xml,%3Csvg width='60' height='60' vi
 export function InstagramCommentCard({ item }: { item: TestimonialComment }) {
   return (
     <article className={`${CARD_SHELL} ${CARD_PAD} bg-[#121212]`}>
-      <div className="mb-2 flex items-center gap-1.5 text-[9px] tracking-wider text-white/40">
+      <div className="mb-2 flex items-center gap-1.5 text-[11px] font-medium tracking-wider text-white/90">
         <InstagramGlyph />
         INSTAGRAM
       </div>
@@ -87,7 +87,7 @@ export function InstagramCommentCard({ item }: { item: TestimonialComment }) {
             <span className="font-semibold">{item.username}</span>{' '}
             <span className="font-normal text-white/90">{item.message}</span>
           </p>
-          <p className="mt-1.5 text-[10px] text-white/40">{item.time}</p>
+          <p className="mt-1.5 text-[11px] text-white/80">{item.time}</p>
         </div>
       </div>
     </article>
@@ -111,7 +111,7 @@ export function WhatsAppCommentCard({ item }: { item: TestimonialComment }) {
         <div className="max-w-[92%] rounded-lg rounded-tl-none bg-[#005c4b] px-2.5 py-1.5">
           <p className="text-[12.5px] leading-relaxed text-[#e9edef]">{item.message}</p>
           <div className="mt-0.5 flex items-center justify-end gap-1">
-            <span className="text-[9px] text-white/50">{item.time}</span>
+            <span className="text-[11px] text-white/80">{item.time}</span>
             <ReadReceipt />
           </div>
         </div>

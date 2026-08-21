@@ -26,26 +26,26 @@ export function Navbar({ storeCategories }: { storeCategories: StoreCategory[] }
     <header className="sticky top-0 z-50 border-b border-border/80 bg-card/90 backdrop-blur-md">
       <div className="hidden border-b border-border/60 bg-primary text-primary-foreground sm:block">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-2 py-1.5 text-[11px] tracking-[0.14em] sm:px-3">
-          <p>
+          <p className="py-1">
             {SITE.neighborhood}, {SITE.city}
           </p>
-          <a href={PHONE_HREF} className="transition-opacity hover:opacity-80">
+          <a href={PHONE_HREF} className="inline-flex min-h-11 items-center transition-opacity hover:opacity-80">
             {SITE.phoneDisplay}
           </a>
         </div>
       </div>
 
       <div className="mx-auto flex max-w-7xl items-center justify-between px-2 py-2.5 sm:px-3">
-        <Link href="/" className="flex items-center gap-3" aria-label={`${SITE.name} — Accueil`}>
-          <Logo size="sm" priority />
+        <Link href="/" className="flex min-h-11 items-center gap-3" aria-label={`${SITE.name} — Accueil`}>
+          <Logo size="sm" />
         </Link>
 
-        <nav className="hidden items-center gap-6 lg:flex">
+        <nav className="hidden items-center gap-1 lg:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="text-[13px] font-medium text-muted-foreground transition-colors hover:text-primary"
+              className="inline-flex min-h-11 items-center px-2.5 text-[13px] font-medium text-foreground/80 transition-colors hover:text-primary"
             >
               {link.label}
             </Link>
@@ -94,12 +94,12 @@ export function Navbar({ storeCategories }: { storeCategories: StoreCategory[] }
                 key={link.href}
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
-                className="text-base font-medium text-muted-foreground hover:text-primary"
+                className="inline-flex min-h-11 items-center text-base font-medium text-foreground hover:text-primary"
               >
                 {link.label}
               </Link>
             ))}
-            <a href={PHONE_HREF} className="text-base font-medium text-primary">
+            <a href={PHONE_HREF} className="inline-flex min-h-11 items-center text-base font-medium text-primary">
               {SITE.phoneDisplay}
             </a>
           </nav>
