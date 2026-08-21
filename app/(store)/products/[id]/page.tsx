@@ -13,12 +13,12 @@ import { productHref } from '@/lib/catalog-href'
 import { parseProductColors, isPromoActive } from '@/lib/product-colors'
 import { parseProductImages } from '@/lib/product-images'
 import { hasVariableSizePrices, parseProductSizes } from '@/lib/product-sizes'
-import { breadcrumbJsonLd, productJsonLd } from '@/lib/seo'
+import { breadcrumbJsonLd, pageAlternates, productJsonLd } from '@/lib/seo'
 import { SITE } from '@/lib/site'
 import { getCategoryLabel } from '@/lib/store-categories'
+import { Breadcrumbs } from '@/components/breadcrumbs'
 import { AddToCartButton } from './add-to-cart-button'
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
 import { Suspense } from 'react'
 
 export const revalidate = 120
@@ -39,23 +39,33 @@ export async function generateMetadata({
   params: Promise<{ id: string }>
 }): Promise<Metadata> {
   const { id } = await params
-  const product = await getProductById(Number(id))
+  const [product, categories] = await Promise.all([
+    getProductById(Number(id)),
+    getCategories(),
+  ])
   if (!product) {
     return { title: 'Produit introuvable', robots: { index: false, follow: true } }
   }
 
+  const categoryLabel = getCategoryLabel(product.category, categories)
   const description =
     product.description?.trim() ||
     `${product.name} chez ${SITE.name} à ${SITE.neighborhood}, ${SITE.city}. ${SITE.tagline}.`
   const url = productHref(product.id)
-  const images = product.imageUrl
-    ? [{ url: product.imageUrl, alt: `${product.brand} ${product.name}` }]
-    : undefined
+  const gallery = parseProductImages(product)
+  const images =
+    gallery.length > 0
+      ? gallery.map((imageUrl) => ({
+          url: imageUrl,
+          alt: `${product.brand} ${product.name}`,
+        }))
+      : undefined
 
   return {
-    title: product.name,
+    title: `${product.name} à ${SITE.city}`,
     description,
-    alternates: { canonical: url },
+    keywords: [product.name, product.brand, categoryLabel, SITE.city, SITE.neighborhood, 'décoration Tunisie'],
+    alternates: pageAlternates(url),
     openGraph: {
       type: 'website',
       title: `${product.name} | ${SITE.name}`,
@@ -67,7 +77,12 @@ export async function generateMetadata({
       card: 'summary_large_image',
       title: product.name,
       description,
-      images: product.imageUrl ? [product.imageUrl] : undefined,
+      images: gallery.length > 0 ? gallery : undefined,
+    },
+    other: {
+      'product:price:amount': product.price,
+      'product:price:currency': 'TND',
+      'product:availability': product.inStock ? 'in stock' : 'out of stock',
     },
   }
 }
@@ -104,17 +119,14 @@ export default async function ProductDetailPage({
         ])}
       />
       <Reveal className="mb-8">
-        <nav aria-label="Fil d’Ariane" className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
-          <Link href="/" className="hover:text-primary transition-colors">Accueil</Link>
-          <span>/</span>
-          <Link href="/products" className="hover:text-primary transition-colors">Boutique</Link>
-          <span>/</span>
-          <Link href={categoryPath} className="hover:text-primary transition-colors">
-            {categoryLabel}
-          </Link>
-          <span>/</span>
-          <span className="text-foreground">{product.name}</span>
-        </nav>
+        <Breadcrumbs
+          items={[
+            { name: 'Accueil', href: '/' },
+            { name: 'Boutique', href: '/products' },
+            { name: categoryLabel, href: categoryPath },
+            { name: product.name },
+          ]}
+        />
       </Reveal>
 
       <div className="grid grid-cols-1 gap-12 md:grid-cols-2">

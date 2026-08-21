@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { catalogHref } from '@/lib/catalog-href'
-import { SITE } from '@/lib/site'
+import { SITE, SITE_KEYWORDS } from '@/lib/site'
+import { pageAlternates } from '@/lib/seo'
 import { normalizePage } from '@/lib/pagination'
 import { CatalogSkeleton } from '@/components/store-skeletons'
 import { CatalogPage } from './catalog-page'
@@ -23,7 +24,7 @@ export async function generateMetadata({
     return {
       title: `Recherche « ${search} »`,
       description: `Résultats pour « ${search} » chez ${SITE.name} à ${SITE.city}.`,
-      alternates: { canonical },
+      alternates: pageAlternates(canonical),
       robots: { index: false, follow: true },
     }
   }
@@ -31,7 +32,9 @@ export async function generateMetadata({
   return {
     title: `Boutique déco à ${SITE.city}`,
     description: `Parcourez coussins, accessoires, rangement et literie chez ${SITE.name} à ${SITE.neighborhood}, ${SITE.city}.`,
-    alternates: { canonical: '/products' },
+    keywords: ['boutique déco', SITE.city, ...SITE_KEYWORDS],
+    alternates: pageAlternates('/products'),
+    robots: page > 1 ? { index: false, follow: true } : undefined,
     openGraph: {
       title: `Boutique | ${SITE.name}`,
       description: `Coussins, accessoires, rangement et literie à ${SITE.city}.`,

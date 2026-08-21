@@ -22,6 +22,7 @@ import {
 import { TestimonialsSection } from '@/components/testimonials-section'
 import { mergeStoreCategories } from '@/lib/store-categories'
 import { SITE } from '@/lib/site'
+import { pageAlternates } from '@/lib/seo'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { Suspense, type ReactNode } from 'react'
@@ -31,12 +32,11 @@ export const revalidate = 120
 export const metadata: Metadata = {
   title: { absolute: `${SITE.name} | Décoration à ${SITE.neighborhood}, ${SITE.city}` },
   description: SITE.description,
-  alternates: {
-    canonical: '/',
-    languages: {
-      'fr-TN': '/',
-      fr: '/',
-    },
+  alternates: pageAlternates('/'),
+  openGraph: {
+    title: `${SITE.name} | Décoration à ${SITE.neighborhood}, ${SITE.city}`,
+    description: SITE.description,
+    url: '/',
   },
 }
 

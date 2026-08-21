@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { getCategories } from '@/app/actions/categories'
 import { catalogHref } from '@/lib/catalog-href'
 import { SITE } from '@/lib/site'
+import { pageAlternates } from '@/lib/seo'
 import { getMergedCategoryBySlug, STORE_CATEGORIES } from '@/lib/store-categories'
 import { normalizePage } from '@/lib/pagination'
 import { CatalogSkeleton } from '@/components/store-skeletons'
@@ -34,17 +35,21 @@ export async function generateMetadata({
   const { search, page } = await searchParams
   const categories = await getCategories()
   const category = getMergedCategoryBySlug(slug, categories)
-  if (!category) return { title: 'Catégorie' }
+  if (!category) return { title: 'Catégorie', robots: { index: false, follow: true } }
 
   const trimmedSearch = search?.trim() ?? ''
   const pageNum = normalizePage(page)
-  const canonical = catalogHref({ category: slug, search: trimmedSearch, page: pageNum })
+  const canonical = catalogHref({
+    category: slug,
+    search: trimmedSearch,
+    page: trimmedSearch ? pageNum : 1,
+  })
 
   if (trimmedSearch) {
     return {
       title: `« ${trimmedSearch} » dans ${category.name}`,
       description: `Recherche ${category.name.toLowerCase()} chez ${SITE.name} à ${SITE.city}.`,
-      alternates: { canonical },
+      alternates: pageAlternates(canonical),
       robots: { index: false, follow: true },
     }
   }
@@ -55,11 +60,14 @@ export async function generateMetadata({
   return {
     title,
     description,
-    alternates: { canonical },
+    keywords: [category.name, SITE.name, SITE.city, SITE.neighborhood, category.tagline, 'décoration Tunisie'],
+    alternates: pageAlternates(canonical),
+    robots: pageNum > 1 ? { index: false, follow: true } : undefined,
     openGraph: {
       title: `${category.name} | ${SITE.name}`,
       description,
       url: canonical,
+      images: category.image ? [{ url: category.image, alt: category.name }] : undefined,
     },
   }
 }
