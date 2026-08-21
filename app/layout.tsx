@@ -10,10 +10,11 @@ import { getSiteUrl } from '@/lib/site-url'
 import './globals.css'
 
 const montserrat = Montserrat({
-  subsets: ['latin', 'latin-ext'],
+  subsets: ['latin'],
   variable: '--font-sans',
   display: 'swap',
   preload: true,
+  adjustFontFallback: true,
 })
 
 const siteUrl = getSiteUrl()
@@ -83,7 +84,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang={SITE_LOCALE} className={`bg-background ${montserrat.variable}`} suppressHydrationWarning>
+    <html lang={SITE_LOCALE} className={`storefront bg-background ${montserrat.variable}`} suppressHydrationWarning>
       <body className={`${montserrat.className} font-sans antialiased`} suppressHydrationWarning>
         <ThemeScript />
         <StorefrontScale />

@@ -12,7 +12,10 @@ export function StorefrontScale() {
   const pathname = usePathname()
 
   useLayoutEffect(() => {
-    document.documentElement.classList.toggle('storefront', isStorefront(pathname))
+    const root = document.documentElement
+    const on = isStorefront(pathname)
+    if (root.classList.contains('storefront') === on) return
+    root.classList.toggle('storefront', on)
   }, [pathname])
 
   return null

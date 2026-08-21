@@ -16,6 +16,7 @@ function scrollToTarget(href: string) {
 export function HeroSection({ slides }: { slides: HeroSlide[] }) {
   const [index, setIndex] = useState(0)
   const [paused, setPaused] = useState(false)
+  const [loadNearby, setLoadNearby] = useState(false)
   const total = slides.length
   const current = slides[index] ?? slides[0]
 
@@ -26,6 +27,20 @@ export function HeroSection({ slides }: { slides: HeroSlide[] }) {
     },
     [total],
   )
+
+  useEffect(() => {
+    let idleId: number | undefined
+    let timeoutId: number | undefined
+    if (typeof window.requestIdleCallback === 'function') {
+      idleId = window.requestIdleCallback(() => setLoadNearby(true))
+    } else {
+      timeoutId = window.setTimeout(() => setLoadNearby(true), 400)
+    }
+    return () => {
+      if (idleId !== undefined) window.cancelIdleCallback(idleId)
+      if (timeoutId !== undefined) window.clearTimeout(timeoutId)
+    }
+  }, [])
 
   useEffect(() => {
     if (paused || total <= 1) return
@@ -53,14 +68,12 @@ export function HeroSection({ slides }: { slides: HeroSlide[] }) {
             isActive ||
             slideIndex === (index + 1) % total ||
             slideIndex === (index - 1 + total) % total
-          if (!isNearby) return null
+          if (!isActive && (!loadNearby || !isNearby)) return null
 
           return (
           <div
             key={slide.id}
-            className={`absolute inset-0 transition-opacity duration-700 ${
-              isActive ? 'opacity-100' : 'opacity-0'
-            }`}
+            className={`absolute inset-0 ${isActive ? 'opacity-100' : 'opacity-0'}`}
             aria-hidden={!isActive}
           >
             <Image
@@ -69,10 +82,11 @@ export function HeroSection({ slides }: { slides: HeroSlide[] }) {
               fill
               priority={slideIndex === 0}
               fetchPriority={slideIndex === 0 ? 'high' : 'low'}
-              sizes="(max-width: 1024px) 100vw, 80rem"
-              className="hero-ken hero-ken-slow object-cover"
+              quality={70}
+              sizes="(max-width: 768px) 100vw, 1280px"
+              className="object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/45 to-black/15" />
+            <div className="absolute inset-0 bg-linear-to-r from-black/80 via-black/60 to-black/35" />
           </div>
           )
         })}
@@ -80,26 +94,26 @@ export function HeroSection({ slides }: { slides: HeroSlide[] }) {
         <div className="relative z-10 mx-auto flex min-h-[56vh] max-w-7xl flex-col justify-end px-4 py-10 md:min-h-[64vh] md:justify-center md:px-6 md:py-14">
           <div key={current.id} className="max-w-xl text-white">
             {current.eyebrow ? (
-              <p className="hero-eyebrow text-[11px] font-medium uppercase tracking-[0.28em] text-white/80">
+              <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-white">
                 {current.eyebrow}
               </p>
             ) : null}
-            <h1 className="hero-title mt-3 font-serif text-3xl font-medium tracking-tight md:text-5xl lg:text-[3.25rem]">
+            <h1 className="mt-3 font-serif text-3xl font-medium tracking-tight text-white md:text-5xl lg:text-[3.25rem]">
               {current.title}
             </h1>
             {current.subtitle ? (
-              <p className="hero-copy mt-3 max-w-md text-sm font-normal leading-relaxed text-white/80 md:text-base">
+              <p className="mt-3 max-w-md text-sm font-normal leading-relaxed text-white md:text-base">
                 {current.subtitle}
               </p>
             ) : null}
             {current.ctaLabel ? (
-              <div className="hero-cta mt-5">
+              <div className="mt-5">
                 <Link
                   href={href}
                   onClick={(event) => {
                     if (scrollToTarget(href)) event.preventDefault()
                   }}
-                  className="hero-cta-pulse inline-flex items-center rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-foreground shadow-lg shadow-black/20"
+                  className="inline-flex min-h-11 items-center rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-foreground shadow-lg shadow-black/20"
                 >
                   {current.ctaLabel}
                 </Link>
@@ -110,23 +124,28 @@ export function HeroSection({ slides }: { slides: HeroSlide[] }) {
 
         {total > 1 && (
           <>
-            <div className="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2">
+            <div className="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 items-center">
               {slides.map((slide, slideIndex) => (
                 <button
                   key={slide.id}
                   type="button"
                   onClick={() => goTo(slideIndex)}
-                  className={`h-2 rounded-full transition-all ${
-                    slideIndex === index ? 'w-8 bg-white' : 'w-2 bg-white/50 hover:bg-white/80'
-                  }`}
+                  className="flex h-11 w-11 items-center justify-center"
                   aria-label={`Aller au slide ${slideIndex + 1}`}
-                />
+                  aria-current={slideIndex === index ? 'true' : undefined}
+                >
+                  <span
+                    className={`rounded-full ${
+                      slideIndex === index ? 'h-2 w-8 bg-white' : 'h-2 w-2 bg-white/80'
+                    }`}
+                  />
+                </button>
               ))}
             </div>
             <button
               type="button"
               onClick={() => goTo(index - 1)}
-              className="absolute top-1/2 left-3 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-black/20 text-white backdrop-blur-sm md:flex"
+              className="absolute top-1/2 left-3 z-10 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-black/20 text-white backdrop-blur-sm md:flex"
               aria-label="Slide precedent"
             >
               ‹
@@ -134,7 +153,7 @@ export function HeroSection({ slides }: { slides: HeroSlide[] }) {
             <button
               type="button"
               onClick={() => goTo(index + 1)}
-              className="absolute top-1/2 right-3 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-black/20 text-white backdrop-blur-sm md:flex"
+              className="absolute top-1/2 right-3 z-10 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-black/20 text-white backdrop-blur-sm md:flex"
               aria-label="Slide suivant"
             >
               ›
