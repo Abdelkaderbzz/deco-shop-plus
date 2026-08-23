@@ -297,7 +297,7 @@ export const getProductById = cache(async (id: number) => {
         .limit(1)
       return result[0] ?? null
     },
-    ['product-by-id', String(id), 'v4'],
+    ['product-by-id', String(id), 'v5'],
     { revalidate: 120, tags: ['products', `product-${id}`] },
   )()
 })

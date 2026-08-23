@@ -147,6 +147,12 @@ const PRODUCTS = [
     ],
     sizes: ['Unique'],
     colors: CATALOG_COLORS,
+    bundles: [
+      { name: 'Une galette', units: 1, price: 18, compareAtPrice: 25, popular: false },
+      { name: 'Pack 2 galettes', units: 2, price: 34, compareAtPrice: 50, popular: false },
+      { name: 'Pack 3 galettes', units: 3, price: 49, compareAtPrice: 75, popular: false },
+      { name: 'Pack 4 galettes', units: 4, price: 64, compareAtPrice: 100, popular: true },
+    ],
     promoEnabled: true,
     promoLabel: 'Promotion',
     featured: true,
