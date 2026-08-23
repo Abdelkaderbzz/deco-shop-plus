@@ -10,6 +10,8 @@ export function StoreRoutePrefetch({ hrefs }: { hrefs: string[] }) {
     if (hrefs.length === 0) return
 
     let done = false
+    let idleId: number | undefined
+    let timeoutId: number | undefined
 
     function prefetchRoutes() {
       if (done) return
@@ -19,15 +21,24 @@ export function StoreRoutePrefetch({ hrefs }: { hrefs: string[] }) {
       }
     }
 
-    const onInteract = () => prefetchRoutes()
-    window.addEventListener('pointerdown', onInteract, { once: true, passive: true })
-    window.addEventListener('keydown', onInteract, { once: true })
-    const timeoutId = window.setTimeout(prefetchRoutes, 5000)
+    function schedule() {
+      if (typeof window.requestIdleCallback === 'function') {
+        idleId = window.requestIdleCallback(prefetchRoutes, { timeout: 8000 })
+      } else {
+        timeoutId = window.setTimeout(prefetchRoutes, 4000)
+      }
+    }
+
+    if (document.readyState === 'complete') {
+      schedule()
+    } else {
+      window.addEventListener('load', schedule, { once: true })
+    }
 
     return () => {
-      window.removeEventListener('pointerdown', onInteract)
-      window.removeEventListener('keydown', onInteract)
-      window.clearTimeout(timeoutId)
+      window.removeEventListener('load', schedule)
+      if (idleId !== undefined) window.cancelIdleCallback(idleId)
+      if (timeoutId !== undefined) window.clearTimeout(timeoutId)
     }
   }, [hrefs, router])
 
