@@ -1,4 +1,4 @@
-const MAX_PRODUCT_IMAGES = 5
+const MAX_PRODUCT_IMAGES = 6
 
 export function parseProductImages(product: {
   images?: string | null

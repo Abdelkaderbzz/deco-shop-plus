@@ -32,7 +32,7 @@ export const productSchema = z
         { message: 'Ancien prix invalide' },
       ),
     category: z.string().min(1, 'Categorie requise'),
-    images: z.array(z.string().url('URL invalide')).max(5, 'Maximum 5 images par produit'),
+    images: z.array(z.string().url('URL invalide')).max(6, 'Maximum 6 images par produit'),
     sizes: z
       .array(
         z.object({
