@@ -81,7 +81,7 @@ export const TESTIMONIAL_ITEMS: TestimonialItem[] = [
     id: 'wa-olfa',
     source: 'whatsapp',
     username: 'Olfa Ali',
-    message: 'Literie trop douce, livraison rapide a Bizerte 🙏',
+    message: 'Galettes de chaise confortables, livraison rapide a Bizerte 🙏',
     time: '09:15',
     avatar: 'OA',
   },
