@@ -12,19 +12,13 @@ export const STORE_CATEGORIES: StoreCategory[] = [
     tagline: 'Galettes de chaise et coussins',
     image: '/assets/chair-pad-stack.webp',
   },
-  {
-    slug: 'rangement',
-    name: 'Rangement',
-    tagline: 'Organisation des vêtements et de la maison',
-    image: '/assets/sr01.webp',
-  },
 ]
 
 /** @deprecated Prefer getHeroImages() from app/actions/hero — kept for showcase gallery refs. */
 export const HERO_IMAGES = [
   { src: '/assets/chair-pad-lifestyle.webp', alt: 'Galette de chaise Deco Shop Plus' },
-  { src: '/assets/sr01-angle.webp', alt: 'Sac de rangement SR01' },
-  { src: '/assets/hc01.webp', alt: 'Housses a chaussures HC01' },
+  { src: '/assets/reading-pillow-colors.webp', alt: 'Coussin de lecture' },
+  { src: '/assets/sofa-cushion-colors.webp', alt: 'Coussin de canape' },
   { src: '/assets/chair-pad-stack.webp', alt: 'Galettes de chaise' },
 ]
 
@@ -38,9 +32,9 @@ export const SHOWCASE_GALLERY: ShowcaseImage[] = [
   { src: '/assets/chair-pad-stack.webp', alt: 'Galettes de chaise', category: 'coussins' },
   { src: '/assets/chair-pad-red.webp', alt: 'Galette de chaise rouge', category: 'coussins' },
   { src: '/assets/chair-pad-lifestyle.webp', alt: 'Galette de chaise en situation', category: 'coussins' },
-  { src: '/assets/sr01.webp', alt: 'Sac de rangement SR01', category: 'rangement' },
-  { src: '/assets/hc01.webp', alt: 'Housses a chaussures HC01', category: 'rangement' },
-  { src: '/assets/sr01-filled.webp', alt: 'Sac de rangement rempli', category: 'rangement' },
+  { src: '/assets/sofa-cushion-colors.webp', alt: 'Coussin de canape', category: 'coussins' },
+  { src: '/assets/reading-pillow-colors.webp', alt: 'Coussin de lecture', category: 'coussins' },
+  { src: '/assets/headboard-cushion-colors.webp', alt: 'Coussin de tete de lit', category: 'coussins' },
 ]
 
 export function getShowcaseByCategory(category: string) {
@@ -57,7 +51,7 @@ export type DbCategory = {
   bannerUrl?: string | null
 }
 
-const RETIRED_CATEGORY_SLUGS = new Set(['textiles', 'accessoires', 'femme', 'homme', 'parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous'])
+const RETIRED_CATEGORY_SLUGS = new Set(['textiles', 'accessoires', 'rangement', 'femme', 'homme', 'parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous'])
 
 export function mergeStoreCategories(dbCategories: DbCategory[]): StoreCategory[] {
   const dbBySlug = new Map(dbCategories.map((category) => [category.slug, category]))
