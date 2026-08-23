@@ -148,6 +148,7 @@ export const heroSlides = pgTable('hero_slides', {
 export const products = pgTable('products', {
   id: serial('id').primaryKey(),
   name: text('name').notNull(),
+  slug: text('slug').notNull().unique(),
   brand: text('brand').notNull(),
   description: text('description'),
   price: numeric('price', { precision: 10, scale: 3 }).notNull(),

@@ -36,6 +36,7 @@ import {
   type ProductSizeInput,
 } from '@/lib/product-sizes'
 import { isInStock, parseStock } from '@/lib/product-stock'
+import { isNumericProductParam, slugify } from '@/lib/slug'
 import { and, asc, desc, eq, ilike, inArray, ne, notInArray, or, sql } from 'drizzle-orm'
 import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
 import { cache } from 'react'
@@ -49,18 +50,39 @@ function normalizeProductImages(images: string[]) {
   }
 }
 
-function revalidateProductCaches(id?: number) {
+function revalidateProductCaches(id?: number, slug?: string | null) {
   revalidateTag('products', 'max')
   if (id) revalidateTag(`product-${id}`, 'max')
-  revalidatePath('/categorie', 'layout')
+  revalidatePath('/products')
+  revalidatePath('/')
+  if (id) revalidatePath(`/products/${id}`)
+  if (slug) revalidatePath(`/products/${slug}`)
 }
 
-function revalidateProductPage(id: number) {
+function revalidateProductPage(id: number, slug?: string | null) {
   revalidatePath(`/products/${id}`)
+  if (slug) revalidatePath(`/products/${slug}`)
+}
+
+async function uniqueProductSlug(name: string, excludeId?: number) {
+  const base = slugify(name) || (excludeId ? `produit-${excludeId}` : 'produit')
+  let candidate = base
+  let n = 2
+  for (;;) {
+    const [row] = await db
+      .select({ id: products.id })
+      .from(products)
+      .where(eq(products.slug, candidate))
+      .limit(1)
+    if (!row || row.id === excludeId) return candidate
+    candidate = `${base}-${n}`
+    n += 1
+  }
 }
 
 const storeProductCardSelect = {
   id: products.id,
+  slug: products.slug,
   name: products.name,
   brand: products.brand,
   price: products.price,
@@ -262,6 +284,7 @@ const getBestSellerProductsCached = unstable_cache(
       .where(eq(products.published, true))
       .groupBy(
         products.id,
+        products.slug,
         products.name,
         products.brand,
         products.price,
@@ -297,8 +320,33 @@ export const getProductById = cache(async (id: number) => {
         .limit(1)
       return result[0] ?? null
     },
-    ['product-by-id', String(id), 'v5'],
+    ['product-by-id', String(id), 'v6'],
     { revalidate: 120, tags: ['products', `product-${id}`] },
+  )()
+})
+
+export const getPublishedProductByParam = cache(async (param: string) => {
+  const key = param.trim()
+  if (!key) return null
+  return unstable_cache(
+    async () => {
+      if (isNumericProductParam(key)) {
+        const result = await db
+          .select()
+          .from(products)
+          .where(and(eq(products.id, Number(key)), eq(products.published, true)))
+          .limit(1)
+        return result[0] ?? null
+      }
+      const result = await db
+        .select()
+        .from(products)
+        .where(and(eq(products.slug, key), eq(products.published, true)))
+        .limit(1)
+      return result[0] ?? null
+    },
+    ['product-by-param', key, 'v2'],
+    { revalidate: 120, tags: ['products'] },
   )()
 })
 
@@ -308,6 +356,7 @@ export const getPublishedProductsForSitemap = cache(async () =>
       db
         .select({
           id: products.id,
+          slug: products.slug,
           name: products.name,
           imageUrl: products.imageUrl,
           updatedAt: products.updatedAt,
@@ -416,9 +465,11 @@ export async function addProduct(data: {
   const fallbackPrice = parsePrice(data.price) ?? 0
   const parsedSizes = parseProductSizes(serializeProductSizes(data.sizes), fallbackPrice)
   const catalogPrice = lowestSizePrice(parsedSizes, fallbackPrice)
+  const slug = await uniqueProductSlug(data.name)
 
   await db.insert(products).values({
     name: data.name,
+    slug,
     brand: data.brand,
     description: data.description,
     price: catalogPrice > 0 ? catalogPrice.toFixed(3) : data.price,
@@ -470,7 +521,16 @@ export async function updateProduct(
   },
 ) {
   await requireAdminId()
+  const [existing] = await db
+    .select({ slug: products.slug, name: products.name })
+    .from(products)
+    .where(eq(products.id, id))
+    .limit(1)
   const updateData: Record<string, unknown> = { ...data, updatedAt: new Date() }
+
+  if (data.name && data.name !== existing?.name) {
+    updateData.slug = await uniqueProductSlug(data.name, id)
+  }
 
   if (data.sizes) {
     updateData.sizes = serializeProductSizes(data.sizes)
@@ -514,17 +574,22 @@ export async function updateProduct(
   revalidatePath('/admin/products')
   revalidatePath('/products')
   revalidatePath('/')
-  revalidateProductCaches(id)
-  revalidateProductPage(id)
+  revalidateProductCaches(id, existing?.slug)
+  revalidateProductPage(id, (updateData.slug as string | undefined) || existing?.slug)
 }
 
 export async function deleteProduct(id: number) {
   await requireAdminId()
+  const [existing] = await db
+    .select({ slug: products.slug })
+    .from(products)
+    .where(eq(products.id, id))
+    .limit(1)
   await db.delete(products).where(eq(products.id, id))
   revalidatePath('/admin')
   revalidatePath('/admin/products')
   revalidatePath('/products')
   revalidatePath('/')
-  revalidateProductCaches(id)
-  revalidateProductPage(id)
+  revalidateProductCaches(id, existing?.slug)
+  revalidateProductPage(id, existing?.slug)
 }

@@ -56,7 +56,11 @@ export async function CatalogPage({
           name,
           description,
           path,
-          products: productPage.items.map((product) => ({ id: product.id, name: product.name })),
+          products: productPage.items.map((product) => ({
+            id: product.id,
+            slug: product.slug,
+            name: product.name,
+          })),
         })}
       />
       <JsonLd data={breadcrumbJsonLd(crumbs)} />

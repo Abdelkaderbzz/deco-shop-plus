@@ -1,5 +1,5 @@
 import { ImageResponse } from 'next/og'
-import { getProductById } from '@/app/actions/products'
+import { getPublishedProductByParam } from '@/app/actions/products'
 import { OgShareCard } from '@/lib/og-share'
 import { formatPriceTnd, parsePrice } from '@/lib/product-price'
 import { ogRemoteImage } from '@/lib/seo'
@@ -16,7 +16,7 @@ export default async function ProductOpenGraphImage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const product = await getProductById(Number(id))
+  const product = await getPublishedProductByParam(id)
   const price = product ? parsePrice(product.price) : null
 
   return new ImageResponse(

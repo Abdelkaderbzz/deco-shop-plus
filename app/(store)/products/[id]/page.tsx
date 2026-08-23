@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { getProductById, getPublishedProductsForSitemap, getRelatedProducts } from '@/app/actions/products'
+import { getPublishedProductByParam, getPublishedProductsForSitemap, getRelatedProducts } from '@/app/actions/products'
 import { getCategories } from '@/app/actions/categories'
 import { JsonLd } from '@/components/json-ld'
 import { ProductCard } from '@/components/product-card'
@@ -16,10 +16,12 @@ import { parseProductImages } from '@/lib/product-images'
 import { hasVariableSizePrices, parseProductSizes } from '@/lib/product-sizes'
 import { breadcrumbJsonLd, pageAlternates, productJsonLd, productMetaDescription } from '@/lib/seo'
 import { PRODUCT_FABRIC, SITE } from '@/lib/site'
+import { isNumericProductParam } from '@/lib/slug'
 import { getCategoryLabel } from '@/lib/store-categories'
 import { Breadcrumbs } from '@/components/breadcrumbs'
 import { AddToCartButton } from './add-to-cart-button'
-import { notFound } from 'next/navigation'
+import { notFound, permanentRedirect } from 'next/navigation'
+import { connection } from 'next/server'
 import { Suspense } from 'react'
 
 export const dynamic = 'force-dynamic'
@@ -28,7 +30,10 @@ export const dynamicParams = true
 export async function generateStaticParams() {
   try {
     const products = await getPublishedProductsForSitemap()
-    return products.map((product) => ({ id: String(product.id) }))
+    return products
+      .map((product) => product.slug)
+      .filter((slug): slug is string => Boolean(slug))
+      .map((slug) => ({ id: slug }))
   } catch {
     return []
   }
@@ -39,18 +44,23 @@ export async function generateMetadata({
 }: {
   params: Promise<{ id: string }>
 }): Promise<Metadata> {
+  await connection()
   const { id } = await params
   const [product, categories] = await Promise.all([
-    getProductById(Number(id)),
+    getPublishedProductByParam(id),
     getCategories(),
   ])
   if (!product) {
     return { title: 'Produit introuvable', robots: { index: false, follow: true } }
   }
 
+  if (product.slug && isNumericProductParam(id)) {
+    permanentRedirect(productHref(product))
+  }
+
   const categoryLabel = getCategoryLabel(product.category, categories)
   const description = productMetaDescription(product)
-  const url = productHref(product.id)
+  const url = productHref(product)
   const gallery = parseProductImages(product)
   const images =
     gallery.length > 0
@@ -102,12 +112,16 @@ export default async function ProductDetailPage({
 }: {
   params: Promise<{ id: string }>
 }) {
+  await connection()
   const { id } = await params
   const [product, categories] = await Promise.all([
-    getProductById(Number(id)),
+    getPublishedProductByParam(id),
     getCategories(),
   ])
   if (!product) notFound()
+  if (product.slug && isNumericProductParam(id)) {
+    permanentRedirect(productHref(product))
+  }
 
   const categoryLabel = getCategoryLabel(product.category, categories)
 
@@ -126,7 +140,7 @@ export default async function ProductDetailPage({
           { name: 'Accueil', path: '/' },
           { name: 'Boutique', path: '/products' },
           { name: categoryLabel, path: categoryPath },
-          { name: product.name, path: productHref(product.id) },
+          { name: product.name, path: productHref(product) },
         ])}
       />
       <Reveal className="mb-8">

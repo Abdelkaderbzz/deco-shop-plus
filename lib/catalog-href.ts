@@ -25,6 +25,12 @@ export function catalogHref({
   return qs ? `${path}?${qs}` : path
 }
 
-export function productHref(id: number | string) {
-  return `/products/${id}`
+export function productHref(
+  product: { slug?: string | null; id: number | string } | number | string,
+) {
+  if (typeof product === 'object' && product) {
+    const slug = product.slug?.trim()
+    return `/products/${slug || product.id}`
+  }
+  return `/products/${product}`
 }

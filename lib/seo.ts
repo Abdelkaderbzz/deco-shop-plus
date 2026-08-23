@@ -241,7 +241,7 @@ export function collectionPageJsonLd({
   name: string
   description: string
   path: string
-  products: { id: number; name: string }[]
+  products: { id: number; name: string; slug?: string | null }[]
 }) {
   const url = absoluteUrl(path)
   return {
@@ -260,7 +260,7 @@ export function collectionPageJsonLd({
       itemListElement: products.map((product, index) => ({
         '@type': 'ListItem',
         position: index + 1,
-        url: absoluteUrl(productHref(product.id)),
+        url: absoluteUrl(productHref(product)),
         name: product.name,
       })),
     },
@@ -308,6 +308,7 @@ export function productJsonLd(product: {
   images?: string | null
   colors?: string | null
   bundles?: string | null
+  slug?: string | null
   inStock: boolean
   category: string
   sizes?: string | null
@@ -329,7 +330,7 @@ export function productJsonLd(product: {
   const availability = product.inStock
     ? 'https://schema.org/InStock'
     : 'https://schema.org/OutOfStock'
-  const offerUrl = absoluteUrl(productHref(product.id))
+  const offerUrl = absoluteUrl(productHref(product))
   const validUntil = priceValidUntil()
   const compareAt = parsePrice(product.compareAtPrice)
 

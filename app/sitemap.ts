@@ -49,7 +49,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     for (const product of products) {
       entries.push({
-        url: absoluteUrl(productHref(product.id)),
+        url: absoluteUrl(productHref(product)),
         lastModified: product.updatedAt ?? newest,
         changeFrequency: 'weekly',
         priority: 0.7,

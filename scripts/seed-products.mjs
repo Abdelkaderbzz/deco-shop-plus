@@ -19,6 +19,19 @@ console.log(
 
 const pool = new Pool({ connectionString: DATABASE_URL })
 
+function slugify(value) {
+  const slug = String(value ?? '')
+    .toLowerCase()
+    .replace(/œ/g, 'oe')
+    .replace(/æ/g, 'ae')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+    .slice(0, 80)
+  return slug
+}
+
 const CATEGORIES = [
   { name: 'Coussins', slug: 'coussins' },
   { name: 'Rangement', slug: 'rangement' },
@@ -148,10 +161,10 @@ const PRODUCTS = [
     sizes: ['Unique'],
     colors: CATALOG_COLORS,
     bundles: [
-      { name: 'Une galette', units: 1, price: 18, compareAtPrice: 25, popular: false },
-      { name: 'Pack 2 galettes', units: 2, price: 34, compareAtPrice: 50, popular: false },
-      { name: 'Pack 3 galettes', units: 3, price: 49, compareAtPrice: 75, popular: false },
-      { name: 'Pack 4 galettes', units: 4, price: 64, compareAtPrice: 100, popular: true },
+      { name: 'Une seule galette', units: 1, price: 18, compareAtPrice: 25, popular: false },
+      { name: 'Pack 2 galettes', units: 2, price: 34, compareAtPrice: 36, popular: false },
+      { name: 'Pack 3 galettes', units: 3, price: 49, compareAtPrice: 54, popular: true },
+      { name: 'Pack 4 galettes', units: 4, price: 62, compareAtPrice: 72, popular: false },
     ],
     promoEnabled: true,
     promoLabel: 'Promotion',
@@ -503,33 +516,36 @@ async function upsertProduct(product) {
   const promoTextColor = product.promoTextColor || '#ffffff'
   const published = product.published !== false
   const featured = published && Boolean(product.featured)
+  const slug = slugify(product.name) || `produit-${existing.rows[0]?.id ?? 'new'}`
 
   if (existing.rows[0]) {
     const id = existing.rows[0].id
     await pool.query(
       `UPDATE products SET
         name = $1,
-        description = $2,
-        price = $3,
-        "compareAtPrice" = $4,
-        category = $5,
-        "imageUrl" = $6,
-        images = $7,
-        sizes = $8,
-        colors = $9,
-        bundles = $10,
+        slug = $2,
+        description = $3,
+        price = $4,
+        "compareAtPrice" = $5,
+        category = $6,
+        "imageUrl" = $7,
+        images = $8,
+        sizes = $9,
+        colors = $10,
+        bundles = $11,
         "inStock" = true,
         stock = 10,
-        featured = $11,
-        published = $12,
-        "promoEnabled" = $13,
-        "promoLabel" = $14,
-        "promoBgColor" = $15,
-        "promoTextColor" = $16,
+        featured = $12,
+        published = $13,
+        "promoEnabled" = $14,
+        "promoLabel" = $15,
+        "promoBgColor" = $16,
+        "promoTextColor" = $17,
         "updatedAt" = NOW()
-       WHERE id = $17`,
+       WHERE id = $18`,
       [
         product.name,
+        slugify(product.name) || `produit-${id}`,
         product.description,
         product.price,
         product.compareAtPrice ?? null,
@@ -553,14 +569,15 @@ async function upsertProduct(product) {
 
   const inserted = await pool.query(
     `INSERT INTO products (
-      name, brand, description, price, "compareAtPrice", category,
+      name, slug, brand, description, price, "compareAtPrice", category,
       "imageUrl", images, sizes, colors, bundles, "relatedProductIds", "inStock", stock, featured, published,
       "promoEnabled", "promoLabel", "promoBgColor", "promoTextColor",
       "createdAt", "updatedAt"
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, '[]', true, 10, $12, $13, $14, $15, $16, $17, NOW(), NOW())
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, '[]', true, 10, $13, $14, $15, $16, $17, $18, NOW(), NOW())
     RETURNING id`,
     [
       product.name,
+      slug,
       product.brand,
       product.description,
       product.price,

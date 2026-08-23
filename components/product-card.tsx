@@ -6,10 +6,12 @@ import { PromoBadge } from '@/components/promo-badge'
 import { isPromoActive } from '@/lib/product-colors'
 import { parsePrice } from '@/lib/product-price'
 import { hasVariableSizePrices, parseProductSizes } from '@/lib/product-sizes'
+import { productHref } from '@/lib/catalog-href'
 import { getCategoryLabel } from '@/lib/store-categories'
 
 type Product = {
   id: number
+  slug?: string | null
   name: string
   brand: string
   price: string
@@ -78,7 +80,7 @@ export function ProductCard({
   if (variant === 'list') {
     return (
       <Link
-        href={`/products/${product.id}`}
+        href={productHref(product)}
         prefetch={false}
         className="block w-[11.5rem] shrink-0 sm:w-[13.5rem]"
       >
@@ -120,7 +122,7 @@ export function ProductCard({
   }
 
   return (
-    <Link href={`/products/${product.id}`} prefetch={false} className="block">
+    <Link href={productHref(product)} prefetch={false} className="block">
       <div className="relative overflow-hidden rounded-md border border-border bg-card">
         <div className="relative aspect-[4/5] overflow-hidden bg-secondary">
           {product.imageUrl ? (

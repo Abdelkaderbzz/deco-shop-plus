@@ -272,6 +272,7 @@ const statements = [
    ) AS v("imageUrl", "alt", "eyebrow", "title", "subtitle", "ctaLabel", "ctaTarget", "ctaHref", "published", "sortOrder")
    WHERE NOT EXISTS (SELECT 1 FROM "hero_slides")`,
   `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "stock" integer NOT NULL DEFAULT 0`,
+  `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "slug" text`,
   `UPDATE "products" SET "stock" = 10 WHERE "inStock" = true AND "stock" = 0`,
   `UPDATE "products" SET "inStock" = ("stock" > 0)`,
   `CREATE INDEX IF NOT EXISTS products_published_created_idx ON products (published, "createdAt" DESC)`,
@@ -283,10 +284,44 @@ const statements = [
   `CREATE INDEX IF NOT EXISTS hero_slides_published_sort_idx ON hero_slides (published, "sortOrder")`,
 ]
 
+function slugify(value) {
+  const slug = String(value ?? '')
+    .toLowerCase()
+    .replace(/œ/g, 'oe')
+    .replace(/æ/g, 'ae')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+    .slice(0, 80)
+  return slug
+}
+
+async function backfillProductSlugs() {
+  const { rows } = await pool.query('SELECT id, name, slug FROM products ORDER BY id')
+  const used = new Set(rows.map((row) => row.slug).filter(Boolean))
+  for (const row of rows) {
+    if (row.slug) continue
+    const base = slugify(row.name) || `produit-${row.id}`
+    let slug = base
+    let n = 2
+    while (used.has(slug)) {
+      slug = `${base}-${n}`
+      n += 1
+    }
+    used.add(slug)
+    await pool.query('UPDATE products SET slug = $1 WHERE id = $2', [slug, row.id])
+  }
+  await pool.query('UPDATE products SET slug = concat(\'produit-\', id) WHERE slug IS NULL OR slug = \'\'')
+  await pool.query('ALTER TABLE products ALTER COLUMN slug SET NOT NULL')
+  await pool.query('CREATE UNIQUE INDEX IF NOT EXISTS products_slug_uidx ON products (slug)')
+}
+
 try {
   for (const sql of statements) {
     await pool.query(sql)
   }
+  await backfillProductSlugs()
   console.log('✓ Migration complete')
 } catch (err) {
   console.error('Migration failed:', err.message)

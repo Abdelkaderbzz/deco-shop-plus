@@ -3,6 +3,7 @@
 import { addProduct, deleteProduct, updateProduct } from '@/app/actions/products'
 import { useToast } from '@/components/toast-provider'
 import { useConfirm } from '@/components/confirm-provider'
+import { productHref } from '@/lib/catalog-href'
 import { getErrorMessage } from '@/lib/get-error-message'
 import { getPrimaryImage, parseProductImages } from '@/lib/product-images'
 import { parseRelatedProductIds } from '@/lib/product-relations'
@@ -46,6 +47,7 @@ import { ADMIN_PAGE_SIZE, AdminPagination } from './admin-pagination'
 
 type Product = {
   id: number
+  slug?: string | null
   name: string
   brand: string
   description: string | null
@@ -364,7 +366,7 @@ export function AdminProductsClient({
                   <td className={adminTableCellCls}>
                     <div className="flex items-center gap-1">
                       <AdminIconLink
-                        href={`/products/${p.id}`}
+                        href={productHref(p)}
                         label="Voir sur la boutique"
                         variant="accent"
                         external

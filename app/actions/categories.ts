@@ -6,6 +6,7 @@ import { categories, products } from '@/lib/db/schema'
 import { asc, eq, sql } from 'drizzle-orm'
 import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
 import { cache } from 'react'
+import { slugify } from '@/lib/slug'
 
 export type CategoryRow = {
   id: number
@@ -19,15 +20,6 @@ export type CategoryRow = {
 export type CategoryActionResult =
   | { success: true; category?: CategoryRow }
   | { success: false; error: string }
-
-function slugify(name: string) {
-  return name
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '')
-}
 
 function mapCategoryError(error: unknown, fallback: string) {
   if (error instanceof Error) {

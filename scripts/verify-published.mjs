@@ -15,7 +15,7 @@ async function fetchText(path) {
 
 async function main() {
   const { rows } = await pool.query(
-    'SELECT id, name, published, featured FROM products ORDER BY id LIMIT 5',
+    'SELECT id, name, slug, published, featured FROM products ORDER BY id LIMIT 5',
   )
   if (rows.length === 0) {
     console.error('No products in database.')
@@ -30,8 +30,8 @@ async function main() {
 
   async function assertStoreVisibility(shouldBeVisible) {
     const list = await fetchText('/products')
-    const onList = list.text.includes(`/products/${target.id}`)
-    const detail = await fetchText(`/products/${target.id}`)
+    const onList = list.text.includes(`/products/${target.slug || target.id}`) || list.text.includes(`/products/${target.id}`)
+    const detail = await fetchText(`/products/${target.slug || target.id}`)
     const detailOk = detail.status === 200
     const detailHidden = detail.status === 404
 
