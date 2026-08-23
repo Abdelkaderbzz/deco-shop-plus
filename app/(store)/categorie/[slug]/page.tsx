@@ -4,7 +4,7 @@ import { getCategories } from '@/app/actions/categories'
 import { catalogHref } from '@/lib/catalog-href'
 import { SITE } from '@/lib/site'
 import { pageAlternates } from '@/lib/seo'
-import { getMergedCategoryBySlug, STORE_CATEGORIES } from '@/lib/store-categories'
+import { getMergedCategoryBySlug, mergeStoreCategories, STORE_CATEGORIES } from '@/lib/store-categories'
 import { normalizePage } from '@/lib/pagination'
 import { CatalogSkeleton } from '@/components/store-skeletons'
 import { CatalogPage } from '../../products/catalog-page'
@@ -14,14 +14,12 @@ export const dynamic = 'force-dynamic'
 export const dynamicParams = true
 
 export async function generateStaticParams() {
-  const slugs = new Set(STORE_CATEGORIES.map((category) => category.slug))
   try {
     const dbCategories = await getCategories()
-    for (const category of dbCategories) slugs.add(category.slug)
+    return mergeStoreCategories(dbCategories).map((category) => ({ slug: category.slug }))
   } catch {
-    // Build can still prerender default categories if the database is unreachable.
+    return STORE_CATEGORIES.map((category) => ({ slug: category.slug }))
   }
-  return [...slugs].map((slug) => ({ slug }))
 }
 
 export async function generateMetadata({
