@@ -7,8 +7,7 @@ export function CategoryCard({ category }: { category: StoreCategory }) {
   return (
     <Link
       href={catalogHref({ category: category.slug })}
-      prefetch
-      className="group relative block overflow-hidden rounded-[1.75rem] border border-border/80 bg-card transition-all duration-500 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10"
+      className="relative block overflow-hidden rounded-[1.75rem] border border-border/80 bg-card"
     >
       <div className="relative aspect-[4/5] overflow-hidden bg-secondary">
         {category.image ? (
@@ -18,7 +17,7 @@ export function CategoryCard({ category }: { category: StoreCategory }) {
             fill
             sizes="(max-width: 768px) 50vw, 25vw"
             quality={70}
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-cover"
           />
         ) : null}
         <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/25 to-transparent" />

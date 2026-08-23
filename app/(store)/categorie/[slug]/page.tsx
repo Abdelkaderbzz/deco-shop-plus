@@ -10,7 +10,7 @@ import { CatalogSkeleton } from '@/components/store-skeletons'
 import { CatalogPage } from '../../products/catalog-page'
 import { Suspense } from 'react'
 
-export const revalidate = 120
+export const dynamic = 'force-dynamic'
 export const dynamicParams = true
 
 export async function generateStaticParams() {

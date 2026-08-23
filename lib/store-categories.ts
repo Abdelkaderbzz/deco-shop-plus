@@ -9,35 +9,29 @@ export const STORE_CATEGORIES: StoreCategory[] = [
   {
     slug: 'coussins',
     name: 'Coussins',
-    tagline: 'Coussins pour canapé, lit et salon',
-    image: '/assets/img_9760.webp',
+    tagline: 'Galettes de chaise et coussins',
+    image: '/assets/chair-pad-stack.webp',
   },
   {
     slug: 'accessoires',
     name: 'Accessoires',
     tagline: 'Objets déco pour la maison',
-    image: '/assets/image00001-2-1537x2048.jpeg.webp',
+    image: '/assets/chair-pad-lifestyle.webp',
   },
   {
     slug: 'rangement',
     name: 'Rangement',
     tagline: 'Organisation des vêtements et de la maison',
-    image: '/assets/photo-output-12-1538x2048.jpeg.webp',
-  },
-  {
-    slug: 'textiles',
-    name: 'Literie',
-    tagline: 'Plaids, couvre-lits et linge de maison',
-    image: '/assets/IMG_4758-1536x2048.jpeg.webp',
+    image: '/assets/sr01.webp',
   },
 ]
 
 /** @deprecated Prefer getHeroImages() from app/actions/hero — kept for showcase gallery refs. */
 export const HERO_IMAGES = [
-  { src: '/assets/img_9756-1.webp', alt: 'Coussins Deco Shop Plus' },
-  { src: '/assets/photo-output-1-2.jpeg.webp', alt: 'Salon Deco Shop Plus' },
-  { src: '/assets/img_9760.webp', alt: 'Coussin brode' },
-  { src: '/assets/IMG_4758-1536x2048.jpeg.webp', alt: 'Plaid marine' },
+  { src: '/assets/chair-pad-lifestyle.webp', alt: 'Galette de chaise Deco Shop Plus' },
+  { src: '/assets/sr01-angle.webp', alt: 'Sac de rangement SR01' },
+  { src: '/assets/hc01.webp', alt: 'Housses a chaussures HC01' },
+  { src: '/assets/chair-pad-stack.webp', alt: 'Galettes de chaise' },
 ]
 
 export type ShowcaseImage = {
@@ -47,12 +41,12 @@ export type ShowcaseImage = {
 }
 
 export const SHOWCASE_GALLERY: ShowcaseImage[] = [
-  { src: '/assets/img_9760.webp', alt: 'Coussin brode floral', category: 'coussins' },
-  { src: '/assets/img_9758.webp', alt: 'Coussins salon', category: 'coussins' },
-  { src: '/assets/img_9756-1.webp', alt: 'Banquette coussins', category: 'coussins' },
-  { src: '/assets/image00001-2-1537x2048.jpeg.webp', alt: 'Fauteuil et coussin', category: 'accessoires' },
-  { src: '/assets/photo-output-12-1538x2048.jpeg.webp', alt: 'Coussins canape', category: 'rangement' },
-  { src: '/assets/IMG_4758-1536x2048.jpeg.webp', alt: 'Plaid marine', category: 'textiles' },
+  { src: '/assets/chair-pad-stack.webp', alt: 'Galettes de chaise', category: 'coussins' },
+  { src: '/assets/chair-pad-red.webp', alt: 'Galette de chaise rouge', category: 'coussins' },
+  { src: '/assets/chair-pad-lifestyle.webp', alt: 'Galette de chaise en situation', category: 'coussins' },
+  { src: '/assets/sr01.webp', alt: 'Sac de rangement SR01', category: 'rangement' },
+  { src: '/assets/hc01.webp', alt: 'Housses a chaussures HC01', category: 'rangement' },
+  { src: '/assets/sr01-filled.webp', alt: 'Sac de rangement rempli', category: 'rangement' },
 ]
 
 export function getShowcaseByCategory(category: string) {
@@ -69,6 +63,8 @@ export type DbCategory = {
   bannerUrl?: string | null
 }
 
+const RETIRED_CATEGORY_SLUGS = new Set(['textiles', 'femme', 'homme', 'parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous'])
+
 export function mergeStoreCategories(dbCategories: DbCategory[]): StoreCategory[] {
   const dbBySlug = new Map(dbCategories.map((category) => [category.slug, category]))
 
@@ -82,7 +78,11 @@ export function mergeStoreCategories(dbCategories: DbCategory[]): StoreCategory[
   })
 
   const extras = dbCategories
-    .filter((category) => !STORE_CATEGORIES.some((item) => item.slug === category.slug))
+    .filter(
+      (category) =>
+        !STORE_CATEGORIES.some((item) => item.slug === category.slug) &&
+        !RETIRED_CATEGORY_SLUGS.has(category.slug),
+    )
     .map((category) => ({
       slug: category.slug,
       name: category.name,
