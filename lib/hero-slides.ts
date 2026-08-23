@@ -42,10 +42,10 @@ export const DEFAULT_HERO_SLIDES: HeroSlide[] = [
   {
     id: 0,
     imageUrl: '/assets/banner1.webp',
-    alt: 'Optimisez votre espace — rangement Deco Shop Plus',
+    alt: 'Galettes et coussins Deco Shop Plus',
     eyebrow: 'Offre du moment',
     title: 'Promotions maison',
-    subtitle: 'Housses, coussins et rangement a prix reduit, livrés partout en Tunisie.',
+    subtitle: 'Galettes de chaise et coussins a prix reduit, livrés partout en Tunisie.',
     ctaLabel: 'Voir les promotions',
     ctaTarget: 'promotions',
     ctaHref: '',
