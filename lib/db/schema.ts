@@ -159,6 +159,8 @@ export const products = pgTable('products', {
   sizes: text('sizes').notNull().default('[]'),
   /** JSON array of { name, hex } color options. Empty = no color picker. */
   colors: text('colors').notNull().default('[]'),
+  /** JSON array of { name, units, price, compareAtPrice, popular } packs. Empty = no pack picker. */
+  bundles: text('bundles').notNull().default('[]'),
   /** JSON array of product ids curated by the admin. Empty = fall back to the
    *  same category on the storefront. */
   relatedProductIds: text('relatedProductIds').notNull().default('[]'),
@@ -201,6 +203,8 @@ export const orderItems = pgTable('order_items', {
   productBrand: text('productBrand').notNull(),
   size: text('size').notNull(),
   color: text('color').notNull().default(''),
+  bundle: text('bundle').notNull().default(''),
+  bundleUnits: integer('bundleUnits').notNull().default(1),
   quantity: integer('quantity').notNull().default(1),
   price: numeric('price', { precision: 10, scale: 3 }).notNull(),
 })
