@@ -11,10 +11,11 @@ import { ProductTrustBox } from '@/components/product-trust-box'
 import { Reveal } from '@/components/reveal'
 import { productHref } from '@/lib/catalog-href'
 import { parseProductColors, isPromoActive } from '@/lib/product-colors'
+import { parseProductBundles } from '@/lib/product-bundles'
 import { parseProductImages } from '@/lib/product-images'
 import { hasVariableSizePrices, parseProductSizes } from '@/lib/product-sizes'
 import { breadcrumbJsonLd, pageAlternates, productJsonLd } from '@/lib/seo'
-import { SITE } from '@/lib/site'
+import { PRODUCT_FABRIC, SITE } from '@/lib/site'
 import { getCategoryLabel } from '@/lib/store-categories'
 import { Breadcrumbs } from '@/components/breadcrumbs'
 import { AddToCartButton } from './add-to-cart-button'
@@ -64,7 +65,15 @@ export async function generateMetadata({
   return {
     title: `${product.name} à ${SITE.city}`,
     description,
-    keywords: [product.name, product.brand, categoryLabel, SITE.city, SITE.neighborhood, 'décoration Tunisie'],
+    keywords: [
+      product.name,
+      product.brand,
+      categoryLabel,
+      PRODUCT_FABRIC,
+      SITE.city,
+      SITE.neighborhood,
+      'décoration Tunisie',
+    ],
     alternates: pageAlternates(url),
     openGraph: {
       type: 'website',
@@ -103,6 +112,7 @@ export default async function ProductDetailPage({
 
   const sizes = parseProductSizes(product.sizes, Number.parseFloat(product.price) || 0)
   const colors = parseProductColors(product)
+  const bundles = parseProductBundles(product)
   const images = parseProductImages(product)
   const promo = isPromoActive(product)
   const categoryPath = `/categorie/${product.category}`
@@ -161,6 +171,11 @@ export default async function ProductDetailPage({
             </p>
           )}
 
+          <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm">
+            <dt className="text-muted-foreground">Matière de fabrication</dt>
+            <dd className="font-medium text-foreground">{PRODUCT_FABRIC}</dd>
+          </dl>
+
           {!product.inStock ? (
             <>
               <ProductPrice
@@ -179,6 +194,7 @@ export default async function ProductDetailPage({
               product={product}
               sizes={sizes}
               colors={colors}
+              bundles={bundles}
               stock={product.stock ?? 0}
               accentColor={promo ? product.promoBgColor : null}
             />

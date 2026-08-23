@@ -3,19 +3,23 @@
 import { createOrder } from '@/app/actions/orders'
 import { useCart } from '@/components/cart-context'
 import { ProductPrice } from '@/components/product-price'
+import { ProductBundleOptions } from '@/components/product-bundle-options'
 import { useToast } from '@/components/toast-provider'
 import { getErrorMessage } from '@/lib/get-error-message'
 import type { ProductColor } from '@/lib/product-colors'
+import { lineStockUnits, type ProductBundle } from '@/lib/product-bundles'
 import { formatPriceTnd, parsePrice } from '@/lib/product-price'
 import { hasVariableSizePrices, priceForSize, type ProductSize } from '@/lib/product-sizes'
 import { stockLabel } from '@/lib/product-stock'
 import { SITE } from '@/lib/site'
 import { whatsappMessageUrl } from '@/lib/social-links'
+import { StoreSelect } from '@/components/store-select'
+import { getGovernorateLabel, GOVERNORATE_SELECT_OPTIONS } from '@/lib/tunisia-governorates'
 import { productOrderSchema, type ProductOrderFormValues } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useState, type MouseEvent } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 
 type Product = {
   id: number
@@ -53,12 +57,14 @@ export function AddToCartButton({
   product,
   sizes,
   colors,
+  bundles,
   stock,
   accentColor,
 }: {
   product: Product
   sizes: ProductSize[]
   colors: ProductColor[]
+  bundles: ProductBundle[]
   stock: number
   accentColor?: string | null
 }) {
@@ -69,29 +75,44 @@ export function AddToCartButton({
   const sizeOptions = sizes.length > 0 ? sizes : [{ name: 'Unique', price: fallbackPrice }]
   const [selectedSize, setSelectedSize] = useState(sizeOptions[0]?.name ?? '')
   const [selectedColor, setSelectedColor] = useState(colors[0]?.name ?? '')
+  const [selectedBundleName, setSelectedBundleName] = useState(bundles[0]?.name ?? '')
   const [added, setAdded] = useState(false)
 
   const {
     register,
     handleSubmit,
+    getValues,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<ProductOrderFormValues>({
     resolver: zodResolver(productOrderSchema),
     defaultValues: {
       customerName: '',
       customerPhone: '',
+      customerGovernorate: '',
       customerAddress: '',
       notes: '',
     },
   })
 
-  const selectedPrice = priceForSize(sizeOptions, selectedSize, fallbackPrice)
-  const showSizePrices = hasVariableSizePrices(sizeOptions)
+  const selectedBundle = bundles.find((bundle) => bundle.name === selectedBundleName) ?? bundles[0]
+  const selectedUnits = selectedBundle?.units ?? 1
+  const sizePrice = priceForSize(sizeOptions, selectedSize, fallbackPrice)
+  const selectedPrice = selectedBundle?.price ?? sizePrice
+  const selectedCompareAt = selectedBundle
+    ? selectedBundle.compareAtPrice != null
+      ? selectedBundle.compareAtPrice.toFixed(3)
+      : null
+    : product.compareAtPrice
+  const showSizePrices = hasVariableSizePrices(sizeOptions) && bundles.length === 0
   const inCart = items
     .filter((item) => item.productId === product.id)
-    .reduce((sum, item) => sum + item.quantity, 0)
+    .reduce((sum, item) => sum + lineStockUnits(item.quantity, item.bundleUnits), 0)
   const remaining = Math.max(0, stock - inCart)
-  const canSelect = Boolean(selectedSize) && (colors.length === 0 || Boolean(selectedColor)) && remaining > 0
+  const canSelect =
+    Boolean(selectedSize) &&
+    (colors.length === 0 || Boolean(selectedColor)) &&
+    remaining >= selectedUnits
 
   function orderItem() {
     return {
@@ -100,6 +121,8 @@ export function AddToCartButton({
       productBrand: product.brand,
       size: selectedSize,
       color: selectedColor,
+      bundle: selectedBundle?.name ?? '',
+      bundleUnits: selectedUnits,
       quantity: 1,
       price: selectedPrice,
     }
@@ -123,13 +146,19 @@ export function AddToCartButton({
       '',
       `Produit : ${product.name}`,
       `Marque : ${product.brand}`,
-      selectedSize ? `Taille / format : ${selectedSize}` : null,
+      selectedSize
+        ? `${/\d+\s*cm/i.test(selectedSize) ? 'Dimensions' : 'Taille / format'} : ${selectedSize}`
+        : null,
       selectedColor ? `Couleur : ${selectedColor}` : null,
+      selectedBundle ? `Pack : ${selectedBundle.name} (${selectedBundle.units} pcs)` : null,
       `Prix : ${formatPriceTnd(selectedPrice)} TND`,
       '',
-      `Nom complet : ${values.customerName.trim()}`,
-      `Telephone : ${values.customerPhone.trim()}`,
-      `Adresse : ${values.customerAddress.trim()}`,
+      values.customerName.trim() ? `Nom complet : ${values.customerName.trim()}` : null,
+      values.customerPhone.trim() ? `Telephone : ${values.customerPhone.trim()}` : null,
+      values.customerGovernorate
+        ? `Gouvernorat : ${getGovernorateLabel(values.customerGovernorate) ?? values.customerGovernorate}`
+        : null,
+      values.customerAddress.trim() ? `Adresse : ${values.customerAddress.trim()}` : null,
     ].filter((line): line is string => line !== null)
 
     const note = values.notes.trim()
@@ -148,6 +177,7 @@ export function AddToCartButton({
       const orderId = await createOrder({
         customerName: values.customerName.trim(),
         customerPhone: values.customerPhone.trim(),
+        customerGovernorate: values.customerGovernorate,
         customerAddress: values.customerAddress.trim(),
         notes: values.notes.trim() || undefined,
         items: [orderItem()],
@@ -159,25 +189,37 @@ export function AddToCartButton({
     }
   }
 
-  function onWhatsApp() {
+  function onWhatsApp(event: MouseEvent<HTMLButtonElement>) {
+    event.preventDefault()
+    event.stopPropagation()
+
     if (!canSelect) {
       toast.error(remaining <= 0 ? 'Plus de stock pour ce produit.' : 'Choisissez la taille et la couleur.')
       return
     }
 
-    void handleSubmit((values) => {
-      window.open(whatsappMessageUrl(buildWhatsAppMessage(values)), '_blank', 'noopener,noreferrer')
-    })()
+    window.location.href = whatsappMessageUrl(buildWhatsAppMessage(getValues()))
   }
 
   return (
     <div className="flex flex-col gap-5">
-      <ProductPrice
-        price={selectedPrice.toFixed(3)}
-        compareAtPrice={product.compareAtPrice}
-        size="lg"
-        accentColor={accentColor}
-      />
+      {bundles.length === 0 ? (
+        <ProductPrice
+          price={selectedPrice.toFixed(3)}
+          compareAtPrice={selectedCompareAt}
+          size="lg"
+          accentColor={accentColor}
+        />
+      ) : null}
+
+      {bundles.length > 0 ? (
+        <ProductBundleOptions
+          bundles={bundles}
+          selectedName={selectedBundle?.name ?? ''}
+          onSelect={setSelectedBundleName}
+          remainingUnits={remaining}
+        />
+      ) : null}
 
       {colors.length > 0 && (
         <div>
@@ -212,7 +254,9 @@ export function AddToCartButton({
       {sizeOptions.length > 0 && (
         <div>
           <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-            Taille / format
+            {sizeOptions.some((size) => /\d+\s*cm/i.test(size.name))
+              ? 'Dimensions'
+              : 'Taille / format'}
           </p>
           <div className="flex flex-wrap gap-2">
             {sizeOptions.map((size) => (
@@ -247,7 +291,7 @@ export function AddToCartButton({
         <div className="mb-4">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Commander ce produit</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Indiquez votre nom, telephone et adresse, puis confirmez ou envoyez sur WhatsApp.
+            Indiquez vos coordonnees pour confirmer la commande, ou envoyez-la directement sur WhatsApp.
           </p>
         </div>
 
@@ -288,6 +332,27 @@ export function AddToCartButton({
           </div>
 
           <div>
+            <label htmlFor="product-order-governorate" className={fieldLabelCls}>
+              Gouvernorat <span className="text-primary">*</span>
+            </label>
+            <Controller
+              control={control}
+              name="customerGovernorate"
+              render={({ field }) => (
+                <StoreSelect
+                  id="product-order-governorate"
+                  value={field.value}
+                  onChange={field.onChange}
+                  options={GOVERNORATE_SELECT_OPTIONS}
+                  placeholder="Choisir votre gouvernorat"
+                  hasError={Boolean(errors.customerGovernorate)}
+                />
+              )}
+            />
+            <FieldError id="product-order-governorate-error" message={errors.customerGovernorate?.message} />
+          </div>
+
+          <div>
             <label htmlFor="product-order-address" className={fieldLabelCls}>
               Adresse <span className="text-primary">*</span>
             </label>
@@ -295,7 +360,7 @@ export function AddToCartButton({
               id="product-order-address"
               rows={3}
               autoComplete="street-address"
-              placeholder="Rue, ville, gouvernorat, point de repere..."
+              placeholder="Rue, ville, point de repere..."
               aria-invalid={Boolean(errors.customerAddress)}
               aria-describedby={errors.customerAddress ? 'product-order-address-error' : undefined}
               className={`${errors.customerAddress ? fieldInputErrorCls : fieldInputCls} resize-none`}
@@ -340,7 +405,7 @@ export function AddToCartButton({
           <button
             type="button"
             onClick={onWhatsApp}
-            disabled={!canSelect || isSubmitting}
+            disabled={!canSelect}
             className="inline-flex w-full items-center justify-center gap-2.5 rounded-full bg-[#25D366] py-3.5 text-sm font-semibold text-white shadow-md shadow-[#25D366]/30 transition-all hover:bg-[#20bd5a] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2 disabled:opacity-50"
           >
             <WhatsAppIcon />
