@@ -2,39 +2,50 @@
 
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
 
+import { lineStockUnits } from '@/lib/product-bundles'
+
 export type CartItem = {
   productId: number
   productName: string
   productBrand: string
   size: string
   color?: string
+  bundle?: string
+  bundleUnits?: number
   quantity: number
   price: number
   imageUrl?: string
   stock?: number
 }
 
-function sameLine(a: Pick<CartItem, 'productId' | 'size' | 'color'>, b: Pick<CartItem, 'productId' | 'size' | 'color'>) {
-  return a.productId === b.productId && a.size === b.size && (a.color || '') === (b.color || '')
+type LineId = Pick<CartItem, 'productId' | 'size' | 'color' | 'bundle'>
+
+function sameLine(a: LineId, b: LineId) {
+  return (
+    a.productId === b.productId &&
+    a.size === b.size &&
+    (a.color || '') === (b.color || '') &&
+    (a.bundle || '') === (b.bundle || '')
+  )
 }
 
-function quantityForProduct(items: CartItem[], productId: number, except?: Pick<CartItem, 'productId' | 'size' | 'color'>) {
+function quantityForProduct(items: CartItem[], productId: number, except?: LineId) {
   return items.reduce((sum, line) => {
     if (line.productId !== productId) return sum
     if (except && sameLine(line, except)) return sum
-    return sum + line.quantity
+    return sum + lineStockUnits(line.quantity, line.bundleUnits)
   }, 0)
 }
 
-export function cartLineKey(item: Pick<CartItem, 'productId' | 'size' | 'color'>) {
-  return `${item.productId}::${item.size}::${item.color || ''}`
+export function cartLineKey(item: LineId) {
+  return `${item.productId}::${item.size}::${item.color || ''}::${item.bundle || ''}`
 }
 
 type CartContextType = {
   items: CartItem[]
   addItem: (item: CartItem) => void
-  removeItem: (item: Pick<CartItem, 'productId' | 'size' | 'color'>) => void
-  updateQuantity: (item: Pick<CartItem, 'productId' | 'size' | 'color'>, quantity: number) => void
+  removeItem: (item: LineId) => void
+  updateQuantity: (item: LineId, quantity: number) => void
   clearCart: () => void
   total: number
   count: number
@@ -50,9 +61,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const maxStock = item.stock ?? 99
       const already = quantityForProduct(prev, item.productId)
       const room = Math.max(0, maxStock - already)
-      if (room <= 0) return prev
+      const unitsPerPack = Math.max(1, item.bundleUnits || 1)
+      if (room < unitsPerPack) return prev
 
-      const quantity = Math.min(item.quantity, room)
+      const quantity = Math.min(item.quantity, Math.floor(room / unitsPerPack))
       const existing = prev.find((line) => sameLine(line, item))
       if (existing) {
         return prev.map((line) =>
@@ -61,16 +73,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
             : line,
         )
       }
-      return [...prev, { ...item, color: item.color || '', quantity }]
+      return [...prev, { ...item, color: item.color || '', bundle: item.bundle || '', quantity }]
     })
   }, [])
 
-  const removeItem = useCallback((item: Pick<CartItem, 'productId' | 'size' | 'color'>) => {
+  const removeItem = useCallback((item: LineId) => {
     setItems((prev) => prev.filter((line) => !sameLine(line, item)))
   }, [])
 
   const updateQuantity = useCallback(
-    (item: Pick<CartItem, 'productId' | 'size' | 'color'>, quantity: number) => {
+    (item: LineId, quantity: number) => {
       if (quantity <= 0) {
         setItems((prev) => prev.filter((line) => !sameLine(line, item)))
         return
@@ -81,7 +93,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
           if (!sameLine(line, item)) return line
           const maxStock = line.stock ?? 99
           const others = quantityForProduct(prev, line.productId, line)
-          const capped = Math.min(quantity, Math.max(1, maxStock - others))
+          const unitsPerPack = Math.max(1, line.bundleUnits || 1)
+          const maxPacks = Math.max(1, Math.floor((maxStock - others) / unitsPerPack))
+          const capped = Math.min(quantity, maxPacks)
           return { ...line, quantity: capped }
         }),
       )

@@ -554,7 +554,8 @@ export function AdminOrdersClient({
                     <p className="font-medium text-slate-900">{item.productName}</p>
                     <p className="text-sm text-slate-500">
                       {item.productBrand} · {item.size}
-                      {item.color ? ` · ${item.color}` : ''} · x{item.quantity}
+                      {item.color ? ` · ${item.color}` : ''}
+                      {item.bundle ? ` · ${item.bundle}` : ''} · x{item.quantity}
                     </p>
                   </div>
                   <p className="font-semibold text-slate-900">

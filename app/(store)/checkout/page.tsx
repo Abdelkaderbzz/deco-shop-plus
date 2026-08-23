@@ -77,6 +77,8 @@ export default function CheckoutPage() {
           productBrand: i.productBrand,
           size: i.size,
           color: i.color || '',
+          bundle: i.bundle || '',
+          bundleUnits: i.bundleUnits || 1,
           quantity: i.quantity,
           price: i.price,
         })),
@@ -132,7 +134,7 @@ export default function CheckoutPage() {
                   <p className="text-[10px] tracking-widest text-primary">{item.productBrand.toUpperCase()}</p>
                   <p className="text-sm font-light text-foreground">{item.productName}</p>
                   <p className="text-[11px] text-muted-foreground">
-                    {[item.size, item.color].filter(Boolean).join(' · ')}
+                    {[item.bundle, item.size, item.color].filter(Boolean).join(' · ')}
                   </p>
                 </div>
                 <div className="flex items-center justify-between">

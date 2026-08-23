@@ -3,6 +3,7 @@
 import { adminCreateOrder, type CartItem } from '@/app/actions/orders'
 import { useToast } from '@/components/toast-provider'
 import { parseProductColors } from '@/lib/product-colors'
+import { lineStockUnits, parseProductBundles } from '@/lib/product-bundles'
 import {
   hasVariableSizePrices,
   parseProductSizes,
@@ -34,6 +35,7 @@ export type CreateOrderProduct = {
   price: string
   sizes: string
   colors: string
+  bundles: string
   inStock: boolean
   stock: number
 }
@@ -68,6 +70,7 @@ export function AdminOrderCreateModal({
   const [productId, setProductId] = useState('')
   const [size, setSize] = useState('')
   const [color, setColor] = useState('')
+  const [bundleName, setBundleName] = useState('')
   const [quantity, setQuantity] = useState('1')
   const [itemError, setItemError] = useState<string | null>(null)
 
@@ -116,6 +119,16 @@ export function AdminOrderCreateModal({
       label: item.name,
     }))
   }, [selectedProduct])
+  const bundleOptions = useMemo(() => {
+    if (!selectedProduct) return []
+    return parseProductBundles(selectedProduct).map((bundle) => ({
+      value: bundle.name,
+      label: `${bundle.name} — ${bundle.price.toFixed(3)} TND`,
+    }))
+  }, [selectedProduct])
+  const selectedBundle = selectedProduct
+    ? parseProductBundles(selectedProduct).find((bundle) => bundle.name === bundleName)
+    : undefined
 
   const subtotal = lines.reduce((acc, line) => acc + line.price * line.quantity, 0)
   const total = subtotal + deliveryFee
@@ -124,12 +137,14 @@ export function AdminOrderCreateModal({
     setLines(nextLines)
     setValue(
       'items',
-      nextLines.map(({ productId, productName, productBrand, size, color, quantity, price }) => ({
+      nextLines.map(({ productId, productName, productBrand, size, color, bundle, bundleUnits, quantity, price }) => ({
         productId,
         productName,
         productBrand,
         size,
         color: color || '',
+        bundle: bundle || '',
+        bundleUnits: bundleUnits || 1,
         quantity,
         price,
       })),
@@ -144,6 +159,7 @@ export function AdminOrderCreateModal({
     const sizes = product ? sizesForProduct(product) : []
     setSize(sizes[0]?.name ?? '')
     setColor(parseProductColors(product).at(0)?.name ?? '')
+    setBundleName(parseProductBundles(product).at(0)?.name ?? '')
   }
 
   function addLine() {
@@ -159,28 +175,41 @@ export function AdminOrderCreateModal({
       setItemError('Selectionnez une couleur.')
       return
     }
+    if (bundleOptions.length > 0 && !bundleName) {
+      setItemError('Selectionnez un pack.')
+      return
+    }
     const qty = parseInt(quantity, 10)
     if (!Number.isFinite(qty) || qty < 1) {
       setItemError('Quantite invalide.')
       return
     }
 
+    const unitsPerPack = selectedBundle?.units ?? 1
     const already = lines
       .filter((line) => line.productId === selectedProduct.id)
-      .reduce((sum, line) => sum + line.quantity, 0)
+      .reduce((sum, line) => sum + lineStockUnits(line.quantity, line.bundleUnits), 0)
     const room = Math.max(0, selectedProduct.stock - already)
-    if (room <= 0) {
+    if (room < unitsPerPack) {
       setItemError('Stock insuffisant pour ce produit.')
       return
     }
-    const addQty = Math.min(qty, room)
+    const addQty = Math.min(qty, Math.floor(room / unitsPerPack))
 
     const existingIndex = lines.findIndex(
       (line) =>
         line.productId === selectedProduct.id &&
         line.size === size &&
-        (line.color || '') === (color || ''),
+        (line.color || '') === (color || '') &&
+        (line.bundle || '') === (bundleName || ''),
     )
+    const packPrice =
+      selectedBundle?.price ??
+      priceForSize(
+        sizesForProduct(selectedProduct),
+        size,
+        parseFloat(selectedProduct.price) || 0,
+      )
     if (existingIndex >= 0) {
       const next = lines.map((line, index) =>
         index === existingIndex
@@ -192,18 +221,16 @@ export function AdminOrderCreateModal({
       syncItems([
         ...lines,
         {
-          key: `${selectedProduct.id}-${size}-${color}-${Date.now()}`,
+          key: `${selectedProduct.id}-${size}-${color}-${bundleName}-${Date.now()}`,
           productId: selectedProduct.id,
           productName: selectedProduct.name,
           productBrand: selectedProduct.brand,
           size,
           color,
+          bundle: bundleName,
+          bundleUnits: unitsPerPack,
           quantity: addQty,
-          price: priceForSize(
-            sizesForProduct(selectedProduct),
-            size,
-            parseFloat(selectedProduct.price) || 0,
-          ),
+          price: packPrice,
         },
       ])
     }
@@ -224,9 +251,10 @@ export function AdminOrderCreateModal({
         const product = products.find((item) => item.id === line.productId)
         const others = lines
           .filter((item) => item.productId === line.productId && item.key !== key)
-          .reduce((sum, item) => sum + item.quantity, 0)
-        const max = Math.max(1, (product?.stock ?? 99) - others)
-        return { ...line, quantity: Math.min(max, nextQty) }
+          .reduce((sum, item) => sum + lineStockUnits(item.quantity, item.bundleUnits), 0)
+        const unitsPerPack = Math.max(1, line.bundleUnits || 1)
+        const maxPacks = Math.max(1, Math.floor(((product?.stock ?? 99) - others) / unitsPerPack))
+        return { ...line, quantity: Math.min(maxPacks, nextQty) }
       }),
     )
   }
@@ -353,7 +381,7 @@ export function AdminOrderCreateModal({
               placeholder="Selectionner un produit..."
               disabled={isPending || products.length === 0}
             />
-            <div className="grid grid-cols-[1fr_1fr_88px_auto] gap-2 max-sm:grid-cols-2">
+            <div className="grid grid-cols-2 gap-2">
               <AdminSelect
                 value={size}
                 onValueChange={setSize}
@@ -368,6 +396,17 @@ export function AdminOrderCreateModal({
                 placeholder="Couleur"
                 disabled={isPending || !selectedProduct || colorOptions.length === 0}
               />
+            </div>
+            {bundleOptions.length > 0 ? (
+              <AdminSelect
+                value={bundleName}
+                onValueChange={setBundleName}
+                items={bundleOptions}
+                placeholder="Pack"
+                disabled={isPending || !selectedProduct}
+              />
+            ) : null}
+            <div className="grid grid-cols-[88px_auto] gap-2">
               <input
                 type="number"
                 min={1}
@@ -405,7 +444,8 @@ export function AdminOrderCreateModal({
                     <p className="truncate text-sm font-medium text-slate-900">{line.productName}</p>
                     <p className="text-xs text-slate-500">
                       {line.productBrand} · {line.size}
-                      {line.color ? ` · ${line.color}` : ''} · {line.price.toFixed(3)} TND
+                      {line.color ? ` · ${line.color}` : ''}
+                      {line.bundle ? ` · ${line.bundle}` : ''} · {line.price.toFixed(3)} TND
                     </p>
                   </div>
                   <input

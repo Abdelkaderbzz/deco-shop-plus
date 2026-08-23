@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { HERO_CTA_TARGETS } from '@/lib/hero-slides'
 import { MAX_PRODUCT_COLORS } from '@/lib/product-colors'
+import { MAX_PRODUCT_BUNDLES } from '@/lib/product-bundles'
 import { GOVERNORATE_SLUGS } from '@/lib/tunisia-governorates'
 
 export const loginSchema = z.object({
@@ -56,6 +57,32 @@ export const productSchema = z
         }),
       )
       .max(MAX_PRODUCT_COLORS, `Maximum ${MAX_PRODUCT_COLORS} couleurs`),
+    bundles: z
+      .array(
+        z.object({
+          name: z.string().min(1, 'Nom du pack requis').max(60, 'Nom trop long'),
+          units: z
+            .string()
+            .min(1, 'Pieces requises')
+            .refine(
+              (value) => Number.isInteger(Number(value)) && Number(value) >= 1 && Number(value) <= 99,
+              { message: 'Pieces invalides (1 a 99)' },
+            ),
+          price: z
+            .string()
+            .min(1, 'Prix requis')
+            .refine((value) => !Number.isNaN(parseFloat(value)) && parseFloat(value) > 0, {
+              message: 'Prix invalide',
+            }),
+          compareAtPrice: z.string().refine(
+            (value) =>
+              value === '' || (!Number.isNaN(parseFloat(value)) && parseFloat(value) > 0),
+            { message: 'Ancien prix invalide' },
+          ),
+          popular: z.boolean(),
+        }),
+      )
+      .max(MAX_PRODUCT_BUNDLES, `Maximum ${MAX_PRODUCT_BUNDLES} packs`),
     relatedProductIds: z
       .array(z.number().int().positive())
       .max(8, 'Maximum 8 produits associes'),
@@ -101,6 +128,28 @@ export const productSchema = z
         path: ['sizes'],
       })
     }
+
+    const bundleNames = data.bundles.map((bundle) => bundle.name.trim().toLowerCase()).filter(Boolean)
+    if (new Set(bundleNames).size !== bundleNames.length) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Chaque pack doit avoir un nom unique',
+        path: ['bundles'],
+      })
+    }
+
+    data.bundles.forEach((bundle, index) => {
+      if (!bundle.compareAtPrice) return
+      const price = parseFloat(bundle.price)
+      const compareAt = parseFloat(bundle.compareAtPrice)
+      if (!Number.isNaN(price) && !Number.isNaN(compareAt) && compareAt <= price) {
+        ctx.addIssue({
+          code: 'custom',
+          message: "L'ancien prix doit etre superieur au prix du pack",
+          path: ['bundles', index, 'compareAtPrice'],
+        })
+      }
+    })
   })
 
 export type ProductFormValues = z.infer<typeof productSchema>
@@ -226,6 +275,8 @@ export const orderCreateItemSchema = z.object({
   productBrand: z.string().min(1),
   size: z.string().min(1, 'Taille requise'),
   color: z.string().max(40),
+  bundle: z.string().max(60).optional(),
+  bundleUnits: z.number().int().min(1).max(99).optional(),
   quantity: z.number().int().min(1, 'Quantite invalide').max(99, 'Quantite trop elevee'),
   price: z.number().positive('Prix invalide'),
 })
@@ -262,15 +313,18 @@ export const checkoutSchema = z
 
 export type CheckoutFormValues = z.infer<typeof checkoutSchema>
 
-export const productOrderSchema = z.object({
-  customerName: z.string().min(1, 'Nom complet requis').max(200, 'Nom trop long'),
-  customerPhone: z
-    .string()
-    .min(1, 'Numero de telephone requis')
-    .min(8, 'Telephone invalide (8 chiffres minimum)'),
-  customerAddress: z.string().min(1, 'Adresse requise').max(400, 'Adresse trop longue'),
-  notes: z.string().max(500, 'Note trop longue'),
-})
+export const productOrderSchema = z
+  .object({
+    customerName: z.string().min(1, 'Nom complet requis').max(200, 'Nom trop long'),
+    customerPhone: z
+      .string()
+      .min(1, 'Numero de telephone requis')
+      .min(8, 'Telephone invalide (8 chiffres minimum)'),
+    customerGovernorate: z.string(),
+    customerAddress: z.string().max(400, 'Adresse trop longue'),
+    notes: z.string().max(500, 'Note trop longue'),
+  })
+  .superRefine(refineDeliveryAddress)
 
 export type ProductOrderFormValues = z.infer<typeof productOrderSchema>
 

@@ -14,6 +14,7 @@ import {
 } from '@/lib/product-colors'
 import { formatPriceTnd, getDiscountPercent, parsePrice } from '@/lib/product-price'
 import { hasVariableSizePrices, parseProductSizes, sizesToFormValues } from '@/lib/product-sizes'
+import { bundlesToFormValues } from '@/lib/product-bundles'
 import { productSchema, type ProductFormValues } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouteTransition } from '@/lib/use-route-transition'
@@ -38,6 +39,7 @@ import {
 import { AdminSelect } from './admin-select'
 import { ProductImagesField } from './product-images-field'
 import { ProductColorsField } from './product-colors-field'
+import { ProductBundlesField } from './product-bundles-field'
 import { ProductSizesField } from './product-sizes-field'
 import { RelatedProductsField, type ProductOption } from './related-products-field'
 import { ADMIN_PAGE_SIZE, AdminPagination } from './admin-pagination'
@@ -54,6 +56,7 @@ type Product = {
   images: string | null
   sizes: string
   colors?: string
+  bundles?: string
   relatedProductIds: string
   stock: number
   inStock: boolean
@@ -81,6 +84,7 @@ const EMPTY_FORM: ProductFormValues = {
   images: [],
   sizes: [],
   colors: [],
+  bundles: [],
   relatedProductIds: [],
   stock: '1',
   featured: false,
@@ -145,6 +149,7 @@ export function AdminProductsClient({
   const images = watch('images')
   const relatedProductIds = watch('relatedProductIds')
   const colors = watch('colors')
+  const bundles = watch('bundles')
   const sizes = watch('sizes')
   const promoEnabled = watch('promoEnabled')
   const watchedPrice = watch('price')
@@ -169,6 +174,7 @@ export function AdminProductsClient({
       images: parseProductImages(product),
       sizes: sizesToFormValues(product.sizes, parsePrice(product.price) ?? 0),
       colors: parseProductColors(product),
+      bundles: bundlesToFormValues(product.bundles),
       relatedProductIds: parseRelatedProductIds(product),
       stock: String(product.stock ?? 0),
       featured: product.featured,
@@ -197,6 +203,7 @@ export function AdminProductsClient({
             images: form.images,
             sizes: form.sizes,
             colors: form.colors.filter((color) => color.name.trim()),
+            bundles: form.bundles.filter((bundle) => bundle.name.trim()),
             relatedProductIds: form.relatedProductIds,
             stock: Number(form.stock),
             featured: form.featured,
@@ -218,6 +225,7 @@ export function AdminProductsClient({
             images: form.images,
             sizes: form.sizes,
             colors: form.colors.filter((color) => color.name.trim()),
+            bundles: form.bundles.filter((bundle) => bundle.name.trim()),
             relatedProductIds: form.relatedProductIds,
             stock: Number(form.stock),
             featured: form.featured,
@@ -471,6 +479,13 @@ export function AdminProductsClient({
               value={colors}
               onChange={(next) => setValue('colors', next, { shouldValidate: true, shouldDirty: true })}
               error={errors.colors?.message || errors.colors?.root?.message}
+            />
+
+            <ProductBundlesField
+              value={bundles}
+              onChange={(next) => setValue('bundles', next, { shouldValidate: true, shouldDirty: true })}
+              defaultPrice={watchedPrice}
+              error={errors.bundles?.message || errors.bundles?.root?.message}
             />
 
             <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">

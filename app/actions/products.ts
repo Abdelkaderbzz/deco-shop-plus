@@ -26,6 +26,10 @@ import {
 } from '@/lib/product-relations'
 import { parsePrice } from '@/lib/product-price'
 import {
+  serializeProductBundles,
+  type ProductBundleInput,
+} from '@/lib/product-bundles'
+import {
   lowestSizePrice,
   parseProductSizes,
   serializeProductSizes,
@@ -293,7 +297,7 @@ export const getProductById = cache(async (id: number) => {
         .limit(1)
       return result[0] ?? null
     },
-    ['product-by-id', String(id)],
+    ['product-by-id', String(id), 'v4'],
     { revalidate: 120, tags: ['products', `product-${id}`] },
   )()
 })
@@ -395,6 +399,7 @@ export async function addProduct(data: {
   images: string[]
   sizes: ProductSizeInput[]
   colors?: ProductColor[]
+  bundles?: ProductBundleInput[]
   relatedProductIds?: number[]
   stock: number
   featured: boolean
@@ -423,6 +428,7 @@ export async function addProduct(data: {
     images: imageData.images,
     sizes: serializeProductSizes(data.sizes),
     colors: serializeProductColors(data.colors ?? []),
+    bundles: serializeProductBundles(data.bundles ?? []),
     relatedProductIds: serializeRelatedProductIds(data.relatedProductIds ?? []),
     stock,
     inStock: isInStock(stock),
@@ -452,6 +458,7 @@ export async function updateProduct(
     images?: string[]
     sizes?: ProductSizeInput[]
     colors?: ProductColor[]
+    bundles?: ProductBundleInput[]
     relatedProductIds?: number[]
     stock?: number
     featured?: boolean
@@ -475,6 +482,7 @@ export async function updateProduct(
     }
   }
   if (Array.isArray(data.colors)) updateData.colors = serializeProductColors(data.colors)
+  if (Array.isArray(data.bundles)) updateData.bundles = serializeProductBundles(data.bundles)
   if (data.relatedProductIds) {
     updateData.relatedProductIds = serializeRelatedProductIds(data.relatedProductIds)
   }

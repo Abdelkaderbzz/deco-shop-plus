@@ -45,11 +45,12 @@ function revalidateStockPaths(productIds: number[]) {
   }
 }
 
-function aggregateItemQuantities(items: { productId: number; quantity: number }[]) {
+function aggregateItemQuantities(items: { productId: number; quantity: number; bundleUnits?: number }[]) {
   const quantities = new Map<number, number>()
   for (const item of items) {
     if (!item.productId || item.quantity <= 0) continue
-    quantities.set(item.productId, (quantities.get(item.productId) ?? 0) + item.quantity)
+    const units = item.quantity * Math.max(1, item.bundleUnits || 1)
+    quantities.set(item.productId, (quantities.get(item.productId) ?? 0) + units)
   }
   return quantities
 }
@@ -101,6 +102,8 @@ export type CartItem = {
   productBrand: string
   size: string
   color?: string
+  bundle?: string
+  bundleUnits?: number
   quantity: number
   price: number
 }
@@ -156,6 +159,8 @@ async function insertOrderWithItems(data: CreateOrderInput) {
         productBrand: item.productBrand,
         size: item.size,
         color: item.color?.trim() || '',
+        bundle: item.bundle?.trim() || '',
+        bundleUnits: Math.max(1, item.bundleUnits || 1),
         quantity: item.quantity,
         price: item.price.toFixed(3),
       })),

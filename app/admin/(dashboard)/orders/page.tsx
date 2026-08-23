@@ -43,6 +43,7 @@ export default async function AdminOrdersPage({
           price: product.price,
           sizes: product.sizes,
           colors: product.colors ?? '[]',
+          bundles: product.bundles ?? '[]',
           inStock: product.inStock,
           stock: product.stock,
         }))}
