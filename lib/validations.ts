@@ -262,6 +262,18 @@ export const checkoutSchema = z
 
 export type CheckoutFormValues = z.infer<typeof checkoutSchema>
 
+export const productOrderSchema = z.object({
+  customerName: z.string().min(1, 'Nom complet requis').max(200, 'Nom trop long'),
+  customerPhone: z
+    .string()
+    .min(1, 'Numero de telephone requis')
+    .min(8, 'Telephone invalide (8 chiffres minimum)'),
+  customerAddress: z.string().min(1, 'Adresse requise').max(400, 'Adresse trop longue'),
+  notes: z.string().max(500, 'Note trop longue'),
+})
+
+export type ProductOrderFormValues = z.infer<typeof productOrderSchema>
+
 export const BANNER_VARIANTS = ['offer', 'news', 'discount'] as const
 export type BannerVariant = (typeof BANNER_VARIANTS)[number]
 
