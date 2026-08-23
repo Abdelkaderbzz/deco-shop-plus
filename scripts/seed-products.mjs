@@ -81,6 +81,7 @@ const IMG = {
  *   promoLabel?: string
  *   promoBgColor?: string
  *   promoTextColor?: string
+ *   published?: boolean
  *   aliases?: string[]
  *   featured: boolean
  *   related: string[]
@@ -156,7 +157,7 @@ const PRODUCTS = [
     promoEnabled: true,
     promoLabel: 'Promotion',
     featured: true,
-    related: ['chairPad', 'chairPadPack4', 'readingPillow', 'hc01'],
+    related: ['chairPad', 'chairPadPack4', 'readingPillow', 'sofaCushion'],
   },
   {
     key: 'hc01',
@@ -180,8 +181,9 @@ const PRODUCTS = [
     ],
     promoEnabled: true,
     promoLabel: 'Promotion',
-    featured: true,
-    related: ['sr01', 'chairPad', 'chairPadBackrest', 'chairPadPack4'],
+    published: false,
+    featured: false,
+    related: ['chairPad', 'chairPadBackrest', 'chairPadPack4'],
   },
   {
     key: 'sr01',
@@ -198,8 +200,9 @@ const PRODUCTS = [
     colors: [{ name: 'Gris', hex: '#4b5563' }],
     promoEnabled: true,
     promoLabel: 'Promotion',
-    featured: true,
-    related: ['hc01', 'chairPad', 'chairPadBackrest', 'chairPadPack4'],
+    published: false,
+    featured: false,
+    related: ['chairPad', 'chairPadBackrest', 'chairPadPack4'],
   },
   {
     key: 'chairPadPack4',
@@ -322,7 +325,7 @@ async function ensureBoutique() {
        "createdAt", "updatedAt")
      VALUES
       ('cite-el-waha-bizerte', 'Deco Shop Plus', 'Bizerte', 'Cite El Waha',
-       'Notre boutique a Cite El Waha, Bizerte. Coussins et rangement de vetements pour la maison.',
+       'Notre boutique a Cite El Waha, Bizerte. Coussins et galettes de chaise pour la maison.',
        '/assets/chair-pad-lifestyle.webp', 'Salon et coussins Deco Shop Plus a Bizerte',
        'Cite El Waha, Bizerte, Tunisie', '56 405 932', 4.9, NULL, 'Google Maps',
        'https://www.google.com/maps/dir/?api=1&destination=Cite+El+Waha%2C+Bizerte%2C+Tunisie',
@@ -351,8 +354,8 @@ async function ensureBoutique() {
 async function ensureHero() {
   const slots = [
     [0, '/assets/chair-pad-lifestyle.webp', 'Galette de chaise Deco Shop Plus'],
-    [1, '/assets/sr01-angle.webp', 'Sac de rangement SR01'],
-    [2, '/assets/hc01.webp', 'Housses a chaussures impermeables HC01'],
+    [1, '/assets/reading-pillow-colors.webp', 'Coussin de lecture Deco Shop Plus'],
+    [2, '/assets/sofa-cushion-colors.webp', 'Coussin de canape Deco Shop Plus'],
     [3, '/assets/chair-pad-stack.webp', 'Galettes de chaise Deco Shop Plus'],
   ]
   for (const [slot, imageUrl, alt] of slots) {
@@ -369,6 +372,29 @@ async function ensureHero() {
 }
 
 async function ensureHeroSlides() {
+  await pool.query(
+    `UPDATE hero_slides
+     SET
+       "imageUrl" = CASE
+         WHEN "imageUrl" IN ('/assets/hc01.webp', '/assets/hc01-size.webp') THEN '/assets/chair-pad-pack-4.webp'
+         WHEN "imageUrl" IN (
+           '/assets/sr01.webp', '/assets/sr01-angle.webp', '/assets/sr01-filled.webp',
+           '/assets/sr01-pack.webp', '/assets/sr01-handle.webp'
+         ) THEN '/assets/reading-pillow-colors.webp'
+         ELSE "imageUrl"
+       END,
+       alt = CASE
+         WHEN "imageUrl" IN ('/assets/hc01.webp', '/assets/hc01-size.webp') THEN 'Pack de 4 galettes de chaise Deco Shop Plus'
+         WHEN "imageUrl" IN (
+           '/assets/sr01.webp', '/assets/sr01-angle.webp', '/assets/sr01-filled.webp',
+           '/assets/sr01-pack.webp', '/assets/sr01-handle.webp'
+         ) THEN 'Coussin de lecture Deco Shop Plus'
+         ELSE alt
+       END,
+       "updatedAt" = NOW()
+     WHERE "imageUrl" LIKE '%/hc01%' OR "imageUrl" LIKE '%/sr01%'`,
+  )
+
   const existing = await pool.query(`SELECT count(*)::int AS count FROM hero_slides`)
   if (existing.rows[0]?.count > 0) return
 
@@ -420,6 +446,8 @@ async function upsertProduct(product) {
   const promoLabel = product.promoLabel || 'Promotion'
   const promoBgColor = product.promoBgColor || '#e85d04'
   const promoTextColor = product.promoTextColor || '#ffffff'
+  const published = product.published !== false
+  const featured = published && Boolean(product.featured)
 
   if (existing.rows[0]) {
     const id = existing.rows[0].id
@@ -437,13 +465,13 @@ async function upsertProduct(product) {
         "inStock" = true,
         stock = 10,
         featured = $10,
-        published = true,
-        "promoEnabled" = $11,
-        "promoLabel" = $12,
-        "promoBgColor" = $13,
-        "promoTextColor" = $14,
+        published = $11,
+        "promoEnabled" = $12,
+        "promoLabel" = $13,
+        "promoBgColor" = $14,
+        "promoTextColor" = $15,
         "updatedAt" = NOW()
-       WHERE id = $15`,
+       WHERE id = $16`,
       [
         product.name,
         product.description,
@@ -454,7 +482,8 @@ async function upsertProduct(product) {
         images,
         sizes,
         colors,
-        product.featured,
+        featured,
+        published,
         promoEnabled,
         promoLabel,
         promoBgColor,
@@ -471,7 +500,7 @@ async function upsertProduct(product) {
       "imageUrl", images, sizes, colors, "relatedProductIds", "inStock", stock, featured, published,
       "promoEnabled", "promoLabel", "promoBgColor", "promoTextColor",
       "createdAt", "updatedAt"
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, '[]', true, 10, $11, true, $12, $13, $14, $15, NOW(), NOW())
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, '[]', true, 10, $11, $12, $13, $14, $15, $16, NOW(), NOW())
     RETURNING id`,
     [
       product.name,
@@ -484,7 +513,8 @@ async function upsertProduct(product) {
       images,
       sizes,
       colors,
-      product.featured,
+      featured,
+      published,
       promoEnabled,
       promoLabel,
       promoBgColor,
