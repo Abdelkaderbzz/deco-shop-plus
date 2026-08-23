@@ -61,7 +61,7 @@ export function HeroSection({ slides }: { slides: HeroSlide[] }) {
       onMouseLeave={() => setPaused(false)}
     >
       <div className="mx-auto max-w-7xl px-2 py-4 sm:px-3 md:py-5">
-        <div className="relative min-h-[56vh] overflow-hidden rounded-2xl border border-border/60 bg-foreground md:min-h-[64vh]">
+        <div className="relative min-h-[56vh] overflow-hidden rounded-2xl border border-border/60 bg-[#0a3d42] md:min-h-[64vh]">
         {slides.map((slide, slideIndex) => {
           const isActive = slideIndex === index
           const isNearby =
@@ -84,9 +84,9 @@ export function HeroSection({ slides }: { slides: HeroSlide[] }) {
               fetchPriority={slideIndex === 0 ? 'high' : 'low'}
               quality={70}
               sizes="(max-width: 768px) 100vw, 1280px"
-              className="object-cover"
+              className="object-cover object-[72%_center]"
             />
-            <div className="absolute inset-0 bg-linear-to-r from-black/80 via-black/60 to-black/35" />
+            <div className="absolute inset-0 bg-linear-to-r from-[#0a3d42]/78 via-[#0a3d42]/38 to-transparent" />
           </div>
           )
         })}
@@ -94,7 +94,7 @@ export function HeroSection({ slides }: { slides: HeroSlide[] }) {
         <div className="relative z-10 mx-auto flex min-h-[56vh] max-w-7xl flex-col justify-end px-4 py-10 md:min-h-[64vh] md:justify-center md:px-6 md:py-14">
           <div key={current.id} className="max-w-xl text-white">
             {current.eyebrow ? (
-              <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-white">
+              <p className="text-[11px] font-medium uppercase tracking-[0.32em] text-white/85">
                 {current.eyebrow}
               </p>
             ) : null}
@@ -102,7 +102,7 @@ export function HeroSection({ slides }: { slides: HeroSlide[] }) {
               {current.title}
             </h1>
             {current.subtitle ? (
-              <p className="mt-3 max-w-md text-sm font-normal leading-relaxed text-white md:text-base">
+              <p className="mt-3 max-w-md text-sm font-normal leading-relaxed text-white/90 md:text-base">
                 {current.subtitle}
               </p>
             ) : null}

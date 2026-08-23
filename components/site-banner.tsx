@@ -6,9 +6,9 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
 const VARIANT_LABELS = {
-  offer: 'OFFRE',
-  news: 'NOUVEAUTE',
-  discount: 'PROMO',
+  offer: 'ATELIER',
+  news: 'MAISON',
+  discount: 'OFFRE',
 } as const
 
 /** Dismissal is keyed by banner id and message, so editing the text brings the
