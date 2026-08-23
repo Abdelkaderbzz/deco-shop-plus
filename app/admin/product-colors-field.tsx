@@ -9,7 +9,7 @@ import {
   adminLabelCls,
 } from './admin-ui'
 import type { ProductColor } from '@/lib/product-colors'
-import { MAX_PRODUCT_COLORS } from '@/lib/product-colors'
+import { CATALOG_PRODUCT_COLORS, MAX_PRODUCT_COLORS } from '@/lib/product-colors'
 
 const colorInputCls = 'size-10 shrink-0 cursor-pointer rounded-md border border-slate-300 bg-white p-1'
 
@@ -39,19 +39,29 @@ export function ProductColorsField({
     <div>
       <div className="mb-2 flex items-center justify-between">
         <label className={`${adminLabelCls} mb-0`}>COULEURS</label>
-        <AdminButton
-          type="button"
-          variant="outline"
-          onClick={addColor}
-          disabled={value.length >= MAX_PRODUCT_COLORS}
-          className="inline-flex items-center gap-1 !px-2.5 !py-1.5 text-xs"
-        >
-          <Plus className="size-3.5" />
-          Ajouter
-        </AdminButton>
+        <div className="flex items-center gap-2">
+          <AdminButton
+            type="button"
+            variant="outline"
+            onClick={() => onChange(CATALOG_PRODUCT_COLORS.map((color) => ({ ...color })))}
+            className="inline-flex items-center gap-1 !px-2.5 !py-1.5 text-xs"
+          >
+            Gamme atelier
+          </AdminButton>
+          <AdminButton
+            type="button"
+            variant="outline"
+            onClick={addColor}
+            disabled={value.length >= MAX_PRODUCT_COLORS}
+            className="inline-flex items-center gap-1 !px-2.5 !py-1.5 text-xs"
+          >
+            <Plus className="size-3.5" />
+            Ajouter
+          </AdminButton>
+        </div>
       </div>
       <p className="mb-3 text-xs text-slate-500">
-        Laissez vide si le produit n a pas de choix de couleur. Exemple : Gris, Noir.
+        Laissez vide si le produit n a pas de choix de couleur. Gamme : Rouge, Jaune, Vert, Gris, Beige, Marine, Marron, Bordeaux, Vert pistache.
       </p>
       <div className="space-y-2">
         {value.map((color, index) => (

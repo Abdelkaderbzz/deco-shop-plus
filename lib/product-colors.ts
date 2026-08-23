@@ -9,6 +9,19 @@ export type ProductColor = {
   hex: string
 }
 
+/** Standard atelier swatches shown on current catalog products. */
+export const CATALOG_PRODUCT_COLORS: ProductColor[] = [
+  { name: 'Rouge', hex: '#c81e1e' },
+  { name: 'Jaune', hex: '#eab308' },
+  { name: 'Vert', hex: '#166534' },
+  { name: 'Gris', hex: '#9ca3af' },
+  { name: 'Beige', hex: '#d6cbb8' },
+  { name: 'Marine', hex: '#1e3a5f' },
+  { name: 'Marron', hex: '#7c2d12' },
+  { name: 'Bordeaux', hex: '#7f1d1d' },
+  { name: 'Vert pistache', hex: '#93c572' },
+]
+
 const HEX = /^#[0-9a-fA-F]{6}$/
 
 export function normalizeHexColor(value: string, fallback = '#6b7280'): string {
