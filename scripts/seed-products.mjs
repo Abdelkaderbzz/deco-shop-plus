@@ -21,11 +21,10 @@ const pool = new Pool({ connectionString: DATABASE_URL })
 
 const CATEGORIES = [
   { name: 'Coussins', slug: 'coussins' },
-  { name: 'Accessoires', slug: 'accessoires' },
   { name: 'Rangement', slug: 'rangement' },
 ]
 
-const OLD_CATEGORY_SLUGS = ['femme', 'homme', 'parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous', 'textiles']
+const OLD_CATEGORY_SLUGS = ['femme', 'homme', 'parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous', 'textiles', 'accessoires']
 
 const IMG = {
   hc01: '/assets/hc01.webp',
@@ -41,8 +40,29 @@ const IMG = {
   chairPadRed: '/assets/chair-pad-red.webp',
   chairPadRound: '/assets/chair-pad-round.webp',
   chairPadBackrest: '/assets/chair-pad-backrest.webp',
+  chairPadBackrestGreen: '/assets/chair-pad-backrest-green.webp',
+  chairPadBackrestOrange: '/assets/chair-pad-backrest-orange.webp',
+  chairPadBackrestGrey: '/assets/chair-pad-backrest-grey.webp',
+  chairPadBackrestFeatures: '/assets/chair-pad-backrest-features.webp',
+  chairPadBackrestVelvet: '/assets/chair-pad-backrest-velvet.webp',
   chairPadPack4: '/assets/chair-pad-pack-4.webp',
   chairPadPack4Colors: '/assets/chair-pad-pack-4-colors.webp',
+  chairPadPack4Chair: '/assets/chair-pad-pack-4-chair.webp',
+  chairPadPack4Swatches: '/assets/chair-pad-pack-4-swatches.webp',
+  chairPadPack4Table: '/assets/chair-pad-pack-4-table.webp',
+  readingPillow: '/assets/reading-pillow.webp',
+  readingPillowGrey: '/assets/reading-pillow-grey.webp',
+  readingPillowNavy: '/assets/reading-pillow-navy.webp',
+  readingPillowColors: '/assets/reading-pillow-colors.webp',
+  sofaCushion: '/assets/sofa-cushion.webp',
+  sofaCushionColors: '/assets/sofa-cushion-colors.webp',
+  sofaCushionShelf: '/assets/sofa-cushion-shelf.webp',
+  sofaCushionPiping: '/assets/sofa-cushion-piping.webp',
+  sofaCushionZip: '/assets/sofa-cushion-zip.webp',
+  headboardCushion: '/assets/headboard-cushion.webp',
+  headboardCushionColors: '/assets/headboard-cushion-colors.webp',
+  headboardCushionBed: '/assets/headboard-cushion-bed.webp',
+  headboardCushionSide: '/assets/headboard-cushion-side.webp',
 }
 
 /** @typedef {{
@@ -52,7 +72,7 @@ const IMG = {
  *   description: string
  *   price: string
  *   compareAtPrice?: string | null
- *   category: 'coussins' | 'accessoires' | 'rangement'
+ *   category: 'coussins' | 'rangement'
  *   image: string
  *   images?: string[]
  *   sizes: string[]
@@ -76,6 +96,7 @@ const PRODUCTS = [
     description:
       'Galette de chaise capitonnée avec attaches aux coins pour la fixer au dossier. Tissu mat, confortable pour cuisine, salle a manger ou bureau. Disponible en carre ou rond, dans une large gamme de couleurs.',
     price: '9.500',
+    compareAtPrice: '15.000',
     category: 'coussins',
     image: IMG.chairPad,
     images: [IMG.chairPad, IMG.chairPadFloor, IMG.chairPadLifestyle, IMG.chairPadRed, IMG.chairPadRound],
@@ -94,8 +115,10 @@ const PRODUCTS = [
       { name: 'Beige', hex: '#d6cbb8' },
       { name: 'Noir', hex: '#1f2937' },
     ],
+    promoEnabled: true,
+    promoLabel: 'Promotion',
     featured: true,
-    related: ['chairPadBackrest', 'chairPadPack4', 'hc01', 'sr01'],
+    related: ['chairPadBackrest', 'chairPadPack4', 'readingPillow', 'sofaCushion'],
   },
   {
     key: 'chairPadBackrest',
@@ -104,9 +127,17 @@ const PRODUCTS = [
     description:
       'Galette de chaise capitonnée en deux parties : dossier et assise, reliees par un pli pour habiller toute la chaise. Tissu mat, boutons capitonnes, attaches aux coins pour la fixer au dossier et a l assise, et anse de transport en haut. Confortable pour cuisine, salle a manger ou bureau. Disponible dans une large gamme de couleurs.',
     price: '18.000',
+    compareAtPrice: '25.000',
     category: 'coussins',
     image: IMG.chairPadBackrest,
-    images: [IMG.chairPadBackrest],
+    images: [
+      IMG.chairPadBackrest,
+      IMG.chairPadBackrestGreen,
+      IMG.chairPadBackrestOrange,
+      IMG.chairPadBackrestGrey,
+      IMG.chairPadBackrestFeatures,
+      IMG.chairPadBackrestVelvet,
+    ],
     sizes: ['Unique'],
     colors: [
       { name: 'Marine', hex: '#1e3a5f' },
@@ -122,8 +153,10 @@ const PRODUCTS = [
       { name: 'Beige', hex: '#d6cbb8' },
       { name: 'Noir', hex: '#1f2937' },
     ],
+    promoEnabled: true,
+    promoLabel: 'Promotion',
     featured: true,
-    related: ['chairPad', 'chairPadPack4', 'hc01', 'sr01'],
+    related: ['chairPad', 'chairPadPack4', 'readingPillow', 'hc01'],
   },
   {
     key: 'hc01',
@@ -175,9 +208,10 @@ const PRODUCTS = [
     description:
       'Pack de 4 galettes de chaise rondes capitonnées, avec attaches pour les fixer au dossier. Tissu doux, confortable pour cuisine ou salle a manger. Choisissez vos 4 couleurs parmi la gamme. Livraison partout en Tunisie.',
     price: '25.000',
+    compareAtPrice: '40.000',
     category: 'coussins',
     image: IMG.chairPadPack4,
-    images: [IMG.chairPadPack4, IMG.chairPadPack4Colors],
+    images: [IMG.chairPadPack4, IMG.chairPadPack4Table, IMG.chairPadPack4Swatches, IMG.chairPadPack4Chair, IMG.chairPadPack4Colors],
     sizes: ['Rond'],
     colors: [
       { name: 'Rouge', hex: '#c81e1e' },
@@ -194,9 +228,78 @@ const PRODUCTS = [
       { name: 'Noir', hex: '#1f2937' },
     ],
     promoEnabled: true,
-    promoLabel: 'Pack de 4',
+    promoLabel: 'Promotion',
     featured: true,
-    related: ['chairPad', 'chairPadBackrest', 'hc01'],
+    related: ['chairPad', 'chairPadBackrest', 'readingPillow'],
+  },
+  {
+    key: 'readingPillow',
+    name: 'Coussin de lecture',
+    brand: 'Deco Shop Plus',
+    description:
+      'Coussin de lecture ergonomique pour le lit ou le canape : dossier cale et rouleau de cou reglable. Boutons lateraux pour ajuster la hauteur de l appui-tete. Tissu doux, confortable pour lire, regarder un ecran ou se reposer. Disponible en 10 couleurs.',
+    price: '52.000',
+    category: 'coussins',
+    image: IMG.readingPillowColors,
+    images: [IMG.readingPillowColors, IMG.readingPillow, IMG.readingPillowGrey, IMG.readingPillowNavy],
+    sizes: ['Unique'],
+    colors: [
+      { name: 'Bordeaux', hex: '#7f1d1d' },
+      { name: 'Marine', hex: '#1e3a5f' },
+      { name: 'Vert', hex: '#166534' },
+      { name: 'Jaune', hex: '#ca8a04' },
+      { name: 'Gris', hex: '#4b5563' },
+      { name: 'Noir', hex: '#1f2937' },
+      { name: 'Beige', hex: '#e8dcc8' },
+      { name: 'Orange', hex: '#ea580c' },
+      { name: 'Marron', hex: '#7c4a2a' },
+      { name: 'Taupe', hex: '#a68a64' },
+    ],
+    featured: true,
+    related: ['chairPad', 'chairPadBackrest', 'sofaCushion', 'headboardCushion'],
+  },
+  {
+    key: 'sofaCushion',
+    name: 'Coussin de canapé',
+    brand: 'Deco Shop Plus',
+    description:
+      'Coussin de canapé en velours coton, forme rectangulaire, finition passepoil et housse zippee amovible. Tissu doux et dense pour le salon. Disponible en plusieurs couleurs pour habiller le canape ou le lit.',
+    price: '38.000',
+    category: 'coussins',
+    image: IMG.sofaCushionColors,
+    images: [IMG.sofaCushionColors, IMG.sofaCushion, IMG.sofaCushionShelf, IMG.sofaCushionPiping, IMG.sofaCushionZip],
+    sizes: ['40x60'],
+    colors: [
+      { name: 'Bordeaux', hex: '#7f1d1d' },
+      { name: 'Marine', hex: '#1e3a5f' },
+      { name: 'Jaune', hex: '#ca8a04' },
+      { name: 'Marron', hex: '#7c4a2a' },
+      { name: 'Beige', hex: '#e8dcc8' },
+      { name: 'Gris', hex: '#4b5563' },
+      { name: 'Noir', hex: '#1f2937' },
+    ],
+    featured: true,
+    related: ['readingPillow', 'chairPad', 'headboardCushion'],
+  },
+  {
+    key: 'headboardCushion',
+    name: 'Coussin de tête de lit',
+    brand: 'Deco Shop Plus',
+    description:
+      'Coussin de tete de lit en forme de cale : dossier capitonne pour s installer confortablement dans le lit. Poche laterale pour telephone, lunettes ou telecommande. Tissu doux, boutons recouverts. Ideal pour lire ou regarder un ecran. Disponible en beige, bleu, vert et gris.',
+    price: '82.000',
+    category: 'coussins',
+    image: IMG.headboardCushionColors,
+    images: [IMG.headboardCushionColors, IMG.headboardCushion, IMG.headboardCushionBed, IMG.headboardCushionSide],
+    sizes: ['Unique'],
+    colors: [
+      { name: 'Beige', hex: '#d6cbb8' },
+      { name: 'Bleu', hex: '#1e3a5f' },
+      { name: 'Vert', hex: '#166534' },
+      { name: 'Gris', hex: '#4b5563' },
+    ],
+    featured: true,
+    related: ['readingPillow', 'sofaCushion', 'chairPad'],
   },
 ]
 
@@ -219,7 +322,7 @@ async function ensureBoutique() {
        "createdAt", "updatedAt")
      VALUES
       ('cite-el-waha-bizerte', 'Deco Shop Plus', 'Bizerte', 'Cite El Waha',
-       'Notre boutique a Cite El Waha, Bizerte. Coussins, accessoires et rangement de vetements pour la maison.',
+       'Notre boutique a Cite El Waha, Bizerte. Coussins et rangement de vetements pour la maison.',
        '/assets/chair-pad-lifestyle.webp', 'Salon et coussins Deco Shop Plus a Bizerte',
        'Cite El Waha, Bizerte, Tunisie', '56 405 932', 4.9, NULL, 'Google Maps',
        'https://www.google.com/maps/dir/?api=1&destination=Cite+El+Waha%2C+Bizerte%2C+Tunisie',
