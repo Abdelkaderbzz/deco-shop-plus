@@ -1,11 +1,12 @@
 import type { Metadata } from 'next'
 import { catalogHref, productHref } from '@/lib/catalog-href'
 import { DEFAULT_DELIVERY_FEE, DELIVERY_COUNTRY, DELIVERY_CURRENCY } from '@/lib/delivery'
+import { parseProductBundles } from '@/lib/product-bundles'
 import { parseProductColors } from '@/lib/product-colors'
 import { parseProductImages } from '@/lib/product-images'
 import { parsePrice } from '@/lib/product-price'
-import { hasVariableSizePrices, lowestSizePrice, parseProductSizes } from '@/lib/product-sizes'
-import { PRODUCT_FABRIC, SITE } from '@/lib/site'
+import { hasVariableSizePrices, parseProductSizes } from '@/lib/product-sizes'
+import { PRODUCT_FABRIC, SITE, STORE_FAQS, STORE_RETURN_DAYS } from '@/lib/site'
 import { FACEBOOK_URL, MAPS_URL, WHATSAPP_URL } from '@/lib/social-links'
 import { STORE_CATEGORIES } from '@/lib/store-categories'
 import { absoluteUrl, getSiteUrl } from '@/lib/site-url'
@@ -71,6 +72,39 @@ function logoImage() {
   }
 }
 
+function clipMeta(text: string, max = 158) {
+  const clean = text.replace(/\s+/g, ' ').trim()
+  if (clean.length <= max) return clean
+  return `${clean.slice(0, max - 1).trimEnd()}…`
+}
+
+export function productMetaDescription(product: {
+  name: string
+  description?: string | null
+}) {
+  const location = `${SITE.neighborhood}, ${SITE.city}`
+  const body = product.description?.trim()
+  if (body) {
+    return clipMeta(
+      `${body} ${PRODUCT_FABRIC}. Livraison en Tunisie. ${SITE.name}, ${location}.`,
+    )
+  }
+  return clipMeta(
+    `${product.name} en ${PRODUCT_FABRIC} chez ${SITE.name} à ${location}. Paiement à la livraison, partout en Tunisie.`,
+  )
+}
+
+function merchantReturnPolicy() {
+  return {
+    '@type': 'MerchantReturnPolicy',
+    applicableCountry: DELIVERY_COUNTRY,
+    returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+    merchantReturnDays: STORE_RETURN_DAYS,
+    returnMethod: 'https://schema.org/ReturnInStore',
+    returnFees: 'https://schema.org/ReturnShippingFees',
+  }
+}
+
 function offerShippingDetails() {
   return {
     '@type': 'OfferShippingDetails',
@@ -82,6 +116,21 @@ function offerShippingDetails() {
       '@type': 'MonetaryAmount',
       value: DEFAULT_DELIVERY_FEE,
       currency: DELIVERY_CURRENCY,
+    },
+    deliveryTime: {
+      '@type': 'ShippingDeliveryTime',
+      handlingTime: {
+        '@type': 'QuantitativeValue',
+        minValue: 0,
+        maxValue: 2,
+        unitCode: 'DAY',
+      },
+      transitTime: {
+        '@type': 'QuantitativeValue',
+        minValue: 1,
+        maxValue: 5,
+        unitCode: 'DAY',
+      },
     },
   }
 }
@@ -129,6 +178,7 @@ export function localBusinessJsonLd() {
     knowsLanguage: ['fr', 'ar'],
     sameAs: [FACEBOOK_URL],
     parentOrganization: { '@id': orgId() },
+    hasMerchantReturnPolicy: merchantReturnPolicy(),
     hasOfferCatalog: {
       '@type': 'OfferCatalog',
       name: `Boutique ${SITE.name}`,
@@ -206,6 +256,7 @@ export function collectionPageJsonLd({
     about: { '@id': localBusinessId() },
     mainEntity: {
       '@type': 'ItemList',
+      numberOfItems: products.length,
       itemListElement: products.map((product, index) => ({
         '@type': 'ListItem',
         position: index + 1,
@@ -213,6 +264,36 @@ export function collectionPageJsonLd({
         name: product.name,
       })),
     },
+  }
+}
+
+export function homePageJsonLd() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': `${getSiteUrl()}/#webpage`,
+    url: getSiteUrl(),
+    name: `${SITE.name} | Décoration à ${SITE.neighborhood}, ${SITE.city}`,
+    description: SITE.description,
+    inLanguage: 'fr-TN',
+    isPartOf: { '@id': websiteId() },
+    about: { '@id': localBusinessId() },
+    primaryImageOfPage: logoImage(),
+  }
+}
+
+export function faqJsonLd() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: STORE_FAQS.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
   }
 }
 
@@ -226,6 +307,7 @@ export function productJsonLd(product: {
   imageUrl: string | null
   images?: string | null
   colors?: string | null
+  bundles?: string | null
   inStock: boolean
   category: string
   sizes?: string | null
@@ -233,10 +315,15 @@ export function productJsonLd(product: {
   const fallback = parsePrice(product.price)
   const sizes = parseProductSizes(product.sizes, fallback ?? 0)
   const colors = parseProductColors(product)
+  const bundles = parseProductBundles(product)
   const gallery = parseProductImages(product).map(absoluteImageUrl)
   const variable = hasVariableSizePrices(sizes)
-  const low = variable ? lowestSizePrice(sizes, fallback ?? 0) : fallback
-  const high = variable ? Math.max(...sizes.map((size) => size.price)) : fallback
+  const sizePrices = variable ? sizes.map((size) => size.price) : fallback != null ? [fallback] : []
+  const bundlePrices = bundles.map((bundle) => bundle.price)
+  const allPrices = [...sizePrices, ...bundlePrices]
+  const low = allPrices.length > 0 ? Math.min(...allPrices) : fallback
+  const high = allPrices.length > 0 ? Math.max(...allPrices) : fallback
+  const offerCount = Math.max(1, sizes.length, bundles.length)
   const image =
     gallery.length > 0 ? gallery : [absoluteUrl('/assets/deco-shop-logo.webp')]
   const availability = product.inStock
@@ -253,6 +340,7 @@ export function productJsonLd(product: {
     itemCondition: 'https://schema.org/NewCondition',
     seller: { '@id': localBusinessId() },
     shippingDetails: offerShippingDetails(),
+    hasMerchantReturnPolicy: merchantReturnPolicy(),
     priceValidUntil: validUntil,
   }
 
@@ -261,12 +349,16 @@ export function productJsonLd(product: {
     '@type': 'Product',
     '@id': `${offerUrl}#product`,
     name: product.name,
-    description:
-      product.description || `${product.name} chez ${SITE.name} à ${SITE.city}.`,
+    description: productMetaDescription(product),
     sku: String(product.id),
     mpn: String(product.id),
     url: offerUrl,
     image,
+    material: PRODUCT_FABRIC,
+    countryOfOrigin: {
+      '@type': 'Country',
+      name: 'Tunisia',
+    },
     brand: {
       '@type': 'Brand',
       name: product.brand || SITE.name,
@@ -284,14 +376,20 @@ export function productJsonLd(product: {
         name: 'Taille',
         value: variable ? `${size.name} (${size.price.toFixed(3)} TND)` : size.name,
       })),
+      ...bundles.map((bundle) => ({
+        '@type': 'PropertyValue',
+        name: 'Pack',
+        value: `${bundle.name} (${bundle.price.toFixed(3)} TND)`,
+      })),
     ],
-    offers: variable
+    offers:
+      variable || bundles.length > 0
       ? {
           '@type': 'AggregateOffer',
           ...offerBase,
           lowPrice: low != null ? low.toFixed(3) : undefined,
           highPrice: high != null ? high.toFixed(3) : undefined,
-          offerCount: sizes.length,
+          offerCount,
         }
       : {
           '@type': 'Offer',
