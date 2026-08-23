@@ -12,7 +12,6 @@ const IMAGES = [
   { file: 'hero/bedroom-linen.webp', url: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=1400&q=80', w: 1400 },
   { file: 'hero/closet-organize.webp', url: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=1400&q=80', w: 1400 },
   { file: 'categories/coussins.webp', url: 'https://images.unsplash.com/photo-1484101403633-562f891dc89a?auto=format&fit=crop&w=1200&q=80', w: 1200 },
-  { file: 'categories/accessoires.webp', url: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1200&q=80', w: 1200 },
   { file: 'categories/rangement.webp', url: 'https://images.unsplash.com/photo-1594026112284-02bb6f3352fe?auto=format&fit=crop&w=1200&q=80', w: 1200 },
   { file: 'boutiques/storefront.webp', url: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=80', w: 1200 },
   { file: 'boutiques/interior.webp', url: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80', w: 1200 },

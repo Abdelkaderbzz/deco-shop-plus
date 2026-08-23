@@ -35,7 +35,7 @@ const GOVERNORATES = [
   'bizerte',
 ]
 
-const CATEGORY_SLUGS = ['coussins', 'accessoires', 'rangement']
+const CATEGORY_SLUGS = ['coussins', 'rangement']
 const PLACEHOLDER_IMAGES = [
   '/assets/chair-pad-stack.webp',
   '/assets/chair-pad-lifestyle.webp',
@@ -47,7 +47,6 @@ const PLACEHOLDER_IMAGES = [
 
 const EXTRA_CATEGORIES = [
   { name: 'Demo Coussins Premium', slug: 'demo-coussins-premium' },
-  { name: 'Demo Accessoires', slug: 'demo-accessoires' },
   { name: 'Demo rangement', slug: 'demo-rangement' },
 ]
 

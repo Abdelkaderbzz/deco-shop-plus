@@ -13,12 +13,6 @@ export const STORE_CATEGORIES: StoreCategory[] = [
     image: '/assets/chair-pad-stack.webp',
   },
   {
-    slug: 'accessoires',
-    name: 'Accessoires',
-    tagline: 'Objets déco pour la maison',
-    image: '/assets/chair-pad-lifestyle.webp',
-  },
-  {
     slug: 'rangement',
     name: 'Rangement',
     tagline: 'Organisation des vêtements et de la maison',
@@ -63,7 +57,7 @@ export type DbCategory = {
   bannerUrl?: string | null
 }
 
-const RETIRED_CATEGORY_SLUGS = new Set(['textiles', 'femme', 'homme', 'parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous'])
+const RETIRED_CATEGORY_SLUGS = new Set(['textiles', 'accessoires', 'femme', 'homme', 'parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous'])
 
 export function mergeStoreCategories(dbCategories: DbCategory[]): StoreCategory[] {
   const dbBySlug = new Map(dbCategories.map((category) => [category.slug, category]))

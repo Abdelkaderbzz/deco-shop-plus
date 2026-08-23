@@ -117,10 +117,9 @@ const statements = [
    ON CONFLICT ("id") DO NOTHING`,
   `INSERT INTO "categories" ("name", "slug") VALUES
     ('Coussins', 'coussins'),
-    ('Accessoires', 'accessoires'),
     ('Rangement', 'rangement')
    ON CONFLICT ("slug") DO NOTHING`,
-  `DELETE FROM "categories" WHERE "slug" IN ('parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous', 'femme', 'homme', 'textiles')`,
+  `DELETE FROM "categories" WHERE "slug" IN ('parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous', 'femme', 'homme', 'textiles', 'accessoires')`,
   `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "images" text NOT NULL DEFAULT '[]'`,
   `ALTER TABLE "categories" ADD COLUMN IF NOT EXISTS "bannerUrl" text`,
   `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "published" boolean NOT NULL DEFAULT true`,
@@ -182,7 +181,7 @@ const statements = [
     ("slug", "name", "city", "region", "description", "imageUrl", "imageAlt", "address", "phone", "rating", "reviewCount", "ratingSource", "directionsUrl", "sortOrder")
    VALUES
     ('cite-el-waha-bizerte', 'Deco Shop Plus', 'Bizerte', 'Cite El Waha',
-     'Notre boutique a Cite El Waha, Bizerte. Coussins, accessoires et rangement de vetements pour la maison.',
+     'Notre boutique a Cite El Waha, Bizerte. Coussins et rangement de vetements pour la maison.',
      '/assets/chair-pad-lifestyle.webp', 'Salon et coussins Deco Shop Plus a Bizerte',
      'Cite El Waha, Bizerte, Tunisie', '56 405 932', 4.9, NULL, 'Google Maps',
      'https://www.google.com/maps/dir/?api=1&destination=Cite+El+Waha%2C+Bizerte%2C+Tunisie', 0)

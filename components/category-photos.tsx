@@ -17,10 +17,10 @@ export function CategoryPhotos({
           <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-primary">Catalogue</p>
           <h1 className="mt-2 font-serif text-4xl font-medium tracking-tight text-foreground">Boutique</h1>
           <p className="mx-auto mt-3 max-w-md text-sm text-muted-foreground">
-            Coussins, accessoires et rangement
+            Coussins et rangement
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-3">
           {categories.map((cat, index) => (
             <Link
               key={cat.slug}

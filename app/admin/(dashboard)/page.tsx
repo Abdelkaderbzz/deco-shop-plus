@@ -59,7 +59,7 @@ export default async function AdminDashboardPage() {
         <AdminQuickLink
           href="/admin/categories"
           title="Gerer les categories"
-          description="Organiser coussins, accessoires et rangement."
+          description="Organiser coussins et rangement."
         />
         <AdminQuickLink
           href="/admin/hero"

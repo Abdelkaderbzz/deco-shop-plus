@@ -13,11 +13,10 @@ if (!DATABASE_URL) {
 
 const RESTORE_CATEGORIES = [
   { name: 'Coussins', slug: 'coussins' },
-  { name: 'Accessoires', slug: 'accessoires' },
   { name: 'Rangement', slug: 'rangement' },
 ]
 
-const REMOVE_SLUGS = ['parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous', 'femme', 'homme', 'textiles']
+const REMOVE_SLUGS = ['parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous', 'femme', 'homme', 'textiles', 'accessoires']
 
 const pool = new Pool({ connectionString: DATABASE_URL })
 

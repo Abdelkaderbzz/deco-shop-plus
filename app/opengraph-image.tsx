@@ -15,7 +15,7 @@ export default function OpenGraphImage() {
       <OgShareCard
         eyebrow={SITE.neighborhood}
         title={SITE.name}
-        footer={`Coussins · Accessoires · Rangement · ${SITE.city}`}
+        footer={`Coussins · Rangement · ${SITE.city}`}
       />
     ),
     { ...size },
