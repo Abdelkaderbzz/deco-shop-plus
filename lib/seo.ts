@@ -5,7 +5,7 @@ import { parseProductColors } from '@/lib/product-colors'
 import { parseProductImages } from '@/lib/product-images'
 import { parsePrice } from '@/lib/product-price'
 import { hasVariableSizePrices, lowestSizePrice, parseProductSizes } from '@/lib/product-sizes'
-import { SITE } from '@/lib/site'
+import { PRODUCT_FABRIC, SITE } from '@/lib/site'
 import { FACEBOOK_URL, MAPS_URL, WHATSAPP_URL } from '@/lib/social-links'
 import { STORE_CATEGORIES } from '@/lib/store-categories'
 import { absoluteUrl, getSiteUrl } from '@/lib/site-url'
@@ -273,14 +273,18 @@ export function productJsonLd(product: {
     },
     category: product.category,
     color: colors.length > 0 ? colors.map((color) => color.name).join(', ') : undefined,
-    additionalProperty:
-      sizes.length > 0
-        ? sizes.map((size) => ({
-            '@type': 'PropertyValue',
-            name: 'Taille',
-            value: variable ? `${size.name} (${size.price.toFixed(3)} TND)` : size.name,
-          }))
-        : undefined,
+    additionalProperty: [
+      {
+        '@type': 'PropertyValue',
+        name: 'Matière de fabrication',
+        value: PRODUCT_FABRIC,
+      },
+      ...sizes.map((size) => ({
+        '@type': 'PropertyValue',
+        name: 'Taille',
+        value: variable ? `${size.name} (${size.price.toFixed(3)} TND)` : size.name,
+      })),
+    ],
     offers: variable
       ? {
           '@type': 'AggregateOffer',

@@ -20,6 +20,9 @@ export const SITE = {
     'Nous sommes un petit atelier. Nous concevons nos propres produits, les fabriquons avec des matières de haute qualité, et les réalisons avec soin et amour.',
 } as const
 
+/** Fabric used on the current catalog (galettes and coussins). */
+export const PRODUCT_FABRIC = 'Velours anti-tache'
+
 export const SITE_KEYWORDS = [
   'Deco Shop Plus',
   'décoration Bizerte',
