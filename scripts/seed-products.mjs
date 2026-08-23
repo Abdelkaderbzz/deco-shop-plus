@@ -63,6 +63,12 @@ const IMG = {
   headboardCushionColors: '/assets/headboard-cushion-colors.webp',
   headboardCushionBed: '/assets/headboard-cushion-bed.webp',
   headboardCushionSide: '/assets/headboard-cushion-side.webp',
+  decorativeCushionStack: '/assets/decorative-cushion-stack.webp',
+  decorativeCushionRed: '/assets/decorative-cushion-red.webp',
+  decorativeCushionGreen: '/assets/decorative-cushion-green.webp',
+  decorativeCushionOrange: '/assets/decorative-cushion-orange.webp',
+  decorativeCushionPurple: '/assets/decorative-cushion-purple.webp',
+  decorativeCushionBlue: '/assets/decorative-cushion-blue.webp',
 }
 
 /** @typedef {{
@@ -77,6 +83,7 @@ const IMG = {
  *   images?: string[]
  *   sizes: string[]
  *   colors?: { name: string, hex: string }[]
+ *   bundles?: { name: string, units: number, price: number, compareAtPrice?: number | null, popular?: boolean }[]
  *   promoEnabled?: boolean
  *   promoLabel?: string
  *   promoBgColor?: string
@@ -88,6 +95,18 @@ const IMG = {
  * }} SeedProduct
  */
 
+const CATALOG_COLORS = [
+  { name: 'Rouge', hex: '#c81e1e' },
+  { name: 'Jaune', hex: '#eab308' },
+  { name: 'Vert', hex: '#166534' },
+  { name: 'Gris', hex: '#9ca3af' },
+  { name: 'Beige', hex: '#d6cbb8' },
+  { name: 'Marine', hex: '#1e3a5f' },
+  { name: 'Marron', hex: '#7c2d12' },
+  { name: 'Bordeaux', hex: '#7f1d1d' },
+  { name: 'Vert pistache', hex: '#93c572' },
+]
+
 /** @type {SeedProduct[]} */
 const PRODUCTS = [
   {
@@ -95,38 +114,25 @@ const PRODUCTS = [
     name: 'Galette de chaise capitonnée',
     brand: 'Deco Shop Plus',
     description:
-      'Galette de chaise capitonnée avec attaches aux coins pour la fixer au dossier. Tissu mat, confortable pour cuisine, salle a manger ou bureau. Disponible en carre ou rond, dans une large gamme de couleurs.',
+      'Galette de chaise capitonnée avec attaches aux coins pour la fixer au dossier. Matière de fabrication : velours anti-tache. Confortable pour cuisine, salle a manger ou bureau. Disponible en carre ou rond : Rouge, Jaune, Vert, Gris, Beige, Marine, Marron, Bordeaux et Vert pistache.',
     price: '9.500',
     compareAtPrice: '15.000',
     category: 'coussins',
     image: IMG.chairPad,
     images: [IMG.chairPad, IMG.chairPadFloor, IMG.chairPadLifestyle, IMG.chairPadRed, IMG.chairPadRound],
     sizes: ['Carré', 'Rond'],
-    colors: [
-      { name: 'Rouge', hex: '#c81e1e' },
-      { name: 'Jaune', hex: '#eab308' },
-      { name: 'Orange', hex: '#ea580c' },
-      { name: 'Rose', hex: '#db2777' },
-      { name: 'Violet', hex: '#7c3aed' },
-      { name: 'Bleu', hex: '#2563eb' },
-      { name: 'Marine', hex: '#1e3a5f' },
-      { name: 'Vert', hex: '#65a30d' },
-      { name: 'Marron', hex: '#7c4a2a' },
-      { name: 'Gris', hex: '#9ca3af' },
-      { name: 'Beige', hex: '#d6cbb8' },
-      { name: 'Noir', hex: '#1f2937' },
-    ],
+    colors: CATALOG_COLORS,
     promoEnabled: true,
     promoLabel: 'Promotion',
     featured: true,
-    related: ['chairPadBackrest', 'chairPadPack4', 'readingPillow', 'sofaCushion'],
+    related: ['chairPadBackrest', 'chairPadPack4', 'readingPillow', 'sofaCushion', 'decorativeCushion'],
   },
   {
     key: 'chairPadBackrest',
     name: 'Galette de chaise capitonnée dossier et assise',
     brand: 'Deco Shop Plus',
     description:
-      'Galette de chaise capitonnée en deux parties : dossier et assise, reliees par un pli pour habiller toute la chaise. Tissu mat, boutons capitonnes, attaches aux coins pour la fixer au dossier et a l assise, et anse de transport en haut. Confortable pour cuisine, salle a manger ou bureau. Disponible dans une large gamme de couleurs.',
+      'Galette de chaise capitonnée en deux parties : dossier et assise, reliees par un pli pour habiller toute la chaise. Matière de fabrication : velours anti-tache. Boutons capitonnes, attaches aux coins pour la fixer au dossier et a l assise, et anse de transport en haut. Confortable pour cuisine, salle a manger ou bureau. Disponible dans une large gamme de couleurs.',
     price: '18.000',
     compareAtPrice: '25.000',
     category: 'coussins',
@@ -140,24 +146,11 @@ const PRODUCTS = [
       IMG.chairPadBackrestVelvet,
     ],
     sizes: ['Unique'],
-    colors: [
-      { name: 'Marine', hex: '#1e3a5f' },
-      { name: 'Rouge', hex: '#c81e1e' },
-      { name: 'Jaune', hex: '#eab308' },
-      { name: 'Orange', hex: '#ea580c' },
-      { name: 'Rose', hex: '#db2777' },
-      { name: 'Violet', hex: '#7c3aed' },
-      { name: 'Bleu', hex: '#2563eb' },
-      { name: 'Vert', hex: '#65a30d' },
-      { name: 'Marron', hex: '#7c4a2a' },
-      { name: 'Gris', hex: '#9ca3af' },
-      { name: 'Beige', hex: '#d6cbb8' },
-      { name: 'Noir', hex: '#1f2937' },
-    ],
+    colors: CATALOG_COLORS,
     promoEnabled: true,
     promoLabel: 'Promotion',
     featured: true,
-    related: ['chairPad', 'chairPadPack4', 'readingPillow', 'sofaCushion'],
+    related: ['chairPad', 'chairPadPack4', 'readingPillow', 'sofaCushion', 'decorativeCushion'],
   },
   {
     key: 'hc01',
@@ -209,27 +202,14 @@ const PRODUCTS = [
     name: 'Pack de 4 galettes de chaise rondes capitonnées',
     brand: 'Deco Shop Plus',
     description:
-      'Pack de 4 galettes de chaise rondes capitonnées, avec attaches pour les fixer au dossier. Tissu doux, confortable pour cuisine ou salle a manger. Choisissez vos 4 couleurs parmi la gamme. Livraison partout en Tunisie.',
+      'Pack de 4 galettes de chaise rondes capitonnées, avec attaches pour les fixer au dossier. Matière de fabrication : velours anti-tache. Confortable pour cuisine ou salle a manger. Choisissez vos 4 couleurs parmi la gamme. Livraison partout en Tunisie.',
     price: '25.000',
     compareAtPrice: '40.000',
     category: 'coussins',
     image: IMG.chairPadPack4,
     images: [IMG.chairPadPack4, IMG.chairPadPack4Table, IMG.chairPadPack4Swatches, IMG.chairPadPack4Chair, IMG.chairPadPack4Colors],
     sizes: ['Rond'],
-    colors: [
-      { name: 'Rouge', hex: '#c81e1e' },
-      { name: 'Jaune', hex: '#eab308' },
-      { name: 'Orange', hex: '#ea580c' },
-      { name: 'Rose', hex: '#db2777' },
-      { name: 'Violet', hex: '#7c3aed' },
-      { name: 'Bleu', hex: '#2563eb' },
-      { name: 'Marine', hex: '#1e3a5f' },
-      { name: 'Vert', hex: '#65a30d' },
-      { name: 'Marron', hex: '#7c4a2a' },
-      { name: 'Gris', hex: '#9ca3af' },
-      { name: 'Beige', hex: '#d6cbb8' },
-      { name: 'Noir', hex: '#1f2937' },
-    ],
+    colors: CATALOG_COLORS,
     promoEnabled: true,
     promoLabel: 'Promotion',
     featured: true,
@@ -240,69 +220,82 @@ const PRODUCTS = [
     name: 'Coussin de lecture',
     brand: 'Deco Shop Plus',
     description:
-      'Coussin de lecture ergonomique pour le lit ou le canape : dossier cale et rouleau de cou reglable. Boutons lateraux pour ajuster la hauteur de l appui-tete. Tissu doux, confortable pour lire, regarder un ecran ou se reposer. Disponible en 10 couleurs.',
+      'Coussin de lecture ergonomique pour le lit ou le canape : dossier cale et rouleau de cou reglable. Boutons lateraux pour ajuster la hauteur de l appui-tete. Matière de fabrication : velours anti-tache. Confortable pour lire, regarder un ecran ou se reposer. Disponible en Rouge, Jaune, Vert, Gris, Beige, Marine, Marron, Bordeaux et Vert pistache.',
     price: '52.000',
     category: 'coussins',
     image: IMG.readingPillowColors,
     images: [IMG.readingPillowColors, IMG.readingPillow, IMG.readingPillowGrey, IMG.readingPillowNavy],
     sizes: ['Unique'],
-    colors: [
-      { name: 'Bordeaux', hex: '#7f1d1d' },
-      { name: 'Marine', hex: '#1e3a5f' },
-      { name: 'Vert', hex: '#166534' },
-      { name: 'Jaune', hex: '#ca8a04' },
-      { name: 'Gris', hex: '#4b5563' },
-      { name: 'Noir', hex: '#1f2937' },
-      { name: 'Beige', hex: '#e8dcc8' },
-      { name: 'Orange', hex: '#ea580c' },
-      { name: 'Marron', hex: '#7c4a2a' },
-      { name: 'Taupe', hex: '#a68a64' },
-    ],
+    colors: CATALOG_COLORS,
     featured: true,
-    related: ['chairPad', 'chairPadBackrest', 'sofaCushion', 'headboardCushion'],
+    related: ['chairPad', 'chairPadBackrest', 'sofaCushion', 'headboardCushion', 'decorativeCushion'],
   },
   {
     key: 'sofaCushion',
     name: 'Coussin de canapé',
     brand: 'Deco Shop Plus',
     description:
-      'Coussin de canapé en velours coton, forme rectangulaire, finition passepoil et housse zippee amovible. Tissu doux et dense pour le salon. Disponible en plusieurs couleurs pour habiller le canape ou le lit.',
+      'Coussin de canapé en velours anti-tache, forme rectangulaire 70 × 40 × 18 cm, finition passepoil et housse zippee amovible. Matière douce et dense pour le salon. Disponible en plusieurs couleurs pour habiller le canape ou le lit.',
     price: '38.000',
     category: 'coussins',
     image: IMG.sofaCushionColors,
     images: [IMG.sofaCushionColors, IMG.sofaCushion, IMG.sofaCushionShelf, IMG.sofaCushionPiping, IMG.sofaCushionZip],
-    sizes: ['40x60'],
-    colors: [
-      { name: 'Bordeaux', hex: '#7f1d1d' },
-      { name: 'Marine', hex: '#1e3a5f' },
-      { name: 'Jaune', hex: '#ca8a04' },
-      { name: 'Marron', hex: '#7c4a2a' },
-      { name: 'Beige', hex: '#e8dcc8' },
-      { name: 'Gris', hex: '#4b5563' },
-      { name: 'Noir', hex: '#1f2937' },
+    sizes: ['70x40x18'],
+    colors: CATALOG_COLORS,
+    bundles: [
+      { name: 'Un seul coussin', units: 1, price: 38, compareAtPrice: null, popular: false },
+      { name: 'Pack 2 coussins', units: 2, price: 72, compareAtPrice: 76, popular: false },
+      { name: 'Pack 3 coussins', units: 3, price: 104, compareAtPrice: 114, popular: true },
     ],
     featured: true,
-    related: ['readingPillow', 'chairPad', 'headboardCushion'],
+    related: ['readingPillow', 'chairPad', 'headboardCushion', 'decorativeCushion'],
   },
   {
     key: 'headboardCushion',
     name: 'Coussin de tête de lit',
     brand: 'Deco Shop Plus',
     description:
-      'Coussin de tete de lit en forme de cale : dossier capitonne pour s installer confortablement dans le lit. Poche laterale pour telephone, lunettes ou telecommande. Tissu doux, boutons recouverts. Ideal pour lire ou regarder un ecran. Disponible en beige, bleu, vert et gris.',
+      'Coussin de tete de lit en forme de cale : dossier capitonne pour s installer confortablement dans le lit. Poche laterale pour telephone, lunettes ou telecommande. Matière de fabrication : velours anti-tache. Boutons recouverts. Ideal pour lire ou regarder un ecran. Dimensions : 90, 120, 140, 160 et 180 cm. Disponible en Rouge, Jaune, Vert, Gris, Beige, Marine, Marron, Bordeaux et Vert pistache.',
     price: '82.000',
     category: 'coussins',
     image: IMG.headboardCushionColors,
     images: [IMG.headboardCushionColors, IMG.headboardCushion, IMG.headboardCushionBed, IMG.headboardCushionSide],
-    sizes: ['Unique'],
-    colors: [
-      { name: 'Beige', hex: '#d6cbb8' },
-      { name: 'Bleu', hex: '#1e3a5f' },
-      { name: 'Vert', hex: '#166534' },
-      { name: 'Gris', hex: '#4b5563' },
-    ],
+    sizes: ['90 cm', '120 cm', '140 cm', '160 cm', '180 cm'],
+    colors: CATALOG_COLORS,
     featured: true,
-    related: ['readingPillow', 'sofaCushion', 'chairPad'],
+    related: ['readingPillow', 'sofaCushion', 'chairPad', 'decorativeCushion'],
+  },
+  {
+    key: 'decorativeCushion',
+    name: 'Coussin décoratif',
+    aliases: ['Coussin decorative', 'Coussin décorative'],
+    brand: 'Deco Shop Plus',
+    description:
+      'Coussin décoratif carré en satin luxe, pour le canapé, le fauteuil ou le lit. Matière de fabrication : satin brillant, doux au toucher. Disponible dans la gamme atelier : Rouge, Jaune, Vert, Gris, Beige, Marine, Marron, Bordeaux et Vert pistache. Vendu à l unité ou en pack.',
+    price: '10.000',
+    compareAtPrice: '14.000',
+    category: 'coussins',
+    image: IMG.decorativeCushionStack,
+    images: [
+      IMG.decorativeCushionStack,
+      IMG.decorativeCushionRed,
+      IMG.decorativeCushionGreen,
+      IMG.decorativeCushionOrange,
+      IMG.decorativeCushionPurple,
+      IMG.decorativeCushionBlue,
+    ],
+    sizes: ['Carré'],
+    colors: CATALOG_COLORS,
+    bundles: [
+      { name: 'Un seul coussin', units: 1, price: 10, compareAtPrice: 14, popular: false },
+      { name: 'Pack 2 coussins', units: 2, price: 22, compareAtPrice: 28, popular: false },
+      { name: 'Pack 3 coussins', units: 3, price: 30, compareAtPrice: 42, popular: false },
+      { name: 'Pack 4 coussins', units: 4, price: 38, compareAtPrice: 56, popular: true },
+    ],
+    promoEnabled: true,
+    promoLabel: 'Promotion',
+    featured: true,
+    related: ['sofaCushion', 'readingPillow', 'chairPad', 'headboardCushion'],
   },
 ]
 
@@ -491,6 +484,7 @@ async function upsertProduct(product) {
   const images = JSON.stringify(imageList)
   const sizes = JSON.stringify(product.sizes)
   const colors = JSON.stringify(product.colors ?? [])
+  const bundles = JSON.stringify(product.bundles ?? [])
   const names = [product.name, ...(product.aliases || [])]
   const existing = await pool.query(
     `SELECT id FROM products WHERE brand = $1 AND name = ANY($2::text[]) LIMIT 1`,
@@ -517,16 +511,17 @@ async function upsertProduct(product) {
         images = $7,
         sizes = $8,
         colors = $9,
+        bundles = $10,
         "inStock" = true,
         stock = 10,
-        featured = $10,
-        published = $11,
-        "promoEnabled" = $12,
-        "promoLabel" = $13,
-        "promoBgColor" = $14,
-        "promoTextColor" = $15,
+        featured = $11,
+        published = $12,
+        "promoEnabled" = $13,
+        "promoLabel" = $14,
+        "promoBgColor" = $15,
+        "promoTextColor" = $16,
         "updatedAt" = NOW()
-       WHERE id = $16`,
+       WHERE id = $17`,
       [
         product.name,
         product.description,
@@ -537,6 +532,7 @@ async function upsertProduct(product) {
         images,
         sizes,
         colors,
+        bundles,
         featured,
         published,
         promoEnabled,
@@ -552,10 +548,10 @@ async function upsertProduct(product) {
   const inserted = await pool.query(
     `INSERT INTO products (
       name, brand, description, price, "compareAtPrice", category,
-      "imageUrl", images, sizes, colors, "relatedProductIds", "inStock", stock, featured, published,
+      "imageUrl", images, sizes, colors, bundles, "relatedProductIds", "inStock", stock, featured, published,
       "promoEnabled", "promoLabel", "promoBgColor", "promoTextColor",
       "createdAt", "updatedAt"
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, '[]', true, 10, $11, $12, $13, $14, $15, $16, NOW(), NOW())
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, '[]', true, 10, $12, $13, $14, $15, $16, $17, NOW(), NOW())
     RETURNING id`,
     [
       product.name,
@@ -568,6 +564,7 @@ async function upsertProduct(product) {
       images,
       sizes,
       colors,
+      bundles,
       featured,
       published,
       promoEnabled,
