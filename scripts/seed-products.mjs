@@ -41,6 +41,8 @@ const IMG = {
   chairPadRed: '/assets/chair-pad-red.webp',
   chairPadRound: '/assets/chair-pad-round.webp',
   chairPadBackrest: '/assets/chair-pad-backrest.webp',
+  chairPadPack4: '/assets/chair-pad-pack-4.webp',
+  chairPadPack4Colors: '/assets/chair-pad-pack-4-colors.webp',
 }
 
 /** @typedef {{
@@ -93,7 +95,7 @@ const PRODUCTS = [
       { name: 'Noir', hex: '#1f2937' },
     ],
     featured: true,
-    related: ['chairPadBackrest', 'hc01', 'sr01'],
+    related: ['chairPadBackrest', 'chairPadPack4', 'hc01', 'sr01'],
   },
   {
     key: 'chairPadBackrest',
@@ -121,7 +123,7 @@ const PRODUCTS = [
       { name: 'Noir', hex: '#1f2937' },
     ],
     featured: true,
-    related: ['chairPad', 'hc01', 'sr01'],
+    related: ['chairPad', 'chairPadPack4', 'hc01', 'sr01'],
   },
   {
     key: 'hc01',
@@ -146,7 +148,7 @@ const PRODUCTS = [
     promoEnabled: true,
     promoLabel: 'Promotion',
     featured: true,
-    related: ['sr01', 'chairPad', 'chairPadBackrest'],
+    related: ['sr01', 'chairPad', 'chairPadBackrest', 'chairPadPack4'],
   },
   {
     key: 'sr01',
@@ -164,7 +166,37 @@ const PRODUCTS = [
     promoEnabled: true,
     promoLabel: 'Promotion',
     featured: true,
-    related: ['hc01', 'chairPad', 'chairPadBackrest'],
+    related: ['hc01', 'chairPad', 'chairPadBackrest', 'chairPadPack4'],
+  },
+  {
+    key: 'chairPadPack4',
+    name: 'Pack de 4 galettes de chaise rondes capitonnées',
+    brand: 'Deco Shop Plus',
+    description:
+      'Pack de 4 galettes de chaise rondes capitonnées, avec attaches pour les fixer au dossier. Tissu doux, confortable pour cuisine ou salle a manger. Choisissez vos 4 couleurs parmi la gamme. Livraison partout en Tunisie.',
+    price: '25.000',
+    category: 'coussins',
+    image: IMG.chairPadPack4,
+    images: [IMG.chairPadPack4, IMG.chairPadPack4Colors],
+    sizes: ['Rond'],
+    colors: [
+      { name: 'Rouge', hex: '#c81e1e' },
+      { name: 'Jaune', hex: '#eab308' },
+      { name: 'Orange', hex: '#ea580c' },
+      { name: 'Rose', hex: '#db2777' },
+      { name: 'Violet', hex: '#7c3aed' },
+      { name: 'Bleu', hex: '#2563eb' },
+      { name: 'Marine', hex: '#1e3a5f' },
+      { name: 'Vert', hex: '#65a30d' },
+      { name: 'Marron', hex: '#7c4a2a' },
+      { name: 'Gris', hex: '#9ca3af' },
+      { name: 'Beige', hex: '#d6cbb8' },
+      { name: 'Noir', hex: '#1f2937' },
+    ],
+    promoEnabled: true,
+    promoLabel: 'Pack de 4',
+    featured: true,
+    related: ['chairPad', 'chairPadBackrest', 'hc01'],
   },
 ]
 
