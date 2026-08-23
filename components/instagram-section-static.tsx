@@ -36,7 +36,7 @@ export function InstagramSectionHeader() {
         Ecrivez-nous
       </h2>
       <p className="mx-auto mt-3 max-w-md text-sm text-muted-foreground">
-        Stock du jour, coussins et rangement — reponse rapide sur WhatsApp.
+        Stock du jour et coussins — reponse rapide sur WhatsApp.
       </p>
     </div>
   )

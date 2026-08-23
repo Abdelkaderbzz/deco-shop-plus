@@ -31,13 +31,13 @@ export async function generateMetadata({
 
   return {
     title: `Boutique déco à ${SITE.city}`,
-    description: `Parcourez coussins et rangement chez ${SITE.name} à ${SITE.neighborhood}, ${SITE.city}.`,
+    description: `Parcourez nos coussins chez ${SITE.name} à ${SITE.neighborhood}, ${SITE.city}.`,
     keywords: ['boutique déco', SITE.city, ...SITE_KEYWORDS],
     alternates: pageAlternates('/products'),
     robots: page > 1 ? { index: false, follow: true } : undefined,
     openGraph: {
       title: `Boutique | ${SITE.name}`,
-      description: `Coussins et rangement à ${SITE.city}.`,
+      description: `Coussins à ${SITE.city}.`,
       url: '/products',
     },
   }

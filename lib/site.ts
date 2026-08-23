@@ -1,9 +1,9 @@
 export const SITE = {
   name: 'Deco Shop Plus',
   shortName: 'DSP',
-  tagline: 'Maison, coussins & rangement',
+  tagline: 'Maison & coussins',
   description:
-    'Deco Shop Plus est une boutique de décoration à Cité El Waha, Bizerte. Coussins et rangement de vêtements pour la maison en Tunisie.',
+    'Deco Shop Plus est une boutique de décoration à Cité El Waha, Bizerte. Galettes de chaise et coussins pour la maison en Tunisie.',
   city: 'Bizerte',
   neighborhood: 'Cité El Waha',
   region: 'Bizerte',
@@ -24,7 +24,7 @@ export const SITE_KEYWORDS = [
   'Deco Shop Plus',
   'décoration Bizerte',
   'coussins Bizerte',
-  'rangement vêtements',
+  'galettes de chaise',
   'Cité El Waha',
   'boutique déco Bizerte',
   'coussins salon',

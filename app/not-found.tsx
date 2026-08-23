@@ -15,7 +15,7 @@ export default function NotFound() {
         Page introuvable
       </h1>
       <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
-        Cette page n’existe pas ou a été déplacée. Découvrez coussins et rangement chez{' '}
+        Cette page n’existe pas ou a été déplacée. Découvrez nos coussins chez{' '}
         {SITE.name} à {SITE.neighborhood}, {SITE.city}.
       </p>
       <Link
