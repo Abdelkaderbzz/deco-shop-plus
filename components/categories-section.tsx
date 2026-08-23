@@ -11,11 +11,11 @@ export function CategoriesSection({ categories }: { categories: StoreCategory[] 
             Pour la maison
           </h2>
           <p className="mx-auto mt-3 max-w-lg text-sm text-muted-foreground">
-            Coussins et rangement choisis a Bizerte.
+            Galettes et coussins choisis a Bizerte.
           </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className={categories.length === 1 ? 'mx-auto max-w-sm' : 'grid grid-cols-2 gap-4'}>
           {categories.map((category) => (
             <CategoryCard key={category.slug} category={category} />
           ))}
