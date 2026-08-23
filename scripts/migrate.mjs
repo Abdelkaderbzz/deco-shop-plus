@@ -118,10 +118,9 @@ const statements = [
   `INSERT INTO "categories" ("name", "slug") VALUES
     ('Coussins', 'coussins'),
     ('Accessoires', 'accessoires'),
-    ('Rangement', 'rangement'),
-    ('Literie', 'textiles')
+    ('Rangement', 'rangement')
    ON CONFLICT ("slug") DO NOTHING`,
-  `DELETE FROM "categories" WHERE "slug" IN ('parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous', 'femme', 'homme')`,
+  `DELETE FROM "categories" WHERE "slug" IN ('parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous', 'femme', 'homme', 'textiles')`,
   `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "images" text NOT NULL DEFAULT '[]'`,
   `ALTER TABLE "categories" ADD COLUMN IF NOT EXISTS "bannerUrl" text`,
   `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "published" boolean NOT NULL DEFAULT true`,
@@ -183,8 +182,8 @@ const statements = [
     ("slug", "name", "city", "region", "description", "imageUrl", "imageAlt", "address", "phone", "rating", "reviewCount", "ratingSource", "directionsUrl", "sortOrder")
    VALUES
     ('cite-el-waha-bizerte', 'Deco Shop Plus', 'Bizerte', 'Cite El Waha',
-     'Notre boutique a Cite El Waha, Bizerte. Coussins, accessoires, rangement de vetements et literie pour la maison.',
-     '/assets/img_9756-1.webp', 'Salon et coussins Deco Shop Plus a Bizerte',
+     'Notre boutique a Cite El Waha, Bizerte. Coussins, accessoires et rangement de vetements pour la maison.',
+     '/assets/chair-pad-lifestyle.webp', 'Salon et coussins Deco Shop Plus a Bizerte',
      'Cite El Waha, Bizerte, Tunisie', '56 405 932', 4.9, NULL, 'Google Maps',
      'https://www.google.com/maps/dir/?api=1&destination=Cite+El+Waha%2C+Bizerte%2C+Tunisie', 0)
    ON CONFLICT ("slug") DO UPDATE SET
@@ -231,10 +230,10 @@ const statements = [
     "updatedAt" timestamp NOT NULL DEFAULT now()
   )`,
   `INSERT INTO "hero_images" ("slot", "imageUrl", "alt") VALUES
-    (0, '/assets/img_9756-1.webp', 'Coussins brodes sur banquette Deco Shop Plus'),
-    (1, '/assets/photo-output-1-2.jpeg.webp', 'Coussins noirs sur canape'),
-    (2, '/assets/img_9760.webp', 'Coussin brode floral'),
-    (3, '/assets/IMG_4758-1536x2048.jpeg.webp', 'Plaid marine et deco maison')
+    (0, '/assets/chair-pad-lifestyle.webp', 'Galette de chaise Deco Shop Plus'),
+    (1, '/assets/sr01-angle.webp', 'Sac de rangement SR01'),
+    (2, '/assets/hc01.webp', 'Housses a chaussures impermeables HC01'),
+    (3, '/assets/chair-pad-stack.webp', 'Galettes de chaise Deco Shop Plus')
    ON CONFLICT ("slot") DO UPDATE SET
      "imageUrl" = EXCLUDED."imageUrl",
      "alt" = EXCLUDED."alt",
@@ -265,8 +264,8 @@ const statements = [
    SELECT v."imageUrl", v."alt", v."eyebrow", v."title", v."subtitle", v."ctaLabel", v."ctaTarget", v."ctaHref", v."published", v."sortOrder"
    FROM (VALUES
      ('/assets/hc01.webp', 'Housses a chaussures impermeables Deco Shop Plus', 'Offre du moment', 'Promotions maison', 'Housses, coussins et rangement a prix reduit, livrés partout en Tunisie.', 'Voir les promotions', 'promotions', '', true, 0),
-     ('/assets/img_9756-1.webp', 'Nouveaux coussins Deco Shop Plus', 'Cite El Waha · Bizerte', 'Derniers articles', 'Les nouvelles pieces deco viennent d arriver en boutique.', 'Voir les nouveautes', 'nouveautes', '', true, 1),
-     ('/assets/photo-output-1-2.jpeg.webp', 'Salon Deco Shop Plus', 'Selection clients', 'Les plus vendus', 'Les pieces que nos clientes emportent le plus souvent.', 'Voir les plus vendus', 'best-sellers', '', true, 2)
+     ('/assets/chair-pad-lifestyle.webp', 'Galette de chaise Deco Shop Plus', 'Cite El Waha · Bizerte', 'Derniers articles', 'Les nouvelles pieces deco viennent d arriver en boutique.', 'Voir les nouveautes', 'nouveautes', '', true, 1),
+     ('/assets/sr01.webp', 'Sac de rangement SR01 Deco Shop Plus', 'Selection clients', 'Les plus vendus', 'Les pieces que nos clientes emportent le plus souvent.', 'Voir les plus vendus', 'best-sellers', '', true, 2)
    ) AS v("imageUrl", "alt", "eyebrow", "title", "subtitle", "ctaLabel", "ctaTarget", "ctaHref", "published", "sortOrder")
    WHERE NOT EXISTS (SELECT 1 FROM "hero_slides")`,
   `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "stock" integer NOT NULL DEFAULT 0`,

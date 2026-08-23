@@ -35,21 +35,20 @@ const GOVERNORATES = [
   'bizerte',
 ]
 
-const CATEGORY_SLUGS = ['coussins', 'accessoires', 'rangement', 'textiles']
+const CATEGORY_SLUGS = ['coussins', 'accessoires', 'rangement']
 const PLACEHOLDER_IMAGES = [
-  '/assets/img_9760.webp',
-  '/assets/img_9758.webp',
-  '/assets/img_9756-1.webp',
-  '/assets/IMG_4758-1536x2048.jpeg.webp',
-  '/assets/photo-output-1-2.jpeg.webp',
-  '/assets/image00001-2-1537x2048.jpeg.webp',
-  '/assets/d236b9ee-ec87-4aaf-a0d1-8cb2c99327a9.webp',
+  '/assets/chair-pad-stack.webp',
+  '/assets/chair-pad-lifestyle.webp',
+  '/assets/hc01.webp',
+  '/assets/sr01.webp',
+  '/assets/sr01-angle.webp',
+  '/assets/chair-pad-red.webp',
 ]
 
 const EXTRA_CATEGORIES = [
   { name: 'Demo Coussins Premium', slug: 'demo-coussins-premium' },
   { name: 'Demo Accessoires', slug: 'demo-accessoires' },
-  { name: 'Demo literie', slug: 'demo-textiles' },
+  { name: 'Demo rangement', slug: 'demo-rangement' },
 ]
 
 function parseArgs(argv) {

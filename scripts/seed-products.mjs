@@ -23,51 +23,24 @@ const CATEGORIES = [
   { name: 'Coussins', slug: 'coussins' },
   { name: 'Accessoires', slug: 'accessoires' },
   { name: 'Rangement', slug: 'rangement' },
-  { name: 'Literie', slug: 'textiles' },
 ]
 
-const OLD_CATEGORY_SLUGS = ['femme', 'homme', 'parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous']
+const OLD_CATEGORY_SLUGS = ['femme', 'homme', 'parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous', 'textiles']
 
 const IMG = {
-  velvet: '/assets/img_9760.webp',
-  linen: '/assets/67e89a53-a200-4f18-aad9-de742de334ba.webp',
-  embroidered: '/assets/d236b9ee-ec87-4aaf-a0d1-8cb2c99327a9.webp',
-  set: '/assets/img_9758.webp',
-  vase: '/assets/image00001-2-1537x2048.jpeg.webp',
-  mirror: '/assets/image00002-5.jpeg.webp',
-  tray: '/assets/photo-output-1-2.jpeg.webp',
-  lantern: '/assets/img_9756-1.webp',
-  drawer: '/assets/img_2899-1536x2048.jpeg.webp',
-  cover: '/assets/img_2900-1536x2048.jpeg.webp',
-  box: '/assets/photo-output-12-1538x2048.jpeg.webp',
-  basket: '/assets/photo-output-11.jpeg.webp',
-  plaid: '/assets/IMG_4758-1536x2048.jpeg.webp',
-  coverlet: '/assets/img_9767.webp',
-  tablecloth: '/assets/img_9768.webp',
-  curtain: '/assets/photo-output-4-1.jpeg.webp',
   hc01: '/assets/hc01.webp',
   hc01Size: '/assets/hc01-size.webp',
-  hv01: '/assets/hv01.webp',
-  hv01Front: '/assets/hv01-front.webp',
-  hv01Size: '/assets/hv01-size.webp',
   sr01: '/assets/sr01.webp',
   sr01Angle: '/assets/sr01-angle.webp',
   sr01Filled: '/assets/sr01-filled.webp',
   sr01Pack: '/assets/sr01-pack.webp',
   sr01Handle: '/assets/sr01-handle.webp',
-  rt03: '/assets/rt03.webp',
-  rt03Window: '/assets/rt03-window.webp',
-  rt03Zip: '/assets/rt03-zip.webp',
   chairPad: '/assets/chair-pad-stack.webp',
   chairPadFloor: '/assets/chair-pad-floor.webp',
   chairPadLifestyle: '/assets/chair-pad-lifestyle.webp',
   chairPadRed: '/assets/chair-pad-red.webp',
   chairPadRound: '/assets/chair-pad-round.webp',
-  matelas: '/assets/protege-matelas-5.webp',
-  matelas3: '/assets/protege-matelas-3.webp',
-  matelas4: '/assets/protege-matelas-4.webp',
-  matelas6: '/assets/protege-matelas-6.webp',
-  matelas7: '/assets/protege-matelas-7.webp',
+  chairPadBackrest: '/assets/chair-pad-backrest.webp',
 }
 
 /** @typedef {{
@@ -77,7 +50,7 @@ const IMG = {
  *   description: string
  *   price: string
  *   compareAtPrice?: string | null
- *   category: 'coussins' | 'accessoires' | 'rangement' | 'textiles'
+ *   category: 'coussins' | 'accessoires' | 'rangement'
  *   image: string
  *   images?: string[]
  *   sizes: string[]
@@ -95,81 +68,12 @@ const IMG = {
 /** @type {SeedProduct[]} */
 const PRODUCTS = [
   {
-    key: 'velvet',
-    name: 'Coussin velours sage',
-    brand: 'Deco Shop Plus',
-    description:
-      'Coussin velours doux, ideal pour le canape. Housse amovible, disponible en plusieurs formats.',
-    price: '29.000',
-    compareAtPrice: '36.000',
-    category: 'coussins',
-    image: IMG.velvet,
-    sizes: ['40x40', '45x45', '50x50'],
-    colors: [
-      { name: 'Sage', hex: '#7d8b74' },
-      { name: 'Ivoire', hex: '#f3efe6' },
-      { name: 'Terracotta', hex: '#c26a4a' },
-    ],
-    promoEnabled: true,
-    featured: true,
-    related: ['chairPad', 'linen', 'embroidered', 'set'],
-  },
-  {
-    key: 'linen',
-    name: 'Coussin lin naturel',
-    brand: 'Deco Shop Plus',
-    description:
-      'Coussin en lin naturel, texture mate et legerement froissee. Parfait pour un salon lumineux.',
-    price: '32.000',
-    category: 'coussins',
-    image: IMG.linen,
-    sizes: ['45x45', '50x50'],
-    colors: [
-      { name: 'Naturel', hex: '#d6cbb8' },
-      { name: 'Blanc', hex: '#f7f4ee' },
-    ],
-    featured: true,
-    related: ['velvet', 'chairPad', 'set', 'coverlet'],
-  },
-  {
-    key: 'embroidered',
-    name: 'Coussin brode oasis',
-    brand: 'Deco Shop Plus',
-    description:
-      'Coussin brode, motif doux inspire de Cite El Waha. Piece decorative pour le lit ou le canape.',
-    price: '39.000',
-    category: 'coussins',
-    image: IMG.embroidered,
-    sizes: ['45x45'],
-    featured: true,
-    related: ['velvet', 'linen', 'chairPad', 'set'],
-  },
-  {
-    key: 'set',
-    name: 'Lot de 2 coussins salon',
-    brand: 'Deco Shop Plus',
-    description:
-      'Duo de coussins coordonnes pour habiller le canape en une seule commande.',
-    price: '54.000',
-    compareAtPrice: '64.000',
-    category: 'coussins',
-    image: IMG.set,
-    sizes: ['45x45'],
-    colors: [
-      { name: 'Sage', hex: '#7d8b74' },
-      { name: 'Lin', hex: '#d6cbb8' },
-    ],
-    promoEnabled: true,
-    featured: false,
-    related: ['chairPad', 'velvet', 'linen', 'embroidered'],
-  },
-  {
     key: 'chairPad',
     name: 'Galette de chaise capitonnée',
     brand: 'Deco Shop Plus',
     description:
       'Galette de chaise capitonnée avec attaches aux coins pour la fixer au dossier. Tissu mat, confortable pour cuisine, salle a manger ou bureau. Disponible en carre ou rond, dans une large gamme de couleurs.',
-    price: '19.900',
+    price: '9.500',
     category: 'coussins',
     image: IMG.chairPad,
     images: [IMG.chairPad, IMG.chairPadFloor, IMG.chairPadLifestyle, IMG.chairPadRed, IMG.chairPadRound],
@@ -189,115 +93,35 @@ const PRODUCTS = [
       { name: 'Noir', hex: '#1f2937' },
     ],
     featured: true,
-    related: ['velvet', 'linen', 'set', 'embroidered'],
+    related: ['chairPadBackrest', 'hc01', 'sr01'],
   },
   {
-    key: 'vase',
-    name: 'Vase ceramique lagune',
+    key: 'chairPadBackrest',
+    name: 'Galette de chaise capitonnée dossier et assise',
     brand: 'Deco Shop Plus',
     description:
-      'Vase ceramique pour fleurs sechees ou fraiches. Objet deco pour table, buffet ou entree.',
-    price: '42.000',
-    category: 'accessoires',
-    image: IMG.vase,
+      'Galette de chaise capitonnée en deux parties : dossier et assise, reliees par un pli pour habiller toute la chaise. Tissu mat, boutons capitonnes, attaches aux coins pour la fixer au dossier et a l assise, et anse de transport en haut. Confortable pour cuisine, salle a manger ou bureau. Disponible dans une large gamme de couleurs.',
+    price: '18.000',
+    category: 'coussins',
+    image: IMG.chairPadBackrest,
+    images: [IMG.chairPadBackrest],
     sizes: ['Unique'],
-    featured: true,
-    related: ['mirror', 'tray', 'lantern', 'tablecloth'],
-  },
-  {
-    key: 'mirror',
-    name: 'Miroir mural ovale',
-    brand: 'Deco Shop Plus',
-    description:
-      'Miroir mural pour agrandir la piece. A suspendre dans l entree, la chambre ou le salon.',
-    price: '79.000',
-    category: 'accessoires',
-    image: IMG.mirror,
-    sizes: ['Unique'],
-    featured: true,
-    related: ['vase', 'lantern', 'tray', 'curtain'],
-  },
-  {
-    key: 'tray',
-    name: 'Plateau bois olive',
-    brand: 'Deco Shop Plus',
-    description:
-      'Plateau en bois pour servir ou exposer bougies, vases et petits objets deco.',
-    price: '35.000',
-    category: 'accessoires',
-    image: IMG.tray,
-    sizes: ['Unique'],
-    featured: false,
-    related: ['vase', 'lantern', 'mirror', 'tablecloth'],
-  },
-  {
-    key: 'lantern',
-    name: 'Photophore artisan',
-    brand: 'Deco Shop Plus',
-    description:
-      'Photophore pour une lumiere douce le soir. Accessoire deco pour salon et terrasse.',
-    price: '27.000',
-    category: 'accessoires',
-    image: IMG.lantern,
-    sizes: ['Unique'],
-    featured: false,
-    related: ['vase', 'tray', 'mirror', 'embroidered'],
-  },
-  {
-    key: 'drawer',
-    name: 'Organiseur de tiroirs',
-    brand: 'Deco Shop Plus',
-    description:
-      'Organiseur pour plier et ranger sous-vetements, chaussettes et petits accessoires.',
-    price: '24.000',
-    category: 'rangement',
-    image: IMG.drawer,
-    sizes: ['Unique'],
-    featured: true,
-    related: ['cover', 'box', 'basket', 'hv01'],
-  },
-  {
-    key: 'cover',
-    name: 'Housse de vetements',
-    brand: 'Deco Shop Plus',
-    description:
-      'Housse pour proteger costumes, robes et manteaux dans le dressing. Anti-poussiere.',
-    price: '19.000',
-    category: 'rangement',
-    image: IMG.cover,
-    sizes: ['Court', 'Long'],
-    featured: false,
-    related: ['hv01', 'sr01', 'hc01', 'drawer'],
-  },
-  {
-    key: 'box',
-    name: 'Boite rangement tissu',
-    brand: 'Deco Shop Plus',
-    description:
-      'Boite en tissu pour etageres et placards. Range plaids, linge ou vetements plies.',
-    price: '22.000',
-    category: 'rangement',
-    image: IMG.box,
-    sizes: ['S', 'M', 'L'],
     colors: [
-      { name: 'Beige', hex: '#e8dcc8' },
-      { name: 'Gris', hex: '#6b7280' },
+      { name: 'Marine', hex: '#1e3a5f' },
+      { name: 'Rouge', hex: '#c81e1e' },
+      { name: 'Jaune', hex: '#eab308' },
+      { name: 'Orange', hex: '#ea580c' },
+      { name: 'Rose', hex: '#db2777' },
+      { name: 'Violet', hex: '#7c3aed' },
+      { name: 'Bleu', hex: '#2563eb' },
+      { name: 'Vert', hex: '#65a30d' },
+      { name: 'Marron', hex: '#7c4a2a' },
+      { name: 'Gris', hex: '#9ca3af' },
+      { name: 'Beige', hex: '#d6cbb8' },
+      { name: 'Noir', hex: '#1f2937' },
     ],
     featured: true,
-    related: ['sr01', 'hv01', 'drawer', 'hc01'],
-  },
-  {
-    key: 'basket',
-    name: 'Panier linge osier',
-    brand: 'Deco Shop Plus',
-    description:
-      'Panier pour le linge ou le rangement du salon. Tressage leger, anse pratique.',
-    price: '45.000',
-    category: 'rangement',
-    image: IMG.basket,
-    sizes: ['Unique'],
-    featured: false,
-    related: ['sr01', 'box', 'hv01', 'hc01'],
+    related: ['chairPad', 'hc01', 'sr01'],
   },
   {
     key: 'hc01',
@@ -322,37 +146,7 @@ const PRODUCTS = [
     promoEnabled: true,
     promoLabel: 'Promotion',
     featured: true,
-    related: ['hv01', 'sr01', 'rt03', 'cover'],
-  },
-  {
-    key: 'hv01',
-    name: 'Housse de Vêtements Imperméable HV01 - Taille M',
-    brand: 'Deco Shop Plus',
-    description:
-      'Housse impermeable pour proteger costumes, manteaux et robes dans le dressing. Moitie tissu gris, moitie fenetre transparente, fermeture zippee. Taille M : 60 x 100 cm.',
-    price: '29.900',
-    category: 'rangement',
-    image: IMG.hv01,
-    images: [IMG.hv01, IMG.hv01Front, IMG.hv01Size],
-    sizes: ['M'],
-    colors: [{ name: 'Gris', hex: '#4b5563' }],
-    featured: true,
-    related: ['hc01', 'sr01', 'cover', 'rt03'],
-  },
-  {
-    key: 'rt03',
-    name: 'Housse de rangement pour tapis RT03 - Zip&Go',
-    brand: 'Deco Shop Plus',
-    description:
-      'Housse cylindrique pour ranger un tapis enroule a l abri de la poussiere et de l humidite. Toile impermeable, couvercle zippé et fenetre transparente. Longueur 2 m, diametre 30 cm.',
-    price: '52.000',
-    category: 'rangement',
-    image: IMG.rt03,
-    images: [IMG.rt03, IMG.rt03Window, IMG.rt03Zip],
-    sizes: ['Unique'],
-    colors: [{ name: 'Gris', hex: '#4b5563' }],
-    featured: true,
-    related: ['sr01', 'hv01', 'plaid', 'coverlet'],
+    related: ['sr01', 'chairPad', 'chairPadBackrest'],
   },
   {
     key: 'sr01',
@@ -370,84 +164,7 @@ const PRODUCTS = [
     promoEnabled: true,
     promoLabel: 'Promotion',
     featured: true,
-    related: ['hv01', 'rt03', 'hc01', 'box'],
-  },
-  {
-    key: 'plaid',
-    name: 'Plaid tricot doux',
-    brand: 'Deco Shop Plus',
-    description:
-      'Plaid a jeter sur le canape ou le lit. Maille douce pour les soirees a la maison.',
-    price: '49.000',
-    compareAtPrice: '59.000',
-    category: 'textiles',
-    image: IMG.plaid,
-    sizes: ['130x170'],
-    colors: [
-      { name: 'Marine', hex: '#1e3a4c' },
-      { name: 'Creme', hex: '#efe6d6' },
-    ],
-    promoEnabled: true,
-    featured: true,
-    related: ['coverlet', 'matelas', 'velvet', 'box'],
-  },
-  {
-    key: 'coverlet',
-    name: 'Couvre-lit coton',
-    brand: 'Deco Shop Plus',
-    description:
-      'Couvre-lit leger pour habiller le lit. Coton facile a entretenir, tombé net.',
-    price: '89.000',
-    category: 'textiles',
-    image: IMG.coverlet,
-    sizes: ['160x200', '180x200', '200x220'],
-    featured: true,
-    related: ['matelas', 'curtain', 'tablecloth', 'linen'],
-  },
-  {
-    key: 'matelas',
-    name: 'Protège-matelas Imperméable Respirant Silencieux et Confortable',
-    brand: 'Deco Shop Plus',
-    description:
-      'Offrez a votre matelas une protection superieure avec notre protege-matelas impermeable, concu pour un confort optimal tout en preservant la durabilite de votre literie. 100% impermeable, respirant (circulation de l air), anti-bacterien et anti-acariens, resistant a l eau et aux liquides. Toutes les dimensions sont disponibles.',
-    price: '45.000',
-    category: 'textiles',
-    image: IMG.matelas,
-    images: [IMG.matelas, IMG.matelas3, IMG.matelas4, IMG.matelas6, IMG.matelas7],
-    sizes: ['90x190', '120x190', '140x190', '160x200', '180x200', '200x200'],
-    colors: [{ name: 'Blanc', hex: '#f7f7f5' }],
-    featured: true,
-    related: ['coverlet', 'plaid', 'chairPad', 'curtain'],
-  },
-  {
-    key: 'tablecloth',
-    name: 'Nappe lin maison',
-    brand: 'Deco Shop Plus',
-    description:
-      'Nappe en lin pour la table du quotidien ou des invites. Chute naturelle, lavage simple.',
-    price: '38.000',
-    category: 'textiles',
-    image: IMG.tablecloth,
-    sizes: ['140x180', '140x220'],
-    featured: false,
-    related: ['curtain', 'coverlet', 'tray', 'plaid'],
-  },
-  {
-    key: 'curtain',
-    name: 'Rideau voile lumiere',
-    brand: 'Deco Shop Plus',
-    description:
-      'Rideau voile pour filtrer la lumiere sans assombrir. Ideal salon et chambre.',
-    price: '52.000',
-    category: 'textiles',
-    image: IMG.curtain,
-    sizes: ['140x260', '140x280'],
-    colors: [
-      { name: 'Blanc', hex: '#f5f5f4' },
-      { name: 'Beige', hex: '#e8dcc8' },
-    ],
-    featured: false,
-    related: ['coverlet', 'tablecloth', 'plaid', 'mirror'],
+    related: ['hc01', 'chairPad', 'chairPadBackrest'],
   },
 ]
 
@@ -470,8 +187,8 @@ async function ensureBoutique() {
        "createdAt", "updatedAt")
      VALUES
       ('cite-el-waha-bizerte', 'Deco Shop Plus', 'Bizerte', 'Cite El Waha',
-       'Notre boutique a Cite El Waha, Bizerte. Coussins, accessoires, rangement de vetements et literie pour la maison.',
-       '/assets/img_9756-1.webp', 'Salon et coussins Deco Shop Plus a Bizerte',
+       'Notre boutique a Cite El Waha, Bizerte. Coussins, accessoires et rangement de vetements pour la maison.',
+       '/assets/chair-pad-lifestyle.webp', 'Salon et coussins Deco Shop Plus a Bizerte',
        'Cite El Waha, Bizerte, Tunisie', '56 405 932', 4.9, NULL, 'Google Maps',
        'https://www.google.com/maps/dir/?api=1&destination=Cite+El+Waha%2C+Bizerte%2C+Tunisie',
        true, true, 0, NOW(), NOW())
@@ -498,10 +215,10 @@ async function ensureBoutique() {
 
 async function ensureHero() {
   const slots = [
-    [0, '/assets/img_9756-1.webp', 'Coussins brodes sur banquette Deco Shop Plus'],
-    [1, '/assets/photo-output-1-2.jpeg.webp', 'Coussins noirs sur canape'],
-    [2, '/assets/img_9760.webp', 'Coussin brode floral'],
-    [3, '/assets/IMG_4758-1536x2048.jpeg.webp', 'Plaid marine et deco maison'],
+    [0, '/assets/chair-pad-lifestyle.webp', 'Galette de chaise Deco Shop Plus'],
+    [1, '/assets/sr01-angle.webp', 'Sac de rangement SR01'],
+    [2, '/assets/hc01.webp', 'Housses a chaussures impermeables HC01'],
+    [3, '/assets/chair-pad-stack.webp', 'Galettes de chaise Deco Shop Plus'],
   ]
   for (const [slot, imageUrl, alt] of slots) {
     await pool.query(

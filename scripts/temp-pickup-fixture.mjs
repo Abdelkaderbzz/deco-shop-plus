@@ -15,7 +15,7 @@ if (mode === 'add') {
        ("name", "brand", "description", "price", "category", "imageUrl", "images", "sizes",
         "inStock", "featured", "published")
      VALUES ($1, 'Deco Shop Plus', 'Produit temporaire de test.', '29.000', 'coussins',
-             '/products/cushion-velvet.webp', '["/products/cushion-velvet.webp"]', '["45x45"]',
+             '/assets/chair-pad-stack.webp', '["/assets/chair-pad-stack.webp"]', '["Carré"]',
              true, true, true)
      RETURNING id`,
     [NAME],

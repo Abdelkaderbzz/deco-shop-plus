@@ -15,10 +15,9 @@ const RESTORE_CATEGORIES = [
   { name: 'Coussins', slug: 'coussins' },
   { name: 'Accessoires', slug: 'accessoires' },
   { name: 'Rangement', slug: 'rangement' },
-  { name: 'Literie', slug: 'textiles' },
 ]
 
-const REMOVE_SLUGS = ['parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous', 'femme', 'homme']
+const REMOVE_SLUGS = ['parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous', 'femme', 'homme', 'textiles']
 
 const pool = new Pool({ connectionString: DATABASE_URL })
 
