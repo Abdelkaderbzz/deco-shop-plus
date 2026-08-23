@@ -9,7 +9,7 @@ export const STORE_CATEGORIES: StoreCategory[] = [
   {
     slug: 'coussins',
     name: 'Coussins',
-    tagline: 'Galettes de chaise et coussins',
+    tagline: 'Galettes de chaise et coussins en velours anti-tache',
     image: '/assets/chair-pad-stack.webp',
   },
 ]

@@ -3,7 +3,7 @@ export const SITE = {
   shortName: 'DSP',
   tagline: 'Maison & coussins',
   description:
-    'Deco Shop Plus est une boutique de décoration à Cité El Waha, Bizerte. Galettes de chaise et coussins pour la maison en Tunisie.',
+    'Galettes de chaise, coussins de canapé, de lecture et de tête de lit en velours anti-tache. Atelier Deco Shop Plus à Cité El Waha, Bizerte. Livraison partout en Tunisie.',
   city: 'Bizerte',
   neighborhood: 'Cité El Waha',
   region: 'Bizerte',
@@ -26,9 +26,39 @@ export const PRODUCT_FABRIC = 'Velours anti-tache'
 export const SITE_KEYWORDS = [
   'Deco Shop Plus',
   'décoration Bizerte',
+  'galettes de chaise Tunisie',
   'coussins Bizerte',
-  'galettes de chaise',
+  'coussin de canapé',
+  'coussin de lecture',
+  'coussin de tête de lit',
+  'velours anti-tache',
   'Cité El Waha',
   'boutique déco Bizerte',
-  'coussins salon',
+  'livraison Tunisie',
 ]
+
+/** Shown in FAQ and product structured data. */
+export const STORE_RETURN_DAYS = 7
+
+export const STORE_FAQS = [
+  {
+    question: 'Où se trouve Deco Shop Plus ?',
+    answer:
+      'Notre atelier est à Cité El Waha, Bizerte. Vous pouvez commander en ligne ou nous écrire sur WhatsApp.',
+  },
+  {
+    question: 'Livrez-vous partout en Tunisie ?',
+    answer:
+      'Oui. Nous livrons dans tous les gouvernorats. Le paiement se fait à la livraison.',
+  },
+  {
+    question: 'Quelle est la matière des coussins ?',
+    answer:
+      'Les galettes et coussins du catalogue actuel sont en velours anti-tache, cousus à l’atelier.',
+  },
+  {
+    question: 'Puis-je échanger un article ?',
+    answer:
+      'Oui, contactez-nous sur WhatsApp dans les 7 jours si l’article n’a pas été utilisé.',
+  },
+] as const
