@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { catalogHref } from '@/lib/catalog-href'
-import { SITE, SITE_KEYWORDS } from '@/lib/site'
+import { PRODUCT_FABRIC, SITE, SITE_KEYWORDS } from '@/lib/site'
 import { pageAlternates } from '@/lib/seo'
 import { normalizePage } from '@/lib/pagination'
 import { CatalogSkeleton } from '@/components/store-skeletons'
@@ -31,13 +31,13 @@ export async function generateMetadata({
 
   return {
     title: `Boutique déco à ${SITE.city}`,
-    description: `Parcourez nos coussins chez ${SITE.name} à ${SITE.neighborhood}, ${SITE.city}.`,
-    keywords: ['boutique déco', SITE.city, ...SITE_KEYWORDS],
+    description: `Parcourez les galettes de chaise et coussins en ${PRODUCT_FABRIC} chez ${SITE.name} à ${SITE.neighborhood}, ${SITE.city}. Livraison partout en Tunisie, paiement à la livraison.`,
+    keywords: ['boutique déco', SITE.city, PRODUCT_FABRIC, ...SITE_KEYWORDS],
     alternates: pageAlternates('/products'),
     robots: page > 1 ? { index: false, follow: true } : undefined,
     openGraph: {
       title: `Boutique | ${SITE.name}`,
-      description: `Coussins à ${SITE.city}.`,
+      description: `Galettes et coussins en ${PRODUCT_FABRIC} à ${SITE.city}. Livraison en Tunisie.`,
       url: '/products',
     },
   }

@@ -34,7 +34,7 @@ export async function CatalogPage({
   const selected = storeCategories.find((item) => item.slug === category)
   const name = selected ? `${selected.name} | ${SITE.name}` : `Boutique | ${SITE.name}`
   const description = selected
-    ? `${selected.name} chez ${SITE.name} à ${SITE.neighborhood}, ${SITE.city}. ${selected.tagline}.`
+    ? `${selected.name} en velours anti-tache chez ${SITE.name} à ${SITE.neighborhood}, ${SITE.city}. ${selected.tagline}.`
     : SITE.description
   const path = catalogHref({ category, search, page: search ? page : 1 })
   const crumbs = selected

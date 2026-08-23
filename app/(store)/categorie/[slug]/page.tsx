@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getCategories } from '@/app/actions/categories'
 import { catalogHref } from '@/lib/catalog-href'
-import { SITE } from '@/lib/site'
+import { PRODUCT_FABRIC, SITE } from '@/lib/site'
 import { pageAlternates } from '@/lib/seo'
 import { getMergedCategoryBySlug, mergeStoreCategories, STORE_CATEGORIES } from '@/lib/store-categories'
 import { normalizePage } from '@/lib/pagination'
@@ -53,12 +53,20 @@ export async function generateMetadata({
   }
 
   const title = `${category.name} à ${SITE.city}`
-  const description = `${category.name} chez ${SITE.name} à ${SITE.neighborhood}, ${SITE.city}. ${category.tagline}. Livraison partout en Tunisie.`
+  const description = `${category.name} en ${PRODUCT_FABRIC} chez ${SITE.name} à ${SITE.neighborhood}, ${SITE.city}. ${category.tagline}. Livraison partout en Tunisie, paiement à la livraison.`
 
   return {
     title,
     description,
-    keywords: [category.name, SITE.name, SITE.city, SITE.neighborhood, category.tagline, 'décoration Tunisie'],
+    keywords: [
+      category.name,
+      SITE.name,
+      SITE.city,
+      SITE.neighborhood,
+      category.tagline,
+      PRODUCT_FABRIC,
+      'décoration Tunisie',
+    ],
     alternates: pageAlternates(canonical),
     robots: pageNum > 1 ? { index: false, follow: true } : undefined,
     openGraph: {

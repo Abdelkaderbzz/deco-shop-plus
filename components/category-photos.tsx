@@ -17,7 +17,7 @@ export function CategoryPhotos({
           <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-primary">Catalogue</p>
           <h1 className="mt-2 font-serif text-4xl font-medium tracking-tight text-foreground">Boutique</h1>
           <p className="mx-auto mt-3 max-w-md text-sm text-muted-foreground">
-            Galettes de chaise et coussins
+            Galettes de chaise et coussins en velours anti-tache, à Cité El Waha, Bizerte.
           </p>
         </div>
         <div className={categories.length === 1 ? 'mx-auto max-w-sm' : 'grid grid-cols-2 gap-3'}>
