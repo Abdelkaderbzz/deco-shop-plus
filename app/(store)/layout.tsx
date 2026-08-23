@@ -5,7 +5,7 @@ import { JsonLd } from '@/components/json-ld'
 import { SiteBanner } from '@/components/site-banner'
 import { StoreRoutePrefetch } from '@/components/store-route-prefetch'
 import { WhatsAppButton } from '@/components/whatsapp-button'
-import { FACEBOOK_URL, WHATSAPP_URL } from '@/lib/social-links'
+import { FACEBOOK_URL, MAPS_URL, PHONE_HREF, WHATSAPP_URL } from '@/lib/social-links'
 import { Logo } from '@/components/logo'
 import { Navbar } from '@/components/navbar'
 import { storeGraphJsonLd } from '@/lib/seo'
@@ -38,6 +38,22 @@ export default async function StoreLayout({ children }: { children: React.ReactN
           <p className="mx-auto max-w-lg text-sm leading-relaxed text-muted-foreground">
             {SITE.footerAbout}
           </p>
+          <address className="mx-auto mt-5 max-w-lg not-italic text-sm leading-relaxed text-muted-foreground">
+            <a
+              href={MAPS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-primary hover:underline"
+            >
+              {SITE.address}
+            </a>
+            <span className="mx-2 text-border" aria-hidden>
+              ·
+            </span>
+            <a href={PHONE_HREF} className="hover:text-primary hover:underline">
+              {SITE.phoneDisplay}
+            </a>
+          </address>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
             <a
               href={WHATSAPP_URL}

@@ -20,8 +20,10 @@ import {
 } from '@/components/store-skeletons'
 import { TestimonialsSection } from '@/components/testimonials-section'
 import { mergeStoreCategories } from '@/lib/store-categories'
-import { SITE } from '@/lib/site'
-import { pageAlternates } from '@/lib/seo'
+import { SITE, SITE_KEYWORDS } from '@/lib/site'
+import { JsonLd } from '@/components/json-ld'
+import { StoreFaq } from '@/components/store-faq'
+import { faqJsonLd, homePageJsonLd, pageAlternates } from '@/lib/seo'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { Suspense, type ReactNode } from 'react'
@@ -31,6 +33,7 @@ export const dynamic = 'force-dynamic'
 export const metadata: Metadata = {
   title: { absolute: `${SITE.name} | Décoration à ${SITE.neighborhood}, ${SITE.city}` },
   description: SITE.description,
+  keywords: [...SITE_KEYWORDS],
   alternates: pageAlternates('/'),
   openGraph: {
     title: `${SITE.name} | Décoration à ${SITE.neighborhood}, ${SITE.city}`,
@@ -172,6 +175,10 @@ export default function HomePage() {
       </Suspense>
 
       <TestimonialsSection />
+
+      <StoreFaq />
+      <JsonLd data={homePageJsonLd()} />
+      <JsonLd data={faqJsonLd()} />
 
       <section className="below-fold border-t border-border bg-secondary/40 py-14 md:py-16">
         <div className="mx-auto max-w-7xl px-2 sm:px-3">
