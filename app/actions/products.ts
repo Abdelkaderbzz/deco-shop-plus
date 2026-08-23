@@ -184,12 +184,7 @@ export const getStoreProductsPaginated = cache(async (options: {
       publishedOnly: true,
     })
 
-  if (search) return run()
-
-  return unstable_cache(run, ['store-products', category, String(page), String(pageSize)], {
-    revalidate: 120,
-    tags: ['products'],
-  })()
+  return run()
 })
 
 /** @deprecated Use getStoreProductsPaginated for paginated reads. */

@@ -24,21 +24,6 @@ type Product = {
   sizes?: string | null
 }
 
-function EyeIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
-      />
-      <circle cx="12" cy="12" r="3.15" stroke="currentColor" strokeWidth="1.8" />
-      <circle cx="12" cy="12" r="1.15" fill="currentColor" />
-    </svg>
-  )
-}
-
 function ProductHoverOverlays({
   product,
   promo,
@@ -52,37 +37,23 @@ function ProductHoverOverlays({
 }) {
   return (
     <>
-      <div className="transition-opacity duration-200 group-hover/card:opacity-0">
-        {!product.inStock ? (
-          <EpuiseBadge className={compact ? 'top-2 left-2 px-2.5 py-0.5 text-[10px]' : undefined} />
-        ) : (
-          <>
-            <PromoBadge
-              product={product}
-              className={compact ? 'top-2 left-2 px-2 py-0.5 text-[10px]' : undefined}
-            />
-            {!promo && !compact && (
-              <div className="absolute top-3 left-3">
-                <span className="bg-card/90 px-2.5 py-1 text-[10px] font-medium tracking-wide text-primary backdrop-blur-sm">
-                  {categoryLabel}
-                </span>
-              </div>
-            )}
-          </>
-        )}
-      </div>
-      <span
-        className={`absolute z-20 flex items-center overflow-hidden rounded-full bg-black text-white opacity-0 shadow-sm transition-[width,opacity] duration-300 ease-out group-hover/card:opacity-100 ${
-          compact
-            ? 'top-2 right-2 h-8 w-8 hover:w-[9.75rem]'
-            : 'top-3 right-3 h-9 w-9 hover:w-40'
-        }`}
-      >
-        <span className={`flex shrink-0 items-center justify-center ${compact ? 'h-8 w-8' : 'h-9 w-9'}`}>
-          <EyeIcon className={compact ? 'h-4 w-4' : 'h-[18px] w-[18px]'} />
-        </span>
-        <span className="whitespace-nowrap pr-3.5 text-xs font-semibold">Aperçu rapide</span>
-      </span>
+      {!product.inStock ? (
+        <EpuiseBadge className={compact ? 'top-2 left-2 px-2.5 py-0.5 text-[10px]' : undefined} />
+      ) : (
+        <>
+          <PromoBadge
+            product={product}
+            className={compact ? 'top-2 left-2 px-2 py-0.5 text-[10px]' : undefined}
+          />
+          {!promo && !compact && (
+            <div className="absolute top-3 left-3">
+              <span className="bg-card/90 px-2.5 py-1 text-[10px] font-medium tracking-wide text-primary">
+                {categoryLabel}
+              </span>
+            </div>
+          )}
+        </>
+      )}
     </>
   )
 }
@@ -109,9 +80,9 @@ export function ProductCard({
       <Link
         href={`/products/${product.id}`}
         prefetch={false}
-        className="group/card block w-[11.5rem] shrink-0 sm:w-[13.5rem]"
+        className="block w-[11.5rem] shrink-0 sm:w-[13.5rem]"
       >
-        <div className="overflow-hidden rounded-md border border-border bg-card transition-all hover:border-primary/30 hover:shadow-md hover:shadow-primary/10">
+        <div className="overflow-hidden rounded-md border border-border bg-card">
           <div className="relative aspect-[4/5] overflow-hidden bg-secondary">
             {product.imageUrl ? (
               <Image
@@ -120,7 +91,7 @@ export function ProductCard({
                 fill
                 sizes="(max-width: 640px) 184px, 216px"
                 quality={70}
-                className="object-cover transition-transform duration-500 ease-out group-hover/card:scale-105"
+                className="object-cover"
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center">
@@ -149,8 +120,8 @@ export function ProductCard({
   }
 
   return (
-    <Link href={`/products/${product.id}`} className="group/card block">
-      <div className="relative overflow-hidden rounded-md border border-border bg-card transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10">
+    <Link href={`/products/${product.id}`} prefetch={false} className="block">
+      <div className="relative overflow-hidden rounded-md border border-border bg-card">
         <div className="relative aspect-[4/5] overflow-hidden bg-secondary">
           {product.imageUrl ? (
             <Image
@@ -160,7 +131,7 @@ export function ProductCard({
               sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
               quality={70}
               priority={priority}
-              className="object-cover transition-transform duration-500 ease-out group-hover/card:scale-105"
+              className="object-cover"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center">
