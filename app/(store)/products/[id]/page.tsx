@@ -14,7 +14,7 @@ import { parseProductColors, isPromoActive } from '@/lib/product-colors'
 import { parseProductBundles } from '@/lib/product-bundles'
 import { parseProductImages } from '@/lib/product-images'
 import { hasVariableSizePrices, parseProductSizes } from '@/lib/product-sizes'
-import { breadcrumbJsonLd, pageAlternates, productJsonLd } from '@/lib/seo'
+import { breadcrumbJsonLd, pageAlternates, productJsonLd, productMetaDescription } from '@/lib/seo'
 import { PRODUCT_FABRIC, SITE } from '@/lib/site'
 import { getCategoryLabel } from '@/lib/store-categories'
 import { Breadcrumbs } from '@/components/breadcrumbs'
@@ -49,9 +49,7 @@ export async function generateMetadata({
   }
 
   const categoryLabel = getCategoryLabel(product.category, categories)
-  const description =
-    product.description?.trim() ||
-    `${product.name} chez ${SITE.name} à ${SITE.neighborhood}, ${SITE.city}. ${SITE.tagline}.`
+  const description = productMetaDescription(product)
   const url = productHref(product.id)
   const gallery = parseProductImages(product)
   const images =
@@ -70,9 +68,12 @@ export async function generateMetadata({
       product.brand,
       categoryLabel,
       PRODUCT_FABRIC,
+      'galette de chaise',
+      'coussin',
       SITE.city,
       SITE.neighborhood,
-      'décoration Tunisie',
+      'livraison Tunisie',
+      'paiement à la livraison',
     ],
     alternates: pageAlternates(url),
     openGraph: {

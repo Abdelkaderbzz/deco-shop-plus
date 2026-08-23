@@ -34,6 +34,14 @@ export const metadata: Metadata = {
   creator: SITE.name,
   publisher: SITE.name,
   category: 'shopping',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  verification: process.env.GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.GOOGLE_SITE_VERIFICATION }
+    : undefined,
   icons: {
     icon: '/icon.png',
     apple: '/apple-icon.png',
