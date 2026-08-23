@@ -372,63 +372,118 @@ async function ensureHero() {
 }
 
 async function ensureHeroSlides() {
-  await pool.query(
-    `UPDATE hero_slides
-     SET
-       "imageUrl" = CASE
-         WHEN "imageUrl" IN ('/assets/hc01.webp', '/assets/hc01-size.webp') THEN '/assets/chair-pad-pack-4.webp'
-         WHEN "imageUrl" IN (
-           '/assets/sr01.webp', '/assets/sr01-angle.webp', '/assets/sr01-filled.webp',
-           '/assets/sr01-pack.webp', '/assets/sr01-handle.webp'
-         ) THEN '/assets/reading-pillow-colors.webp'
-         ELSE "imageUrl"
-       END,
-       alt = CASE
-         WHEN "imageUrl" IN ('/assets/hc01.webp', '/assets/hc01-size.webp') THEN 'Pack de 4 galettes de chaise Deco Shop Plus'
-         WHEN "imageUrl" IN (
-           '/assets/sr01.webp', '/assets/sr01-angle.webp', '/assets/sr01-filled.webp',
-           '/assets/sr01-pack.webp', '/assets/sr01-handle.webp'
-         ) THEN 'Coussin de lecture Deco Shop Plus'
-         ELSE alt
-       END,
-       "updatedAt" = NOW()
-     WHERE "imageUrl" LIKE '%/hc01%' OR "imageUrl" LIKE '%/sr01%'`,
-  )
-
-  const existing = await pool.query(`SELECT count(*)::int AS count FROM hero_slides`)
-  if (existing.rows[0]?.count > 0) return
-
   const slides = [
     [
-      '/assets/banner1.webp',
-      'Optimisez votre espace — rangement Deco Shop Plus',
-      'Offre du moment',
-      'Promotions maison',
-      'Housses, coussins et rangement a prix reduit, livrés partout en Tunisie.',
-      'Voir les promotions',
-      'promotions',
+      '/assets/campaign-atelier.webp',
+      'Atelier Deco Shop Plus a Cite El Waha, Bizerte',
+      'Cité El Waha · Bizerte',
+      'Un atelier. Des coussins.',
+      'Nous concevons et cousons nos pièces à Bizerte, avec des matières choisies et du temps.',
+      'Entrer dans la boutique',
+      'products',
+      '',
       0,
     ],
     [
-      '/assets/banner2.webp',
-      'Sac de voyage Zip&GO Deco Shop Plus',
-      'Cite El Waha · Bizerte',
-      'Derniers articles',
-      'Les nouvelles pieces deco viennent d arriver en boutique.',
-      'Voir les nouveautes',
-      'nouveautes',
+      '/assets/campaign-matiere.webp',
+      'Velours et tissus Deco Shop Plus',
+      'Matières',
+      'Le velours, le confort, la couleur',
+      'Des tissus denses, des finitions soignées — pour le salon comme pour le lit.',
+      'Voir les coussins',
+      'custom',
+      '/categorie/coussins',
       1,
+    ],
+    [
+      '/assets/campaign-couleurs.webp',
+      'Couleurs de l atelier Deco Shop Plus',
+      "L'offre de l'atelier",
+      'Quatre galettes, une table',
+      'Un pack pour habiller la salle à manger, aux couleurs que vous choisissez.',
+      "Voir l'offre",
+      'custom',
+      '/products/25',
+      2,
+    ],
+    [
+      '/assets/campaign-maison.webp',
+      'Maison et lecture, univers Deco Shop Plus',
+      'Maison',
+      "S'installer. Lire. Rester.",
+      'Des pièces pensées pour le quotidien, cousues ici, livrées partout en Tunisie.',
+      'Les nouveautés',
+      'nouveautes',
+      '',
+      3,
     ],
   ]
 
-  for (const [imageUrl, alt, eyebrow, title, subtitle, ctaLabel, ctaTarget, sortOrder] of slides) {
-    await pool.query(
-      `INSERT INTO hero_slides
-        ("imageUrl", alt, eyebrow, title, subtitle, "ctaLabel", "ctaTarget", "ctaHref", published, "sortOrder", "createdAt", "updatedAt")
-       VALUES ($1, $2, $3, $4, $5, $6, $7, '', true, $8, NOW(), NOW())`,
-      [imageUrl, alt, eyebrow, title, subtitle, ctaLabel, ctaTarget, sortOrder],
-    )
+  await pool.query(
+    `DELETE FROM hero_slides
+     WHERE "imageUrl" IN (
+       '/assets/banner1.webp', '/assets/banner2.webp',
+       '/assets/banner-galettes.webp', '/assets/banner-lecture.webp',
+       '/assets/banner-canape.webp', '/assets/banner-tete-de-lit.webp',
+       '/assets/hc01.webp', '/assets/hc01-size.webp',
+       '/assets/sr01.webp', '/assets/sr01-angle.webp', '/assets/sr01-filled.webp',
+       '/assets/sr01-pack.webp', '/assets/sr01-handle.webp',
+       '/assets/chair-pad-pack-4.webp', '/assets/chair-pad-lifestyle.webp',
+       '/assets/reading-pillow-colors.webp'
+     )
+     OR "imageUrl" LIKE '%/hc01%'
+     OR "imageUrl" LIKE '%/sr01%'`,
+  )
+
+  for (const [imageUrl, alt, eyebrow, title, subtitle, ctaLabel, ctaTarget, ctaHref, sortOrder] of slides) {
+    const existing = await pool.query(`SELECT id FROM hero_slides WHERE "imageUrl" = $1 LIMIT 1`, [imageUrl])
+    if (existing.rows[0]) {
+      await pool.query(
+        `UPDATE hero_slides
+         SET alt = $2, eyebrow = $3, title = $4, subtitle = $5,
+             "ctaLabel" = $6, "ctaTarget" = $7, "ctaHref" = $8,
+             published = true, "sortOrder" = $9, "updatedAt" = NOW()
+         WHERE id = $1`,
+        [existing.rows[0].id, alt, eyebrow, title, subtitle, ctaLabel, ctaTarget, ctaHref, sortOrder],
+      )
+    } else {
+      await pool.query(
+        `INSERT INTO hero_slides
+          ("imageUrl", alt, eyebrow, title, subtitle, "ctaLabel", "ctaTarget", "ctaHref", published, "sortOrder", "createdAt", "updatedAt")
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, true, $9, NOW(), NOW())`,
+        [imageUrl, alt, eyebrow, title, subtitle, ctaLabel, ctaTarget, ctaHref, sortOrder],
+      )
+    }
   }
+}
+
+async function ensureSiteBanner() {
+  await pool.query(`UPDATE banners SET active = false, "updatedAt" = NOW() WHERE active = true`)
+  const existing = await pool.query(
+    `SELECT id FROM banners WHERE name = $1 LIMIT 1`,
+    ['Atelier Cite El Waha'],
+  )
+  if (existing.rows[0]) {
+    await pool.query(
+      `UPDATE banners SET
+        message = $1, variant = 'news',
+        "backgroundColor" = '#0f5c64', "textColor" = '#f7fbfa', "fontSize" = 13,
+        "linkLabel" = 'BOUTIQUE', "linkHref" = '/products',
+        dismissible = true, active = true, "updatedAt" = NOW()
+       WHERE id = $2`,
+      ['Atelier Cité El Waha — coussins cousus à Bizerte', existing.rows[0].id],
+    )
+    return
+  }
+  await pool.query(
+    `INSERT INTO banners
+      (name, message, variant, "backgroundColor", "textColor", "fontSize",
+       "linkLabel", "linkHref", dismissible, active, "createdAt", "updatedAt")
+     VALUES
+      ('Atelier Cite El Waha',
+       'Atelier Cité El Waha — coussins cousus à Bizerte',
+       'news', '#0f5c64', '#f7fbfa', 13, 'BOUTIQUE', '/products', true, true, NOW(), NOW())`,
+  )
 }
 
 async function upsertProduct(product) {
@@ -529,6 +584,7 @@ async function seed() {
   await ensureBoutique()
   await ensureHero()
   await ensureHeroSlides()
+  await ensureSiteBanner()
 
   const idsByKey = new Map()
   for (const product of PRODUCTS) {

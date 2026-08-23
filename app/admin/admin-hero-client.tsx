@@ -32,9 +32,9 @@ const EMPTY_SLIDE: HeroSlideFormValues = {
   alt: '',
   eyebrow: 'Cite El Waha · Bizerte',
   title: 'Deco Shop Plus',
-  subtitle: 'Coussins pour la maison.',
-  ctaLabel: 'Voir les promotions',
-  ctaTarget: 'promotions',
+  subtitle: 'Nous concevons et cousons nos pieces a Bizerte.',
+  ctaLabel: 'Entrer dans la boutique',
+  ctaTarget: 'products',
   ctaHref: '',
   published: true,
 }

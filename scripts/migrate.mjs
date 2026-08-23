@@ -262,9 +262,10 @@ const statements = [
     ("imageUrl", "alt", "eyebrow", "title", "subtitle", "ctaLabel", "ctaTarget", "ctaHref", "published", "sortOrder")
    SELECT v."imageUrl", v."alt", v."eyebrow", v."title", v."subtitle", v."ctaLabel", v."ctaTarget", v."ctaHref", v."published", v."sortOrder"
    FROM (VALUES
-     ('/assets/chair-pad-pack-4.webp', 'Pack de 4 galettes de chaise Deco Shop Plus', 'Offre du moment', 'Promotions maison', 'Galettes de chaise et coussins a prix reduit, livrés partout en Tunisie.', 'Voir les promotions', 'promotions', '', true, 0),
-     ('/assets/chair-pad-lifestyle.webp', 'Galette de chaise Deco Shop Plus', 'Cite El Waha · Bizerte', 'Derniers articles', 'Les nouvelles pieces deco viennent d arriver en boutique.', 'Voir les nouveautes', 'nouveautes', '', true, 1),
-     ('/assets/reading-pillow-colors.webp', 'Coussin de lecture Deco Shop Plus', 'Selection clients', 'Les plus vendus', 'Les pieces que nos clientes emportent le plus souvent.', 'Voir les plus vendus', 'best-sellers', '', true, 2)
+     ('/assets/campaign-atelier.webp', 'Atelier Deco Shop Plus a Cite El Waha, Bizerte', 'Cité El Waha · Bizerte', 'Un atelier. Des coussins.', 'Nous concevons et cousons nos pièces à Bizerte, avec des matières choisies et du temps.', 'Entrer dans la boutique', 'products', '', true, 0),
+     ('/assets/campaign-matiere.webp', 'Velours et tissus Deco Shop Plus', 'Matières', 'Le velours, le confort, la couleur', 'Des tissus denses, des finitions soignées — pour le salon comme pour le lit.', 'Voir les coussins', 'custom', '/categorie/coussins', true, 1),
+     ('/assets/campaign-couleurs.webp', 'Couleurs de l atelier Deco Shop Plus', 'L offre de l atelier', 'Quatre galettes, une table', 'Un pack pour habiller la salle à manger, aux couleurs que vous choisissez.', 'Voir l offre', 'custom', '/products/25', true, 2),
+     ('/assets/campaign-maison.webp', 'Maison et lecture, univers Deco Shop Plus', 'Maison', 'S installer. Lire. Rester.', 'Des pièces pensées pour le quotidien, cousues ici, livrées partout en Tunisie.', 'Les nouveautés', 'nouveautes', '', true, 3)
    ) AS v("imageUrl", "alt", "eyebrow", "title", "subtitle", "ctaLabel", "ctaTarget", "ctaHref", "published", "sortOrder")
    WHERE NOT EXISTS (SELECT 1 FROM "hero_slides")`,
   `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "stock" integer NOT NULL DEFAULT 0`,
