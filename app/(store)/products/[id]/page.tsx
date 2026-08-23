@@ -21,7 +21,7 @@ import { AddToCartButton } from './add-to-cart-button'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 
-export const revalidate = 120
+export const dynamic = 'force-dynamic'
 export const dynamicParams = true
 
 export async function generateStaticParams() {

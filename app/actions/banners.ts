@@ -11,7 +11,7 @@ import {
   type BannerVariant,
 } from '@/lib/validations'
 import { and, desc, eq, ne } from 'drizzle-orm'
-import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { cache } from 'react'
 
 export type BannerRow = typeof banners.$inferSelect
@@ -50,23 +50,14 @@ function revalidateBanners() {
   revalidatePath('/', 'layout')
 }
 
-const getActiveBannerCached = unstable_cache(
-  async () => {
-    const [row] = await db
-      .select()
-      .from(banners)
-      .where(eq(banners.active, true))
-      .orderBy(desc(banners.updatedAt))
-      .limit(1)
-    return row ?? null
-  },
-  ['active-banner'],
-  { revalidate: 300, tags: ['active-banner'] },
-)
-
 /** Storefront read. Returns null when nothing is published. */
 export const getActiveBanner = cache(async (): Promise<ActiveBanner | null> => {
-  const row = await getActiveBannerCached()
+  const [row] = await db
+    .select()
+    .from(banners)
+    .where(eq(banners.active, true))
+    .orderBy(desc(banners.updatedAt))
+    .limit(1)
   if (!row || row.message.trim() === '') return null
 
   return {

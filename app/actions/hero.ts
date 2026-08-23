@@ -12,7 +12,7 @@ import {
 } from '@/lib/hero-slides'
 import { heroSlideSchema } from '@/lib/validations'
 import { asc, desc, eq } from 'drizzle-orm'
-import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { cache } from 'react'
 
 export type HeroActionResult =
@@ -76,24 +76,12 @@ async function revalidateHeroPaths() {
   revalidatePath('/')
 }
 
-const getHeroImagesCached = unstable_cache(
-  async () => mergeHeroImages(await listHeroRows()),
-  ['hero-images'],
-  { revalidate: 300, tags: ['hero-images'] },
-)
+export const getHeroImages = cache(async (): Promise<HeroImageSlot[]> => mergeHeroImages(await listHeroRows()))
 
-const getHeroSlidesCached = unstable_cache(
-  async () => {
-    const slides = await listHeroSlideRows(true)
-    return slides.length > 0 ? slides : DEFAULT_HERO_SLIDES
-  },
-  ['hero-slides'],
-  { revalidate: 120, tags: ['hero-slides'] },
-)
-
-export const getHeroImages = cache(async (): Promise<HeroImageSlot[]> => getHeroImagesCached())
-
-export const getHeroSlides = cache(async (): Promise<HeroSlide[]> => getHeroSlidesCached())
+export const getHeroSlides = cache(async (): Promise<HeroSlide[]> => {
+  const slides = await listHeroSlideRows(true)
+  return slides.length > 0 ? slides : DEFAULT_HERO_SLIDES
+})
 
 export async function getAdminHeroImages(): Promise<HeroImageSlot[]> {
   await requireAdminId()

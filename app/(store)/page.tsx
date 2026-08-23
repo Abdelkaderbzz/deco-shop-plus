@@ -26,7 +26,7 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import { Suspense, type ReactNode } from 'react'
 
-export const revalidate = 120
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: { absolute: `${SITE.name} | Décoration à ${SITE.neighborhood}, ${SITE.city}` },
