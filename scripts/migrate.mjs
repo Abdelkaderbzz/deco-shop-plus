@@ -279,6 +279,8 @@ const statements = [
   `CREATE INDEX IF NOT EXISTS products_published_category_idx ON products (published, category)`,
   `CREATE INDEX IF NOT EXISTS products_published_featured_idx ON products (published, featured) WHERE published = true AND featured = true`,
   `CREATE INDEX IF NOT EXISTS products_published_promo_idx ON products (published, "promoEnabled") WHERE published = true AND "promoEnabled" = true`,
+  `ALTER TABLE "orders" ADD COLUMN IF NOT EXISTS "checkoutDraftId" text`,
+  `CREATE UNIQUE INDEX IF NOT EXISTS orders_checkout_draft_id_uidx ON "orders" ("checkoutDraftId") WHERE "checkoutDraftId" IS NOT NULL`,
   `CREATE INDEX IF NOT EXISTS order_items_product_id_idx ON "order_items" ("productId")`,
   `CREATE INDEX IF NOT EXISTS banners_active_idx ON banners (active) WHERE active = true`,
   `CREATE INDEX IF NOT EXISTS hero_slides_published_sort_idx ON hero_slides (published, "sortOrder")`,

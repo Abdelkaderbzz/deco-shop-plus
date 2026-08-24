@@ -192,6 +192,8 @@ export const orders = pgTable('orders', {
   totalAmount: numeric('totalAmount', { precision: 10, scale: 3 }).notNull(),
   deliveryFee: numeric('deliveryFee', { precision: 10, scale: 3 }).notNull().default('7.000'),
   notes: text('notes'),
+  /** Browser session id used to upsert abandoned checkouts without duplicates. */
+  checkoutDraftId: text('checkoutDraftId').unique(),
   createdAt: timestamp('createdAt').notNull().defaultNow(),
   updatedAt: timestamp('updatedAt').notNull().defaultNow(),
 })
