@@ -27,7 +27,7 @@ export default async function AdminOrdersPage({
       <AdminPageHeader
         eyebrow="VENTES"
         title="Commandes"
-        description="Creez des commandes, modifiez le statut, editez les informations client ou supprimez des commandes."
+        description="Creez des commandes, relancez les paniers abandonnes, modifiez le statut ou supprimez des commandes."
       />
       <AdminOrdersClient
         orders={orderPage.items}

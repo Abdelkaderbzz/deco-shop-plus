@@ -26,13 +26,20 @@ export default async function AdminDashboardPage() {
         description="Vue d'ensemble de votre boutique: produits, commandes, categories et tarifs de livraison."
       />
 
-      <div className="mb-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="mb-8 grid grid-cols-2 gap-3 lg:grid-cols-5">
         <AdminStatCard label="COMMANDES" value={stats.totalOrders} />
         <AdminStatCard
           label="EN ATTENTE"
           value={stats.pendingOrders}
           tone={stats.pendingOrders > 0 ? 'warning' : 'default'}
         />
+        <Link href="/admin/orders?status=abandoned" className="block">
+          <AdminStatCard
+            label="ABANDONNEES"
+            value={stats.abandonedOrders}
+            tone={stats.abandonedOrders > 0 ? 'orange' : 'default'}
+          />
+        </Link>
         <AdminStatCard
           label="CHIFFRE D'AFFAIRES"
           value={`${formatPriceTnd(stats.revenue)} TND`}

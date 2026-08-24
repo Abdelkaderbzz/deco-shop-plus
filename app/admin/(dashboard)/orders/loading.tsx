@@ -6,7 +6,7 @@ export default function AdminOrdersLoading() {
       eyebrow="VENTES"
       title="Commandes"
       description="Consultez, modifiez le statut, editez les informations client ou supprimez des commandes."
-      stats={4}
+      stats={6}
       rows={10}
       columns={10}
     />

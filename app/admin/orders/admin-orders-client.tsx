@@ -15,7 +15,7 @@ import { orderEditSchema, type OrderEditFormValues } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouteTransition } from '@/lib/use-route-transition'
 import { Eye, Pencil, Plus, Trash2 } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
+import { useEffect, useMemo, useState, useTransition } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import {
   AdminBadge,
@@ -46,6 +46,12 @@ import {
   AdminOrderCreateModal,
   type CreateOrderProduct,
 } from './admin-order-create-modal'
+import {
+  AdminOrderItemsEditor,
+  cartItemsFromLines,
+  type OrderLineDraft,
+} from './admin-order-items-editor'
+import { lineStockUnits } from '@/lib/product-bundles'
 
 type Order = {
   id: number
@@ -118,7 +124,8 @@ export function AdminOrdersClient({
   const [statusCounts, setStatusCounts] = useState(initialStatusCounts)
   const [selectedOrder, setSelectedOrder] = useState<OrderWithItems | null>(null)
   const [loadingOrderId, setLoadingOrderId] = useState<number | null>(null)
-  const [editingOrder, setEditingOrder] = useState<Order | null>(null)
+  const [editingOrder, setEditingOrder] = useState<OrderWithItems | null>(null)
+  const [editLines, setEditLines] = useState<OrderLineDraft[]>([])
   const [creating, setCreating] = useState(false)
   const [searchInput, setSearchInput] = useState(initialSearch)
   const [isPending, startTransition] = useTransition()
@@ -138,6 +145,7 @@ export function AdminOrdersClient({
     handleSubmit,
     reset,
     control,
+    setValue,
     formState: { errors },
   } = useForm<OrderEditFormValues>({
     resolver: zodResolver(orderEditSchema),
@@ -148,8 +156,26 @@ export function AdminOrdersClient({
       customerAddress: '',
       status: 'pending',
       notes: '',
+      items: [],
     },
   })
+
+  const reservedStock = useMemo(() => {
+    const reserved: Record<number, number> = {}
+    if (!editingOrder || editingOrder.status === 'cancelled' || editingOrder.status === 'abandoned') {
+      return reserved
+    }
+    for (const item of editingOrder.items) {
+      reserved[item.productId] =
+        (reserved[item.productId] ?? 0) + lineStockUnits(item.quantity, item.bundleUnits)
+    }
+    return reserved
+  }, [editingOrder])
+
+  function syncEditLines(nextLines: OrderLineDraft[]) {
+    setEditLines(nextLines)
+    setValue('items', cartItemsFromLines(nextLines), { shouldValidate: true })
+  }
 
   async function openOrder(id: number) {
     setLoadingOrderId(id)
@@ -168,14 +194,37 @@ export function AdminOrdersClient({
   }
 
   function openEdit(order: Order) {
-    setEditingOrder(order)
-    reset({
-      customerName: order.customerName,
-      customerPhone: order.customerPhone,
-      customerGovernorate: order.customerGovernorate ?? '',
-      customerAddress: order.customerAddress ?? '',
-      status: order.status,
-      notes: order.notes ?? '',
+    startTransition(async () => {
+      const result = await getOrderWithItems(order.id)
+      if (!result.success) {
+        toast.error(result.error)
+        return
+      }
+
+      const nextLines: OrderLineDraft[] = result.data.items.map((item) => ({
+        key: `item-${item.id}`,
+        productId: item.productId,
+        productName: item.productName,
+        productBrand: item.productBrand,
+        size: item.size,
+        color: item.color,
+        bundle: item.bundle,
+        bundleUnits: item.bundleUnits,
+        quantity: item.quantity,
+        price: parseFloat(item.price),
+      }))
+
+      setEditingOrder(result.data)
+      setEditLines(nextLines)
+      reset({
+        customerName: result.data.customerName,
+        customerPhone: result.data.customerPhone,
+        customerGovernorate: result.data.customerGovernorate ?? '',
+        customerAddress: result.data.customerAddress ?? '',
+        status: result.data.status,
+        notes: result.data.notes ?? '',
+        items: cartItemsFromLines(nextLines),
+      })
     })
   }
 
@@ -218,6 +267,7 @@ export function AdminOrdersClient({
         customerAddress: values.customerAddress || undefined,
         status: values.status,
         notes: values.notes || undefined,
+        items: values.items,
       })
 
       if (!result.success) {
@@ -290,8 +340,8 @@ export function AdminOrdersClient({
 
   return (
     <div>
-      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {STATUS_OPTIONS.slice(0, 4).map((status) => {
+      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        {STATUS_OPTIONS.map((status) => {
           const count = statusCounts[status.value] ?? 0
           return (
             <button
@@ -381,7 +431,12 @@ export function AdminOrdersClient({
                   <AdminCellEllipsis text={order.customerName} maxWidthClass="max-w-[140px]" />
                 </td>
                 <td className={`${adminTableMutedCls} whitespace-nowrap font-mono text-xs`} dir="ltr">
-                  {order.customerPhone}
+                  <a
+                    href={`tel:${order.customerPhone.replace(/\s+/g, '')}`}
+                    className="text-teal-800 hover:underline"
+                  >
+                    {order.customerPhone}
+                  </a>
                 </td>
                 <td className={adminTableCellCls}>
                   <AdminCellEllipsis
@@ -491,6 +546,20 @@ export function AdminOrdersClient({
       {selectedOrder && (
         <AdminModal title={`Commande #${selectedOrder.id}`} onClose={() => setSelectedOrder(null)}>
           <div className="space-y-4 text-sm">
+            {selectedOrder.status === 'abandoned' && (
+              <div className="rounded-md border border-orange-200 bg-orange-50 px-4 py-3 text-orange-900">
+                <p className="text-xs font-semibold uppercase tracking-wide">Commande abandonnee</p>
+                <p className="mt-1">
+                  Ce client a commence une commande sans la confirmer. Appelez-le pour conclure la vente.
+                </p>
+                <a
+                  href={`tel:${selectedOrder.customerPhone.replace(/\s+/g, '')}`}
+                  className="mt-2 inline-flex font-semibold text-orange-800 underline"
+                >
+                  Appeler {selectedOrder.customerPhone}
+                </a>
+              </div>
+            )}
             <div className="grid grid-cols-2 gap-4">
               {[
                 { label: 'Client', value: selectedOrder.customerName },
@@ -589,6 +658,7 @@ export function AdminOrdersClient({
         <AdminModal
           title={`Modifier commande #${editingOrder.id}`}
           onClose={() => !isPending && setEditingOrder(null)}
+          className="max-w-2xl"
         >
           <form onSubmit={handleSubmit(onEditSubmit)} className="space-y-4">
             <div>
@@ -664,6 +734,20 @@ export function AdminOrdersClient({
               />
               <AdminFieldError message={errors.notes?.message} />
             </div>
+
+            <AdminOrderItemsEditor
+              products={products}
+              deliveryFee={
+                parseFloat(editingOrder.deliveryFee) > 0
+                  ? parseFloat(editingOrder.deliveryFee)
+                  : deliveryFee
+              }
+              lines={editLines}
+              onChange={syncEditLines}
+              reservedStock={reservedStock}
+              disabled={isPending}
+              error={errors.items?.message}
+            />
 
             <AdminButton type="submit" disabled={isPending} className="w-full">
               {isPending ? 'Enregistrement...' : 'Enregistrer'}
