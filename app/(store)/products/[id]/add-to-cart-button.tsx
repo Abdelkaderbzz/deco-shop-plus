@@ -16,10 +16,9 @@ import { whatsappMessageUrl } from '@/lib/social-links'
 import { StoreSelect } from '@/components/store-select'
 import { getGovernorateLabel, GOVERNORATE_SELECT_OPTIONS } from '@/lib/tunisia-governorates'
 import { productOrderSchema, type ProductOrderFormValues } from '@/lib/validations'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
-import { useState, type MouseEvent } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import { useRef, useState, type FormEvent } from 'react'
+import type { ZodError } from 'zod'
 
 type Product = {
   id: number
@@ -32,7 +31,7 @@ type Product = {
 
 const fieldLabelCls = 'mb-1.5 block text-sm font-semibold text-foreground'
 const fieldInputCls =
-  'w-full rounded-xl border-2 border-border bg-card px-4 py-3 text-base text-foreground outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/20'
+  'w-full rounded-xl border-2 border-border bg-card px-4 py-3 text-base text-foreground outline-none placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/20'
 const fieldInputErrorCls =
   'w-full rounded-xl border-2 border-destructive bg-card px-4 py-3 text-base text-foreground outline-none focus:border-destructive focus:ring-2 focus:ring-destructive/20'
 
@@ -50,6 +49,197 @@ function WhatsAppIcon({ className }: { className?: string }) {
     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
       <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z" />
     </svg>
+  )
+}
+
+function orderFieldErrors(error: ZodError): Partial<Record<keyof ProductOrderFormValues, string>> {
+  const next: Partial<Record<keyof ProductOrderFormValues, string>> = {}
+  for (const issue of error.issues) {
+    const key = issue.path[0]
+    if (typeof key === 'string' && !(key in next)) {
+      next[key as keyof ProductOrderFormValues] = issue.message
+    }
+  }
+  return next
+}
+
+function readProductOrderForm(form: HTMLFormElement): ProductOrderFormValues {
+  const data = new FormData(form)
+  return {
+    customerName: String(data.get('customerName') ?? ''),
+    customerPhone: String(data.get('customerPhone') ?? ''),
+    customerGovernorate: String(data.get('customerGovernorate') ?? ''),
+    customerAddress: String(data.get('customerAddress') ?? ''),
+    notes: String(data.get('notes') ?? ''),
+  }
+}
+
+function ProductOrderForm({
+  canSelect,
+  onOrder,
+  onWhatsApp,
+}: {
+  canSelect: boolean
+  onOrder: (values: ProductOrderFormValues) => Promise<void>
+  onWhatsApp: (values: ProductOrderFormValues) => void
+}) {
+  const formRef = useRef<HTMLFormElement>(null)
+  const [errors, setErrors] = useState<Partial<Record<keyof ProductOrderFormValues, string>>>({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  function parsedValues() {
+    const form = formRef.current
+    if (!form) return null
+    const result = productOrderSchema.safeParse(readProductOrderForm(form))
+    if (!result.success) {
+      setErrors(orderFieldErrors(result.error))
+      return null
+    }
+    setErrors({})
+    return result.data
+  }
+
+  async function handleOrderSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const values = parsedValues()
+    if (!values) return
+    setIsSubmitting(true)
+    try {
+      await onOrder(values)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  return (
+    <form
+      ref={formRef}
+      onSubmit={handleOrderSubmit}
+      noValidate
+      className="rounded-2xl border-2 border-primary/25 bg-card p-5 shadow-sm"
+    >
+      <div className="mb-4">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Commander ce produit</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Indiquez vos coordonnees pour confirmer la commande, ou envoyez-la directement sur WhatsApp.
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <label htmlFor="product-order-name" className={fieldLabelCls}>
+            Nom complet <span className="text-primary">*</span>
+          </label>
+          <input
+            id="product-order-name"
+            name="customerName"
+            type="text"
+            autoComplete="name"
+            placeholder="Ex: Fatma Ben Ali"
+            aria-invalid={Boolean(errors.customerName)}
+            aria-describedby={errors.customerName ? 'product-order-name-error' : undefined}
+            className={errors.customerName ? fieldInputErrorCls : fieldInputCls}
+          />
+          <FieldError id="product-order-name-error" message={errors.customerName} />
+        </div>
+
+        <div>
+          <label htmlFor="product-order-phone" className={fieldLabelCls}>
+            Telephone <span className="text-primary">*</span>
+          </label>
+          <input
+            id="product-order-phone"
+            name="customerPhone"
+            type="tel"
+            autoComplete="tel"
+            inputMode="tel"
+            placeholder="Ex: 22 123 456"
+            aria-invalid={Boolean(errors.customerPhone)}
+            aria-describedby={errors.customerPhone ? 'product-order-phone-error' : undefined}
+            className={errors.customerPhone ? fieldInputErrorCls : fieldInputCls}
+          />
+          <FieldError id="product-order-phone-error" message={errors.customerPhone} />
+        </div>
+
+        <div>
+          <label htmlFor="product-order-governorate" className={fieldLabelCls}>
+            Gouvernorat <span className="text-primary">*</span>
+          </label>
+          <StoreSelect
+            id="product-order-governorate"
+            name="customerGovernorate"
+            defaultValue=""
+            options={GOVERNORATE_SELECT_OPTIONS}
+            placeholder="Choisir votre gouvernorat"
+            hasError={Boolean(errors.customerGovernorate)}
+          />
+          <FieldError id="product-order-governorate-error" message={errors.customerGovernorate} />
+        </div>
+
+        <div>
+          <label htmlFor="product-order-address" className={fieldLabelCls}>
+            Adresse <span className="text-primary">*</span>
+          </label>
+          <textarea
+            id="product-order-address"
+            name="customerAddress"
+            rows={3}
+            autoComplete="street-address"
+            placeholder="Rue, ville, point de repere..."
+            aria-invalid={Boolean(errors.customerAddress)}
+            aria-describedby={errors.customerAddress ? 'product-order-address-error' : undefined}
+            className={`${errors.customerAddress ? fieldInputErrorCls : fieldInputCls} resize-none`}
+          />
+          <FieldError id="product-order-address-error" message={errors.customerAddress} />
+        </div>
+
+        <div>
+          <label htmlFor="product-order-note" className={fieldLabelCls}>
+            Note <span className="font-medium text-muted-foreground">(optionnel)</span>
+          </label>
+          <textarea
+            id="product-order-note"
+            name="notes"
+            rows={2}
+            placeholder="Couleur preferee, horaire, instructions..."
+            aria-invalid={Boolean(errors.notes)}
+            aria-describedby={errors.notes ? 'product-order-note-error' : undefined}
+            className={`${errors.notes ? fieldInputErrorCls : fieldInputCls} resize-none`}
+          />
+          <FieldError id="product-order-note-error" message={errors.notes} />
+        </div>
+      </div>
+
+      <div className="mt-5 flex flex-col gap-3">
+        <button
+          type="submit"
+          disabled={!canSelect || isSubmitting}
+          className="w-full rounded-full bg-primary py-4 text-base font-semibold tracking-wide text-primary-foreground shadow-lg shadow-primary/35 transition-all hover:brightness-110 hover:shadow-xl hover:shadow-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50"
+        >
+          <span className="inline-flex items-center justify-center gap-2">
+            {isSubmitting ? 'Envoi en cours...' : 'Commander maintenant'}
+            {!isSubmitting && (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden>
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            )}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            const values = parsedValues()
+            if (values) onWhatsApp(values)
+          }}
+          disabled={!canSelect}
+          className="inline-flex w-full items-center justify-center gap-2.5 rounded-full bg-[#25D366] py-3.5 text-sm font-semibold text-white shadow-md shadow-[#25D366]/30 transition-all hover:bg-[#20bd5a] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2 disabled:opacity-50"
+        >
+          <WhatsAppIcon />
+          Commander sur WhatsApp
+        </button>
+      </div>
+    </form>
   )
 }
 
@@ -77,23 +267,6 @@ export function AddToCartButton({
   const [selectedColor, setSelectedColor] = useState(colors[0]?.name ?? '')
   const [selectedBundleName, setSelectedBundleName] = useState(bundles[0]?.name ?? '')
   const [added, setAdded] = useState(false)
-
-  const {
-    register,
-    handleSubmit,
-    getValues,
-    control,
-    formState: { errors, isSubmitting },
-  } = useForm<ProductOrderFormValues>({
-    resolver: zodResolver(productOrderSchema),
-    defaultValues: {
-      customerName: '',
-      customerPhone: '',
-      customerGovernorate: '',
-      customerAddress: '',
-      notes: '',
-    },
-  })
 
   const selectedBundle = bundles.find((bundle) => bundle.name === selectedBundleName) ?? bundles[0]
   const selectedUnits = selectedBundle?.units ?? 1
@@ -189,16 +362,13 @@ export function AddToCartButton({
     }
   }
 
-  function onWhatsApp(event: MouseEvent<HTMLButtonElement>) {
-    event.preventDefault()
-    event.stopPropagation()
-
+  function onWhatsApp(values: ProductOrderFormValues) {
     if (!canSelect) {
       toast.error(remaining <= 0 ? 'Plus de stock pour ce produit.' : 'Choisissez la taille et la couleur.')
       return
     }
 
-    window.location.href = whatsappMessageUrl(buildWhatsAppMessage(getValues()))
+    window.location.href = whatsappMessageUrl(buildWhatsAppMessage(values))
   }
 
   return (
@@ -284,144 +454,16 @@ export function AddToCartButton({
 
       <p className="text-xs font-medium text-muted-foreground">{stockLabel(remaining)}</p>
 
-      <form
-        onSubmit={handleSubmit(onCommander)}
-        className="rounded-2xl border-2 border-primary/25 bg-card p-5 shadow-sm"
+      <ProductOrderForm canSelect={canSelect} onOrder={onCommander} onWhatsApp={onWhatsApp} />
+
+      <button
+        type="button"
+        onClick={handleAddToCart}
+        disabled={!canSelect}
+        className="w-full rounded-full border border-border py-3 text-sm font-medium text-muted-foreground transition-all hover:border-primary hover:bg-primary/5 hover:text-primary disabled:opacity-40"
       >
-        <div className="mb-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Commander ce produit</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Indiquez vos coordonnees pour confirmer la commande, ou envoyez-la directement sur WhatsApp.
-          </p>
-        </div>
-
-        <div className="space-y-4">
-          <div>
-            <label htmlFor="product-order-name" className={fieldLabelCls}>
-              Nom complet <span className="text-primary">*</span>
-            </label>
-            <input
-              id="product-order-name"
-              type="text"
-              autoComplete="name"
-              placeholder="Ex: Fatma Ben Ali"
-              aria-invalid={Boolean(errors.customerName)}
-              aria-describedby={errors.customerName ? 'product-order-name-error' : undefined}
-              className={errors.customerName ? fieldInputErrorCls : fieldInputCls}
-              {...register('customerName')}
-            />
-            <FieldError id="product-order-name-error" message={errors.customerName?.message} />
-          </div>
-
-          <div>
-            <label htmlFor="product-order-phone" className={fieldLabelCls}>
-              Telephone <span className="text-primary">*</span>
-            </label>
-            <input
-              id="product-order-phone"
-              type="tel"
-              autoComplete="tel"
-              inputMode="tel"
-              placeholder="Ex: 22 123 456"
-              aria-invalid={Boolean(errors.customerPhone)}
-              aria-describedby={errors.customerPhone ? 'product-order-phone-error' : undefined}
-              className={errors.customerPhone ? fieldInputErrorCls : fieldInputCls}
-              {...register('customerPhone')}
-            />
-            <FieldError id="product-order-phone-error" message={errors.customerPhone?.message} />
-          </div>
-
-          <div>
-            <label htmlFor="product-order-governorate" className={fieldLabelCls}>
-              Gouvernorat <span className="text-primary">*</span>
-            </label>
-            <Controller
-              control={control}
-              name="customerGovernorate"
-              render={({ field }) => (
-                <StoreSelect
-                  id="product-order-governorate"
-                  value={field.value}
-                  onChange={field.onChange}
-                  options={GOVERNORATE_SELECT_OPTIONS}
-                  placeholder="Choisir votre gouvernorat"
-                  hasError={Boolean(errors.customerGovernorate)}
-                />
-              )}
-            />
-            <FieldError id="product-order-governorate-error" message={errors.customerGovernorate?.message} />
-          </div>
-
-          <div>
-            <label htmlFor="product-order-address" className={fieldLabelCls}>
-              Adresse <span className="text-primary">*</span>
-            </label>
-            <textarea
-              id="product-order-address"
-              rows={3}
-              autoComplete="street-address"
-              placeholder="Rue, ville, point de repere..."
-              aria-invalid={Boolean(errors.customerAddress)}
-              aria-describedby={errors.customerAddress ? 'product-order-address-error' : undefined}
-              className={`${errors.customerAddress ? fieldInputErrorCls : fieldInputCls} resize-none`}
-              {...register('customerAddress')}
-            />
-            <FieldError id="product-order-address-error" message={errors.customerAddress?.message} />
-          </div>
-
-          <div>
-            <label htmlFor="product-order-note" className={fieldLabelCls}>
-              Note <span className="font-medium text-muted-foreground">(optionnel)</span>
-            </label>
-            <textarea
-              id="product-order-note"
-              rows={2}
-              placeholder="Couleur preferee, horaire, instructions..."
-              aria-invalid={Boolean(errors.notes)}
-              aria-describedby={errors.notes ? 'product-order-note-error' : undefined}
-              className={`${errors.notes ? fieldInputErrorCls : fieldInputCls} resize-none`}
-              {...register('notes')}
-            />
-            <FieldError id="product-order-note-error" message={errors.notes?.message} />
-          </div>
-        </div>
-
-        <div className="mt-5 flex flex-col gap-3">
-          <button
-            type="submit"
-            disabled={!canSelect || isSubmitting}
-            className="w-full rounded-full bg-primary py-4 text-base font-semibold tracking-wide text-primary-foreground shadow-lg shadow-primary/35 transition-all hover:brightness-110 hover:shadow-xl hover:shadow-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50"
-          >
-            <span className="inline-flex items-center justify-center gap-2">
-              {isSubmitting ? 'Envoi en cours...' : 'Commander maintenant'}
-              {!isSubmitting && (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden>
-                  <path d="M5 12h14M13 6l6 6-6 6" />
-                </svg>
-              )}
-            </span>
-          </button>
-
-          <button
-            type="button"
-            onClick={onWhatsApp}
-            disabled={!canSelect}
-            className="inline-flex w-full items-center justify-center gap-2.5 rounded-full bg-[#25D366] py-3.5 text-sm font-semibold text-white shadow-md shadow-[#25D366]/30 transition-all hover:bg-[#20bd5a] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2 disabled:opacity-50"
-          >
-            <WhatsAppIcon />
-            Commander sur WhatsApp
-          </button>
-
-          <button
-            type="button"
-            onClick={handleAddToCart}
-            disabled={!canSelect}
-            className="w-full rounded-full border border-border py-3 text-sm font-medium text-muted-foreground transition-all hover:border-primary hover:bg-primary/5 hover:text-primary disabled:opacity-40"
-          >
-            {added ? 'Ajoute au panier' : remaining <= 0 ? 'Plus de stock' : 'Ajouter au panier'}
-          </button>
-        </div>
-      </form>
+        {added ? 'Ajoute au panier' : remaining <= 0 ? 'Plus de stock' : 'Ajouter au panier'}
+      </button>
     </div>
   )
 }

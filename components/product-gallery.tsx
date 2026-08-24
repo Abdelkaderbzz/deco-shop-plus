@@ -27,15 +27,14 @@ export function ProductGallery({
 
   return (
     <div className="space-y-4">
-      <div className="group/image relative aspect-square overflow-hidden border border-border bg-secondary">
+      <div className="relative aspect-square overflow-hidden border border-border bg-secondary">
         <Image
-          key={activeImage}
           src={activeImage}
           alt={alt}
           fill
           priority
           sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-cover transition-transform duration-700 ease-out will-change-transform group-hover/image:scale-110"
+          className="object-cover"
         />
         {badge}
       </div>
@@ -46,8 +45,11 @@ export function ProductGallery({
             <button
               key={`${url}-${index}`}
               type="button"
-              onClick={() => setActiveIndex(index)}
-              className={`relative aspect-square overflow-hidden border transition-colors ${
+              onPointerDown={(event) => {
+                if (event.button !== 0) return
+                setActiveIndex(index)
+              }}
+              className={`relative aspect-square overflow-hidden border ${
                 index === activeIndex ? 'border-primary' : 'border-border hover:border-primary/40'
               }`}
             >
