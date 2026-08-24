@@ -15,7 +15,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { getCheckoutDraftId, markCheckoutCompleted, useAbandonedCheckout } from '@/lib/use-abandoned-checkout'
+import { useEffect, useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
 const storeLabelCls = 'mb-2 block text-sm font-semibold text-foreground'
@@ -40,6 +41,7 @@ export default function CheckoutPage() {
     register,
     handleSubmit,
     control,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutSchema),
@@ -51,6 +53,40 @@ export default function CheckoutPage() {
       notes: '',
     },
   })
+
+  const customerName = watch('customerName')
+  const customerPhone = watch('customerPhone')
+  const customerGovernorate = watch('customerGovernorate')
+  const customerAddress = watch('customerAddress')
+  const notes = watch('notes')
+
+  const abandonedItems = useMemo(
+    () =>
+      items.map((item) => ({
+        productId: item.productId,
+        productName: item.productName,
+        productBrand: item.productBrand,
+        size: item.size,
+        color: item.color || '',
+        bundle: item.bundle || '',
+        bundleUnits: item.bundleUnits || 1,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+    [items],
+  )
+
+  useAbandonedCheckout(
+    {
+      customerName: customerName ?? '',
+      customerPhone: customerPhone ?? '',
+      customerGovernorate,
+      customerAddress,
+      notes,
+      items: abandonedItems,
+    },
+    { disabled: isSubmitting || items.length === 0 },
+  )
 
   useEffect(() => {
     getDeliveryFee().then(setDeliveryFee).catch(() => setDeliveryFee(7))
@@ -66,6 +102,7 @@ export default function CheckoutPage() {
 
     try {
       const orderId = await createOrder({
+        checkoutDraftId: getCheckoutDraftId() || undefined,
         customerName: values.customerName,
         customerPhone: values.customerPhone,
         customerGovernorate: values.customerGovernorate || undefined,
@@ -83,6 +120,7 @@ export default function CheckoutPage() {
           price: i.price,
         })),
       })
+      markCheckoutCompleted()
       clearCart()
       toast.success('Commande confirmee avec succes.')
       router.push(`/checkout/success?orderId=${orderId}`)

@@ -1,6 +1,6 @@
 'use client'
 
-import { createOrder } from '@/app/actions/orders'
+import { createOrder, type CartItem } from '@/app/actions/orders'
 import { useCart } from '@/components/cart-context'
 import { ProductPrice } from '@/components/product-price'
 import { ProductBundleOptions } from '@/components/product-bundle-options'
@@ -17,6 +17,7 @@ import { StoreSelect } from '@/components/store-select'
 import { getGovernorateLabel, GOVERNORATE_SELECT_OPTIONS } from '@/lib/tunisia-governorates'
 import { productOrderSchema, type ProductOrderFormValues } from '@/lib/validations'
 import { useRouter } from 'next/navigation'
+import { getCheckoutDraftId, markCheckoutCompleted, useAbandonedCheckout } from '@/lib/use-abandoned-checkout'
 import { useRef, useState, type FormEvent } from 'react'
 import type { ZodError } from 'zod'
 
@@ -78,14 +79,41 @@ function ProductOrderForm({
   canSelect,
   onOrder,
   onWhatsApp,
+  abandonedItems,
 }: {
   canSelect: boolean
   onOrder: (values: ProductOrderFormValues) => Promise<void>
   onWhatsApp: (values: ProductOrderFormValues) => void
+  abandonedItems: CartItem[]
 }) {
   const formRef = useRef<HTMLFormElement>(null)
   const [errors, setErrors] = useState<Partial<Record<keyof ProductOrderFormValues, string>>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [draft, setDraft] = useState<ProductOrderFormValues>({
+    customerName: '',
+    customerPhone: '',
+    customerGovernorate: '',
+    customerAddress: '',
+    notes: '',
+  })
+
+  useAbandonedCheckout(
+    {
+      customerName: draft.customerName,
+      customerPhone: draft.customerPhone,
+      customerGovernorate: draft.customerGovernorate,
+      customerAddress: draft.customerAddress,
+      notes: draft.notes,
+      items: abandonedItems,
+    },
+    { disabled: isSubmitting },
+  )
+
+  function syncDraft() {
+    const form = formRef.current
+    if (!form) return
+    setDraft(readProductOrderForm(form))
+  }
 
   function parsedValues() {
     const form = formRef.current
@@ -115,6 +143,8 @@ function ProductOrderForm({
     <form
       ref={formRef}
       onSubmit={handleOrderSubmit}
+      onInput={syncDraft}
+      onChange={syncDraft}
       noValidate
       className="rounded-2xl border-2 border-primary/25 bg-card p-5 shadow-sm"
     >
@@ -293,7 +323,7 @@ export function AddToCartButton({
       productName: product.name,
       productBrand: product.brand,
       size: selectedSize,
-      color: selectedColor,
+      color: selectedColor || '',
       bundle: selectedBundle?.name ?? '',
       bundleUnits: selectedUnits,
       quantity: 1,
@@ -348,6 +378,7 @@ export function AddToCartButton({
 
     try {
       const orderId = await createOrder({
+        checkoutDraftId: getCheckoutDraftId() || undefined,
         customerName: values.customerName.trim(),
         customerPhone: values.customerPhone.trim(),
         customerGovernorate: values.customerGovernorate,
@@ -355,6 +386,7 @@ export function AddToCartButton({
         notes: values.notes.trim() || undefined,
         items: [orderItem()],
       })
+      markCheckoutCompleted()
       toast.success('Commande confirmee avec succes.')
       router.push(`/checkout/success?orderId=${orderId}`)
     } catch (error) {
@@ -454,7 +486,12 @@ export function AddToCartButton({
 
       <p className="text-xs font-medium text-muted-foreground">{stockLabel(remaining)}</p>
 
-      <ProductOrderForm canSelect={canSelect} onOrder={onCommander} onWhatsApp={onWhatsApp} />
+      <ProductOrderForm
+        canSelect={canSelect}
+        onOrder={onCommander}
+        onWhatsApp={onWhatsApp}
+        abandonedItems={[orderItem()]}
+      />
 
       <button
         type="button"
