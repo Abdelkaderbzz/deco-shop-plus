@@ -1,7 +1,8 @@
-export type OrderStatusTone = 'warning' | 'info' | 'violet' | 'success' | 'danger' | 'default'
+export type OrderStatusTone = 'warning' | 'info' | 'violet' | 'success' | 'danger' | 'orange' | 'default'
 
 export const ORDER_STATUS_OPTIONS = [
   { value: 'pending', label: 'En attente', tone: 'warning' as const },
+  { value: 'abandoned', label: 'Abandonnee', tone: 'orange' as const },
   { value: 'confirmed', label: 'Confirme', tone: 'info' as const },
   { value: 'shipped', label: 'Expedie', tone: 'violet' as const },
   { value: 'delivered', label: 'Livre', tone: 'success' as const },
@@ -29,5 +30,7 @@ export const ORDER_STATUS_SELECT_CLS: Record<OrderStatusTone, string> = {
     '!border-emerald-300 !bg-emerald-50 !text-emerald-800 font-semibold focus:!border-emerald-500 focus:!ring-emerald-500/20',
   danger:
     '!border-red-300 !bg-red-50 !text-red-700 font-semibold focus:!border-red-500 focus:!ring-red-500/20',
+  orange:
+    '!border-orange-300 !bg-orange-50 !text-orange-800 font-semibold focus:!border-orange-500 focus:!ring-orange-500/20',
   default: '!border-slate-300 !bg-slate-50 !text-slate-700 font-semibold',
 }

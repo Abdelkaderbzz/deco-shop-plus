@@ -253,22 +253,6 @@ function refineDeliveryAddress(
   }
 }
 
-export const orderEditSchema = z
-  .object({
-    customerName: z.string().min(1, 'Nom requis').max(200, 'Nom trop long'),
-    customerPhone: z
-      .string()
-      .min(1, 'Telephone requis')
-      .min(8, 'Telephone invalide (8 chiffres minimum)'),
-    customerGovernorate: z.string(),
-    customerAddress: z.string(),
-    status: z.string().min(1, 'Statut requis'),
-    notes: z.string().max(500, 'Notes trop longues'),
-  })
-  .superRefine(refineDeliveryAddress)
-
-export type OrderEditFormValues = z.infer<typeof orderEditSchema>
-
 export const orderCreateItemSchema = z.object({
   productId: z.number().int().positive(),
   productName: z.string().min(1),
@@ -280,6 +264,23 @@ export const orderCreateItemSchema = z.object({
   quantity: z.number().int().min(1, 'Quantite invalide').max(99, 'Quantite trop elevee'),
   price: z.number().positive('Prix invalide'),
 })
+
+export const orderEditSchema = z
+  .object({
+    customerName: z.string().min(1, 'Nom requis').max(200, 'Nom trop long'),
+    customerPhone: z
+      .string()
+      .min(1, 'Telephone requis')
+      .min(8, 'Telephone invalide (8 chiffres minimum)'),
+    customerGovernorate: z.string(),
+    customerAddress: z.string(),
+    status: z.string().min(1, 'Statut requis'),
+    notes: z.string().max(500, 'Notes trop longues'),
+    items: z.array(orderCreateItemSchema).min(1, 'Ajoutez au moins un article'),
+  })
+  .superRefine(refineDeliveryAddress)
+
+export type OrderEditFormValues = z.infer<typeof orderEditSchema>
 
 export const orderCreateSchema = z
   .object({
@@ -327,6 +328,37 @@ export const productOrderSchema = z
   .superRefine(refineDeliveryAddress)
 
 export type ProductOrderFormValues = z.infer<typeof productOrderSchema>
+
+const phoneDigits = (value: string) => value.replace(/\D/g, '')
+
+export const abandonedCheckoutItemSchema = z.object({
+  productId: z.number().int().positive(),
+  productName: z.string().min(1).max(200),
+  productBrand: z.string().min(1).max(100),
+  size: z.string().max(40).default(''),
+  color: z.string().max(40).optional(),
+  bundle: z.string().max(60).optional(),
+  bundleUnits: z.number().int().min(1).max(99).optional(),
+  quantity: z.number().int().min(1).max(99),
+  price: z.number().min(0).max(100000),
+})
+
+export const abandonedCheckoutSchema = z.object({
+  draftId: z.string().uuid(),
+  customerName: z.string().trim().min(2).max(200),
+  customerPhone: z
+    .string()
+    .trim()
+    .min(1)
+    .max(40)
+    .refine((value) => phoneDigits(value).length >= 8, 'Telephone invalide'),
+  customerGovernorate: z.string().max(80).optional(),
+  customerAddress: z.string().max(400).optional(),
+  notes: z.string().max(500).optional(),
+  items: z.array(abandonedCheckoutItemSchema).max(30),
+})
+
+export type AbandonedCheckoutValues = z.infer<typeof abandonedCheckoutSchema>
 
 export const BANNER_VARIANTS = ['offer', 'news', 'discount'] as const
 export type BannerVariant = (typeof BANNER_VARIANTS)[number]
