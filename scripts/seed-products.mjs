@@ -290,7 +290,7 @@ const PRODUCTS = [
     aliases: ['Coussin decorative', 'Coussin décorative'],
     brand: 'Deco Shop Plus',
     description:
-      'Coussin décoratif carré en satin luxe, pour le canapé, le fauteuil ou le lit. Matière de fabrication : satin brillant, doux au toucher. Disponible dans la gamme atelier : Rouge, Jaune, Vert, Gris, Beige, Marine, Marron, Bordeaux et Vert pistache. Vendu à l unité ou en pack.',
+      'Coussin décoratif carré en satin luxe, pour le canapé, le fauteuil ou le lit. Matière de fabrication : velours anti-tache. Dimensions : 40 × 40 cm. Disponible dans la gamme atelier : Rouge, Jaune, Vert, Gris, Beige, Marine, Marron, Bordeaux et Vert pistache. Vendu à l unité ou en pack.',
     price: '10.000',
     compareAtPrice: '14.000',
     category: 'coussins',
@@ -303,7 +303,7 @@ const PRODUCTS = [
       IMG.decorativeCushionPurple,
       IMG.decorativeCushionBlue,
     ],
-    sizes: ['Carré'],
+    sizes: ['40 × 40 cm'],
     colors: CATALOG_COLORS,
     bundles: [
       { name: 'Un seul coussin', units: 1, price: 10, compareAtPrice: 14, popular: false },

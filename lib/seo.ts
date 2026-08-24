@@ -5,7 +5,7 @@ import { parseProductBundles } from '@/lib/product-bundles'
 import { parseProductColors } from '@/lib/product-colors'
 import { parseProductImages } from '@/lib/product-images'
 import { parsePrice } from '@/lib/product-price'
-import { hasVariableSizePrices, parseProductSizes } from '@/lib/product-sizes'
+import { hasVariableSizePrices, parseProductSizes, uniqueDimensionLabel } from '@/lib/product-sizes'
 import { PRODUCT_FABRIC, SITE, STORE_FAQS, STORE_RETURN_DAYS } from '@/lib/site'
 import { FACEBOOK_URL, MAPS_URL, WHATSAPP_URL } from '@/lib/social-links'
 import { STORE_CATEGORIES } from '@/lib/store-categories'
@@ -315,6 +315,7 @@ export function productJsonLd(product: {
 }) {
   const fallback = parsePrice(product.price)
   const sizes = parseProductSizes(product.sizes, fallback ?? 0)
+  const dimension = uniqueDimensionLabel(sizes)
   const colors = parseProductColors(product)
   const bundles = parseProductBundles(product)
   const gallery = parseProductImages(product).map(absoluteImageUrl)
@@ -372,6 +373,15 @@ export function productJsonLd(product: {
         name: 'Matière de fabrication',
         value: PRODUCT_FABRIC,
       },
+      ...(dimension
+        ? [
+            {
+              '@type': 'PropertyValue' as const,
+              name: 'Dimensions',
+              value: dimension,
+            },
+          ]
+        : []),
       ...sizes.map((size) => ({
         '@type': 'PropertyValue',
         name: 'Taille',

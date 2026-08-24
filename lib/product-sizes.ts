@@ -87,6 +87,14 @@ export function lowestSizePrice(sizes: ProductSize[], fallback: number): number 
   return Math.min(...prices)
 }
 
+/** Single size that already encodes a measure, e.g. 40 × 40 cm or 70x40x18. */
+export function uniqueDimensionLabel(sizes: ProductSize[]): string | null {
+  if (sizes.length !== 1) return null
+  const name = sizes[0]?.name.trim() ?? ''
+  if (!/\d+\s*[×x*]\s*\d+/.test(name)) return null
+  return name
+}
+
 export function hasVariableSizePrices(sizes: ProductSize[]): boolean {
   if (sizes.length < 2) return false
   const first = sizes[0]?.price

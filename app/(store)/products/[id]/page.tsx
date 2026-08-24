@@ -13,7 +13,7 @@ import { productHref } from '@/lib/catalog-href'
 import { parseProductColors, isPromoActive } from '@/lib/product-colors'
 import { parseProductBundles } from '@/lib/product-bundles'
 import { parseProductImages } from '@/lib/product-images'
-import { hasVariableSizePrices, parseProductSizes } from '@/lib/product-sizes'
+import { hasVariableSizePrices, parseProductSizes, uniqueDimensionLabel } from '@/lib/product-sizes'
 import { breadcrumbJsonLd, pageAlternates, productJsonLd, productMetaDescription } from '@/lib/seo'
 import { PRODUCT_FABRIC, SITE } from '@/lib/site'
 import { isNumericProductParam } from '@/lib/slug'
@@ -126,6 +126,7 @@ export default async function ProductDetailPage({
   const categoryLabel = getCategoryLabel(product.category, categories)
 
   const sizes = parseProductSizes(product.sizes, Number.parseFloat(product.price) || 0)
+  const dimension = uniqueDimensionLabel(sizes)
   const colors = parseProductColors(product)
   const bundles = parseProductBundles(product)
   const images = parseProductImages(product)
@@ -189,6 +190,12 @@ export default async function ProductDetailPage({
           <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm">
             <dt className="text-muted-foreground">Matière de fabrication</dt>
             <dd className="font-medium text-foreground">{PRODUCT_FABRIC}</dd>
+            {dimension ? (
+              <>
+                <dt className="text-muted-foreground">Dimensions</dt>
+                <dd className="font-medium text-foreground">{dimension}</dd>
+              </>
+            ) : null}
           </dl>
 
           {!product.inStock ? (
