@@ -82,7 +82,7 @@ export function ProductCard({
       <Link
         href={productHref(product)}
         prefetch={false}
-        className="block w-56 shrink-0 sm:w-66"
+        className="block w-64 shrink-0 sm:w-72 md:w-80"
       >
         <div className="overflow-hidden rounded-md border border-border bg-card">
           <div className="relative aspect-[4/5] overflow-hidden bg-secondary">
@@ -91,7 +91,7 @@ export function ProductCard({
                 src={product.imageUrl}
                 alt={`${product.brand} ${product.name}`}
                 fill
-                sizes="(max-width: 640px) 224px, 264px"
+                sizes="(max-width: 640px) 256px, (max-width: 768px) 288px, 320px"
                 quality={70}
                 className="object-cover"
               />

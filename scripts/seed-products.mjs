@@ -103,6 +103,9 @@ const IMG = {
   storageBoxLot5Zip: '/assets/storage-box-lot5-zip.webp',
   storageBoxLot5Fabric: '/assets/storage-box-lot5-fabric.webp',
   storageBoxLot5Closet: '/assets/storage-box-lot5-closet.webp',
+  storageCubeLot5Hero: '/assets/storage-cube-lot5-hero.webp',
+  storageCubeLot5Size: '/assets/storage-cube-lot5-size.webp',
+  storageCubeLot5Features: '/assets/storage-cube-lot5-features.webp',
 }
 
 /** @typedef {{
@@ -243,7 +246,7 @@ const PRODUCTS = [
     promoLabel: 'Promotion',
     published: false,
     featured: false,
-    related: ['chairPad', 'chairPadBackrest', 'chairPadPack4', 'rugCoverStorage', 'storageBoxLot5'],
+    related: ['chairPad', 'chairPadBackrest', 'chairPadPack4', 'rugCoverStorage', 'storageBoxLot5', 'storageCubeLot5'],
   },
   {
     key: 'sr01',
@@ -262,7 +265,7 @@ const PRODUCTS = [
     promoLabel: 'Promotion',
     published: false,
     featured: false,
-    related: ['chairPad', 'chairPadBackrest', 'chairPadPack4', 'rugCoverStorage', 'storageBoxLot5'],
+    related: ['chairPad', 'chairPadBackrest', 'chairPadPack4', 'rugCoverStorage', 'storageBoxLot5', 'storageCubeLot5'],
   },
   {
     key: 'rugCoverStorage',
@@ -290,7 +293,7 @@ const PRODUCTS = [
     ],
     colors: RUG_COVER_COLORS,
     featured: true,
-    related: ['sr01', 'hc01', 'storageBoxLot5'],
+    related: ['sr01', 'hc01', 'storageBoxLot5', 'storageCubeLot5'],
   },
   {
     key: 'chairPadPack4',
@@ -500,7 +503,34 @@ const PRODUCTS = [
     promoEnabled: true,
     promoLabel: 'Promotion',
     featured: true,
-    related: ['rugCoverStorage', 'sr01', 'hc01'],
+    related: ['rugCoverStorage', 'sr01', 'hc01', 'storageCubeLot5'],
+  },
+  {
+    key: 'storageCubeLot5',
+    name: 'Lot de 5 Cubes de Rangement Pliables – 50 × 40 × 40 cm',
+    aliases: [
+      'Pack de 5 cubes de rangement',
+      'Cubes de rangement pliables 50x40x40',
+      '5 cubes de rangement',
+    ],
+    brand: 'Deco Shop Plus',
+    description:
+      'Lot de 5 cubes de rangement pliables en tissu matelasse gris. Format 50 x 40 x 40 cm, fenetre transparente, fermeture eclair robuste et poignees renforcees. Protege contre la poussiere et l humidite, se plie facilement une fois vide. Ideal pour vetements, couvertures, couettes et oreillers.',
+    price: '40.000',
+    compareAtPrice: '46.000',
+    category: 'rangement',
+    image: IMG.storageCubeLot5Hero,
+    images: [
+      IMG.storageCubeLot5Hero,
+      IMG.storageCubeLot5Size,
+      IMG.storageCubeLot5Features,
+    ],
+    sizes: ['50 × 40 × 40 cm'],
+    colors: [{ name: 'Gris', hex: '#6b7280' }],
+    promoEnabled: true,
+    promoLabel: 'Promotion',
+    featured: true,
+    related: ['storageBoxLot5', 'rugCoverStorage', 'sr01', 'hc01'],
   },
 ]
 
