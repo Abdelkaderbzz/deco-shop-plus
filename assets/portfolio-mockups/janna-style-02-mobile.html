@@ -2,105 +2,82 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <title>02 — Boutique dans la poche</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet" />
+  <title>La boutique dans la poche</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
-    :root {
-      --cream: #f3f6f4;
-      --card: #fbfcfa;
-      --teal: #0f5c64;
-      --ink: #1a2220;
-      --muted: #6a7a76;
-      --accent: #0f5c64;
-    }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: var(--cream); font-family: Manrope, sans-serif; color: var(--ink); }
     .stage {
       width: 1080px; height: 1920px;
-      padding: 80px 56px 56px;
+      padding: 88px 64px 72px;
+      background: #efece6;
       display: flex; flex-direction: column; align-items: center;
+      font-family: Outfit, sans-serif; color: #1c2422;
     }
-    .eyebrow {
-      font-size: 14px; letter-spacing: 0.32em; text-transform: uppercase;
-      color: var(--accent); font-weight: 600; margin-bottom: 14px;
+    .kicker {
+      font-size: 13px; letter-spacing: 0.38em; text-transform: uppercase;
+      color: #0f5c64; font-weight: 600; margin-bottom: 14px;
     }
-    h1 {
+    .lead {
       font-family: "Cormorant Garamond", serif;
-      font-size: 58px; font-weight: 600; text-align: center;
-      line-height: 1.05; margin-bottom: 40px; max-width: 14ch;
+      font-size: 54px; font-weight: 600; text-align: center;
+      line-height: 1.06; margin-bottom: 42px; max-width: 13ch;
     }
-    .card {
+    .photo {
       width: 100%; flex: 1; border-radius: 36px; overflow: hidden;
-      background: linear-gradient(165deg, #eef4f2, #dce7e4 55%, #cfdcd8);
-      box-shadow: 0 24px 60px rgba(15,92,100,.1);
       position: relative;
-      min-height: 1180px;
-    }
-    .glow {
-      position: absolute; inset: 0;
       background:
-        radial-gradient(circle at 70% 40%, rgba(255,255,255,.55), transparent 45%),
-        radial-gradient(circle at 20% 80%, rgba(15,92,100,.12), transparent 40%);
+        radial-gradient(circle at 78% 38%, rgba(255,255,255,.55), transparent 42%),
+        linear-gradient(165deg, #e8eeea 0%, #d5dfdb 55%, #c8d4cf 100%);
+      box-shadow: 0 28px 70px rgba(15, 92, 100, 0.12);
+    }
+    .bg-prop {
+      position: absolute; right: -4%; bottom: 8%;
+      width: 58%; transform: rotate(5deg);
+      filter: drop-shadow(0 28px 36px rgba(13,21,20,.28));
+      border-radius: 18px;
     }
     .phone {
-      position: absolute;
-      left: 9%;
-      bottom: 10%;
-      width: 360px;
-      background: #0f1211;
-      border-radius: 42px;
+      position: absolute; left: 8%; top: 9%;
+      width: 390px;
+      background: #0c0e0d;
+      border-radius: 46px;
       padding: 12px;
       border: 2px solid #2a312f;
-      filter: drop-shadow(0 30px 40px rgba(13,21,20,.35));
+      box-shadow: 0 40px 70px rgba(13,21,20,.38);
       z-index: 2;
     }
-    .phone-screen {
-      border-radius: 32px; overflow: hidden; aspect-ratio: 390 / 844; background: #111;
+    .notch {
+      position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
+      width: 92px; height: 20px; background: #0c0e0d; border-radius: 20px; z-index: 3;
     }
-    .phone-screen img {
-      width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block;
+    .screen {
+      border-radius: 36px; overflow: hidden; aspect-ratio: 390/844; background: #111;
     }
-    .prop {
-      position: absolute;
-      right: 6%;
-      bottom: 16%;
-      width: 420px;
-      border-radius: 18px;
-      filter: drop-shadow(0 24px 30px rgba(13,21,20,.28));
-      z-index: 1;
-      transform: rotate(4deg);
-    }
-    .footer {
-      margin-top: 32px; text-align: center; width: 100%;
-    }
-    .cats {
-      color: var(--muted); font-size: 17px; letter-spacing: 0.04em; margin-bottom: 22px;
-    }
-    .agency-label {
-      font-size: 12px; letter-spacing: 0.28em; text-transform: uppercase;
-      color: var(--teal); font-weight: 600; margin-bottom: 8px;
-    }
-    .agency-name { font-size: 28px; font-weight: 600; }
-    .agency-name span { color: #2f8f4e; margin-right: 6px; }
+    .screen img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+    .footer { margin-top: 36px; text-align: center; width: 100%; }
+    .line { color: #6a7a76; font-size: 16px; margin-bottom: 22px; }
+    .made { font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase; color: #0f5c64; font-weight: 600; margin-bottom: 8px; }
+    .agency { font-size: 26px; font-weight: 600; }
+    .agency i { font-style: normal; color: #2f8f4e; margin-right: 7px; }
   </style>
 </head>
 <body>
   <div class="stage">
-    <p class="eyebrow">Réalisation</p>
-    <h1>La boutique dans la poche</h1>
-    <div class="card">
-      <div class="glow"></div>
+    <p class="kicker">Réalisation</p>
+    <p class="lead">La boutique dans la poche</p>
+    <div class="photo">
+      <img class="bg-prop" src="prop-cushions.webp" alt="" />
       <div class="phone">
-        <div class="phone-screen">
-          <img src="04-home-mobile.png" alt="Mobile" />
+        <div class="notch"></div>
+        <div class="screen">
+          <img src="04-home-mobile.png" alt="Accueil mobile" />
         </div>
       </div>
-      <img class="prop" src="prop-cushions.webp" alt="Coussins" />
     </div>
     <div class="footer">
-      <p class="cats">Coussins · Galettes · Packs · WhatsApp</p>
-      <p class="agency-label">Une réalisation</p>
-      <p class="agency-name"><span>✦</span>revixa</p>
+      <p class="line">Coussins · Galettes · Packs · WhatsApp</p>
+      <p class="made">Une réalisation</p>
+      <p class="agency"><i>✦</i>revixa</p>
     </div>
   </div>
 </body>

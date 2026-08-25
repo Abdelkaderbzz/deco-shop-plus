@@ -2,243 +2,162 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <title>01 — Étude de cas Deco Shop Plus</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet" />
+  <title>Deco Shop Plus — Étude de cas</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
-    :root {
-      --cream: #f3f6f4;
-      --card: #fbfcfa;
-      --teal: #0f5c64;
-      --teal-soft: #3d9aa0;
-      --ink: #1a2220;
-      --muted: #6a7a76;
-      --line: #c5a35a;
-    }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: var(--cream); font-family: Manrope, sans-serif; color: var(--ink); }
+    body { background: #efece6; }
     .stage {
       width: 1080px;
       height: 1920px;
-      padding: 72px 56px 56px;
+      padding: 88px 64px 72px;
+      background: #efece6;
       display: flex;
       flex-direction: column;
       align-items: center;
+      font-family: Outfit, sans-serif;
+      color: #1c2422;
     }
-    .top-label {
+    .kicker {
+      font-size: 13px;
+      letter-spacing: 0.38em;
+      text-transform: uppercase;
+      color: #0f5c64;
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+    .lead {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 56px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 42px;
+    }
+    .photo {
+      width: 100%;
+      flex: 1;
+      border-radius: 36px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 28px 70px rgba(15, 92, 100, 0.12);
+      background: #d8d2c8;
+    }
+    .photo img.scene {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 42%;
+      display: block;
+    }
+    .photo .veil {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(251,252,250,.18) 0%, transparent 22%, transparent 78%, rgba(15,21,20,.18) 100%);
+      pointer-events: none;
+    }
+    .caption {
+      position: absolute;
+      left: 40px;
+      top: 40px;
+      z-index: 2;
+    }
+    .caption .small {
       font-size: 13px;
       letter-spacing: 0.32em;
       text-transform: uppercase;
-      color: var(--teal);
-      font-weight: 600;
-      margin-bottom: 10px;
-    }
-    .top-title {
-      font-family: "Cormorant Garamond", serif;
-      font-size: 34px;
-      font-weight: 600;
-      margin-bottom: 36px;
-    }
-    .card {
-      width: 100%;
-      flex: 1;
-      background: var(--card);
-      border-radius: 36px;
-      padding: 48px 40px 36px;
-      box-shadow: 0 24px 60px rgba(15, 92, 100, 0.08);
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      overflow: hidden;
-    }
-    .card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(ellipse at 30% 70%, rgba(15,92,100,.05), transparent 50%),
-        linear-gradient(180deg, #fbfcfa 0%, #eef3f1 100%);
-      z-index: 0;
-    }
-    .card > * { position: relative; z-index: 1; }
-    .brand-row {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-      margin-bottom: 22px;
-    }
-    .brand-row img {
-      width: 86px;
-      height: 86px;
-      border-radius: 50%;
-      object-fit: cover;
-      box-shadow: 0 8px 20px rgba(15,92,100,.18);
-    }
-    .eyebrow {
-      font-size: 14px;
-      letter-spacing: 0.28em;
-      text-transform: uppercase;
-      color: var(--line);
+      color: #b08d4a;
       font-weight: 600;
       margin-bottom: 8px;
     }
-    h1 {
+    .caption h2 {
       font-family: "Cormorant Garamond", serif;
-      font-size: 64px;
-      line-height: 1.02;
+      font-size: 42px;
       font-weight: 600;
-      letter-spacing: -0.02em;
+      color: #1c2422;
+      text-shadow: 0 1px 0 rgba(255,255,255,.35);
     }
-    .divider {
-      width: 120px;
+    .rule {
+      width: 88px;
       height: 1px;
-      background: var(--line);
-      margin: 18px 0 14px;
+      background: #b08d4a;
+      margin: 14px 0 12px;
       position: relative;
     }
-    .divider::after {
+    .rule::after {
       content: "◆";
       position: absolute;
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
-      background: var(--card);
-      padding: 0 8px;
-      color: var(--line);
-      font-size: 10px;
+      font-size: 9px;
+      color: #b08d4a;
+      background: transparent;
     }
-    .tagline {
-      color: var(--muted);
-      font-size: 18px;
-      letter-spacing: 0.02em;
+    .caption p {
+      font-size: 15px;
+      color: #4a5b58;
     }
-    .scene {
-      flex: 1;
-      margin-top: 28px;
-      border-radius: 24px;
-      background:
-        linear-gradient(160deg, #e8eeec, #d9e4e1 45%, #cfdcd8);
-      position: relative;
-      overflow: hidden;
-      min-height: 920px;
-      box-shadow: inset 0 0 0 1px rgba(15,92,100,.06);
-    }
-    .marble {
+    .logo-mark {
       position: absolute;
-      inset: 18% 0 0;
-      background:
-        radial-gradient(circle at 20% 30%, rgba(255,255,255,.55), transparent 40%),
-        linear-gradient(180deg, #ebe7e0 0%, #d8d2c8 100%);
-      border-radius: 40% 40% 0 0 / 18% 18% 0 0;
-    }
-    .laptop {
-      position: absolute;
-      left: 50%;
-      bottom: 11%;
-      transform: translateX(-42%);
-      width: 620px;
-      filter: drop-shadow(0 28px 40px rgba(13,21,20,.28));
-    }
-    .laptop-lid {
-      background: #1c1f1e;
-      border-radius: 12px 12px 0 0;
-      border: 9px solid #232726;
-      border-bottom: 0;
-      overflow: hidden;
-      aspect-ratio: 16 / 10.2;
-    }
-    .laptop-lid img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: top center;
-      display: block;
-    }
-    .laptop-base {
-      height: 14px;
-      background: linear-gradient(180deg, #2c3230, #171a19);
-      border-radius: 0 0 8px 8px;
-    }
-    .prop {
-      position: absolute;
-      left: 4%;
-      bottom: 14%;
-      width: 220px;
-      filter: drop-shadow(0 18px 24px rgba(13,21,20,.25));
-      border-radius: 12px;
-    }
-    .logo-badge {
-      position: absolute;
-      left: 8%;
-      bottom: 42%;
-      width: 92px;
-      height: 92px;
+      left: 40px;
+      bottom: 40px;
+      width: 78px;
+      height: 78px;
       border-radius: 50%;
       object-fit: cover;
-      box-shadow: 0 10px 24px rgba(15,92,100,.25);
-      border: 3px solid white;
+      border: 3px solid #fff;
+      box-shadow: 0 10px 24px rgba(13,21,20,.22);
+      z-index: 2;
     }
     .footer {
-      margin-top: 28px;
+      margin-top: 36px;
       text-align: center;
       width: 100%;
     }
-    .footer p {
-      color: var(--muted);
+    .footer .line {
+      color: #6a7a76;
       font-size: 16px;
-      margin-bottom: 18px;
+      margin-bottom: 22px;
     }
-    .agency-label {
-      font-size: 12px;
-      letter-spacing: 0.28em;
+    .made {
+      font-size: 11px;
+      letter-spacing: 0.32em;
       text-transform: uppercase;
-      color: var(--teal);
+      color: #0f5c64;
       font-weight: 600;
       margin-bottom: 8px;
     }
-    .agency-name {
-      font-size: 28px;
+    .agency {
+      font-size: 26px;
       font-weight: 600;
-      letter-spacing: 0.04em;
-      color: var(--ink);
+      letter-spacing: 0.02em;
     }
-    .agency-name span {
+    .agency i {
+      font-style: normal;
       color: #2f8f4e;
-      margin-right: 6px;
+      margin-right: 7px;
     }
   </style>
 </head>
 <body>
   <div class="stage">
-    <p class="top-label">Étude de cas</p>
-    <p class="top-title">Deco Shop Plus</p>
-    <div class="card">
-      <div class="brand-row">
-        <img src="logo.webp" alt="Deco Shop Plus" />
-        <div>
-          <p class="eyebrow">Étude de cas</p>
-          <h1>Deco Shop Plus</h1>
-          <div class="divider"></div>
-          <p class="tagline">Boutique e-commerce • Maison & coussins • Tunisie</p>
-        </div>
+    <p class="kicker">Étude de cas</p>
+    <p class="lead">Deco Shop Plus</p>
+    <div class="photo">
+      <img class="scene" src="scene-cover-laptop-live.png" alt="Deco Shop Plus sur ordinateur" />
+      <div class="veil"></div>
+      <div class="caption">
+        <p class="small">Étude de cas</p>
+        <h2>Deco Shop Plus</h2>
+        <div class="rule"></div>
+        <p>Boutique e-commerce • Maison & coussins • Tunisie</p>
       </div>
-      <div class="scene">
-        <div class="marble"></div>
-        <img class="logo-badge" src="logo.webp" alt="" />
-        <img class="prop" src="prop-cushions.webp" alt="" />
-        <div class="laptop">
-          <div class="laptop-lid">
-            <img src="01-home-desktop.png" alt="Homepage" />
-          </div>
-          <div class="laptop-base"></div>
-        </div>
-      </div>
+      <img class="logo-mark" src="logo.webp" alt="Deco Shop Plus" />
     </div>
     <div class="footer">
-      <p>Boutique e-commerce • Maison & coussins • Tunisie</p>
-      <p class="agency-label">Une réalisation</p>
-      <p class="agency-name"><span>✦</span>revixa</p>
+      <p class="line">Boutique e-commerce • Maison & coussins • Tunisie</p>
+      <p class="made">Une réalisation</p>
+      <p class="agency"><i>✦</i>revixa</p>
     </div>
   </div>
 </body>

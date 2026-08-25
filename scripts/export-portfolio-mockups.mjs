@@ -10,6 +10,10 @@ const exports = [
   { html: 'janna-style-02-mobile.html', out: '02-boutique-poche-story.png', width: 1080, height: 1920 },
   { html: 'janna-style-03-agence.html', out: '03-ecommerce-pret-story.png', width: 1080, height: 1920 },
   { html: 'janna-style-04-devices.html', out: '04-web-mobile-story.png', width: 1080, height: 1920 },
+  { html: 'wa-01-cover.html', out: 'wa-01-cover-1080.png', width: 1080, height: 1080 },
+  { html: 'wa-02-mobile.html', out: 'wa-02-mobile-1080.png', width: 1080, height: 1080 },
+  { html: 'wa-03-pret.html', out: 'wa-03-pret-1080.png', width: 1080, height: 1080 },
+  { html: 'wa-04-devices.html', out: 'wa-04-devices-1080.png', width: 1080, height: 1080 },
 ]
 
 const browser = await chromium.launch()

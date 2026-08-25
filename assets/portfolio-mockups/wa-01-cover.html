@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>Catalogue — Cover</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Outfit:wght@500;600&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    .stage {
+      width: 1080px; height: 1080px;
+      padding: 48px 48px 40px;
+      background: #efece6;
+      display: flex; flex-direction: column; align-items: center;
+      font-family: Outfit, sans-serif; color: #1c2422;
+    }
+    .kicker {
+      font-size: 13px; letter-spacing: 0.36em; text-transform: uppercase;
+      color: #0f5c64; font-weight: 600; margin-bottom: 8px;
+    }
+    .lead {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 52px; font-weight: 600; margin-bottom: 22px;
+    }
+    .photo {
+      width: 100%; flex: 1; border-radius: 28px; overflow: hidden; position: relative;
+      box-shadow: 0 22px 50px rgba(15,92,100,.12);
+    }
+    .photo img.scene {
+      width: 100%; height: 100%; object-fit: cover; object-position: center 48%; display: block;
+    }
+    .logo-mark {
+      position: absolute; left: 22px; bottom: 22px;
+      width: 64px; height: 64px; border-radius: 50%; object-fit: cover;
+      border: 3px solid #fff; box-shadow: 0 8px 18px rgba(13,21,20,.22);
+    }
+    .footer {
+      margin-top: 18px; text-align: center; width: 100%;
+      font-size: 15px; color: #6a7a76;
+    }
+    .agency { margin-top: 8px; font-size: 20px; font-weight: 600; color: #1c2422; }
+    .agency i { font-style: normal; color: #2f8f4e; margin-right: 6px; }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <p class="kicker">Étude de cas</p>
+    <p class="lead">Deco Shop Plus</p>
+    <div class="photo">
+      <img class="scene" src="scene-cover-laptop-live.png" alt="" />
+      <img class="logo-mark" src="logo.webp" alt="" />
+    </div>
+    <p class="footer">Boutique e-commerce • Maison & coussins • Tunisie</p>
+    <p class="agency"><i>✦</i>revixa</p>
+  </div>
+</body>
+</html>

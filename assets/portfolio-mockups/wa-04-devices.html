@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>Catalogue — Web & mobile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Outfit:wght@500;600&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    .stage {
+      width: 1080px; height: 1080px;
+      padding: 44px 48px 36px;
+      background: #efece6;
+      display: flex; flex-direction: column; align-items: center;
+      font-family: Outfit, sans-serif; color: #1c2422;
+    }
+    .kicker {
+      font-size: 13px; letter-spacing: 0.36em; text-transform: uppercase;
+      color: #0f5c64; font-weight: 600; margin-bottom: 8px;
+    }
+    .lead {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 44px; font-weight: 600; margin-bottom: 18px; text-align: center;
+    }
+    .photo {
+      width: 100%; flex: 1; border-radius: 28px; overflow: hidden; position: relative;
+      background: linear-gradient(165deg, #f4efe6, #e6dccb 50%, #d8ccb8);
+      box-shadow: 0 22px 50px rgba(15,92,100,.12);
+    }
+    .laptop {
+      position: absolute; left: 3%; top: 10%; width: 70%;
+      filter: drop-shadow(0 22px 30px rgba(13,21,20,.28));
+    }
+    .lid {
+      background: #151817; border: 8px solid #1f2422; border-bottom: 0;
+      border-radius: 10px 10px 0 0; overflow: hidden; aspect-ratio: 16/10;
+    }
+    .lid img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+    .base { height: 12px; background: linear-gradient(180deg,#2a302e,#141716); border-radius: 0 0 7px 7px; }
+    .phone {
+      position: absolute; right: 6%; top: 14%; width: 220px;
+      background: #0c0e0d; border-radius: 30px; padding: 8px;
+      border: 2px solid #2a312f; z-index: 2;
+      box-shadow: 0 24px 40px rgba(13,21,20,.36);
+    }
+    .ps { border-radius: 24px; overflow: hidden; aspect-ratio: 390/844; background: #111; }
+    .ps img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+    .footer { margin-top: 16px; text-align: center; width: 100%; font-size: 15px; color: #6a7a76; }
+    .agency { margin-top: 8px; font-size: 20px; font-weight: 600; }
+    .agency i { font-style: normal; color: #2f8f4e; margin-right: 6px; }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <p class="kicker">Web & mobile</p>
+    <p class="lead">Un magasin élégant, partout</p>
+    <div class="photo">
+      <div class="laptop">
+        <div class="lid"><img src="01-home-desktop.png" alt="" /></div>
+        <div class="base"></div>
+      </div>
+      <div class="phone">
+        <div class="ps"><img src="05-product-mobile.png" alt="" /></div>
+      </div>
+    </div>
+    <p class="footer">Pensé pour le web et le téléphone</p>
+    <p class="agency"><i>✦</i>revixa</p>
+  </div>
+</body>
+</html>
