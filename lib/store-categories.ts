@@ -41,8 +41,8 @@ export const SHOWCASE_GALLERY: ShowcaseImage[] = [
   { src: '/assets/sofa-cushion-colors.webp', alt: 'Coussin de canape', category: 'coussins' },
   { src: '/assets/reading-pillow-colors.webp', alt: 'Coussin de lecture', category: 'coussins' },
   { src: '/assets/headboard-cushion-colors.webp', alt: 'Coussin de tete de lit', category: 'coussins' },
-  { src: '/assets/rug-cover-hero.webp', alt: 'Housse de rangement pour tapis', category: 'rangement' },
-  { src: '/assets/rug-cover-organized.webp', alt: 'Rangement tapis organise', category: 'rangement' },
+  { src: '/assets/rug-cover-primary.webp', alt: 'Housse de rangement pour tapis', category: 'rangement' },
+  { src: '/assets/rug-cover-rangement-optimise.webp', alt: 'Rangement tapis organise', category: 'rangement' },
   { src: '/assets/sr01.webp', alt: 'Sac de rangement vetements', category: 'rangement' },
 ]
 
