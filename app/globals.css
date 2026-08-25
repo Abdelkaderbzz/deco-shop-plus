@@ -117,10 +117,12 @@ html {
   }
   html.storefront {
     font-size: 87.5%;
+    --container-7xl: 96rem;
   }
   @media (min-width: 768px) {
     html.storefront {
       font-size: 80%;
+      --container-7xl: 96rem;
     }
   }
   * {

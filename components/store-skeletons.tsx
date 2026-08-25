@@ -10,7 +10,7 @@ export function ProductGridSkeleton({ count = 8 }: { count?: number }) {
   return (
     <div className="mx-auto max-w-7xl px-2 py-14 sm:px-3 md:py-16">
       <div className="mx-auto mb-10 h-8 w-48 animate-pulse rounded bg-muted/50" />
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 xl:grid-cols-4">
         {Array.from({ length: count }).map((_, index) => (
           <div key={index} className="space-y-3">
             <div className="aspect-[4/5] animate-pulse rounded-md bg-muted/50" />
@@ -47,7 +47,7 @@ export function CatalogSkeleton() {
           ))}
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 xl:grid-cols-4">
         {Array.from({ length: 8 }).map((_, index) => (
           <div key={index} className="space-y-3">
             <div className="aspect-[3/4] animate-pulse rounded-xl bg-muted/50" />
