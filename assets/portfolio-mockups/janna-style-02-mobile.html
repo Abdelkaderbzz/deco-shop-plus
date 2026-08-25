@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>02 — Boutique dans la poche</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --cream: #f3f6f4;
+      --card: #fbfcfa;
+      --teal: #0f5c64;
+      --ink: #1a2220;
+      --muted: #6a7a76;
+      --accent: #0f5c64;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--cream); font-family: Manrope, sans-serif; color: var(--ink); }
+    .stage {
+      width: 1080px; height: 1920px;
+      padding: 80px 56px 56px;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .eyebrow {
+      font-size: 14px; letter-spacing: 0.32em; text-transform: uppercase;
+      color: var(--accent); font-weight: 600; margin-bottom: 14px;
+    }
+    h1 {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 58px; font-weight: 600; text-align: center;
+      line-height: 1.05; margin-bottom: 40px; max-width: 14ch;
+    }
+    .card {
+      width: 100%; flex: 1; border-radius: 36px; overflow: hidden;
+      background: linear-gradient(165deg, #eef4f2, #dce7e4 55%, #cfdcd8);
+      box-shadow: 0 24px 60px rgba(15,92,100,.1);
+      position: relative;
+      min-height: 1180px;
+    }
+    .glow {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(circle at 70% 40%, rgba(255,255,255,.55), transparent 45%),
+        radial-gradient(circle at 20% 80%, rgba(15,92,100,.12), transparent 40%);
+    }
+    .phone {
+      position: absolute;
+      left: 9%;
+      bottom: 10%;
+      width: 360px;
+      background: #0f1211;
+      border-radius: 42px;
+      padding: 12px;
+      border: 2px solid #2a312f;
+      filter: drop-shadow(0 30px 40px rgba(13,21,20,.35));
+      z-index: 2;
+    }
+    .phone-screen {
+      border-radius: 32px; overflow: hidden; aspect-ratio: 390 / 844; background: #111;
+    }
+    .phone-screen img {
+      width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block;
+    }
+    .prop {
+      position: absolute;
+      right: 6%;
+      bottom: 16%;
+      width: 420px;
+      border-radius: 18px;
+      filter: drop-shadow(0 24px 30px rgba(13,21,20,.28));
+      z-index: 1;
+      transform: rotate(4deg);
+    }
+    .footer {
+      margin-top: 32px; text-align: center; width: 100%;
+    }
+    .cats {
+      color: var(--muted); font-size: 17px; letter-spacing: 0.04em; margin-bottom: 22px;
+    }
+    .agency-label {
+      font-size: 12px; letter-spacing: 0.28em; text-transform: uppercase;
+      color: var(--teal); font-weight: 600; margin-bottom: 8px;
+    }
+    .agency-name { font-size: 28px; font-weight: 600; }
+    .agency-name span { color: #2f8f4e; margin-right: 6px; }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <p class="eyebrow">Réalisation</p>
+    <h1>La boutique dans la poche</h1>
+    <div class="card">
+      <div class="glow"></div>
+      <div class="phone">
+        <div class="phone-screen">
+          <img src="04-home-mobile.png" alt="Mobile" />
+        </div>
+      </div>
+      <img class="prop" src="prop-cushions.webp" alt="Coussins" />
+    </div>
+    <div class="footer">
+      <p class="cats">Coussins · Galettes · Packs · WhatsApp</p>
+      <p class="agency-label">Une réalisation</p>
+      <p class="agency-name"><span>✦</span>revixa</p>
+    </div>
+  </div>
+</body>
+</html>

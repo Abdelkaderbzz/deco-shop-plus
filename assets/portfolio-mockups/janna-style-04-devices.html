@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>04 — Web & Mobile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --cream: #f3f6f4;
+      --teal: #0f5c64;
+      --ink: #1a2220;
+      --muted: #6a7a76;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--cream); font-family: Manrope, sans-serif; color: var(--ink); }
+    .stage {
+      width: 1080px; height: 1920px;
+      padding: 80px 56px 56px;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .eyebrow {
+      font-size: 14px; letter-spacing: 0.32em; text-transform: uppercase;
+      color: var(--teal); font-weight: 600; margin-bottom: 12px;
+    }
+    h1 {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 54px; font-weight: 600; text-align: center;
+      line-height: 1.08; margin-bottom: 40px; max-width: 14ch;
+    }
+    .card {
+      width: 100%; flex: 1; border-radius: 36px; overflow: hidden;
+      background: linear-gradient(165deg, #f7f3ec, #ebe4d8 50%, #ddd4c6);
+      box-shadow: 0 24px 60px rgba(15,92,100,.1);
+      position: relative; min-height: 1180px;
+    }
+    .laptop {
+      position: absolute;
+      left: 4%;
+      top: 12%;
+      width: 640px;
+      filter: drop-shadow(0 28px 36px rgba(13,21,20,.28));
+      z-index: 1;
+    }
+    .lid {
+      background: #1c1f1e; border: 9px solid #232726; border-bottom: 0;
+      border-radius: 12px 12px 0 0; overflow: hidden; aspect-ratio: 16/10;
+    }
+    .lid img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+    .base { height: 14px; background: linear-gradient(180deg,#2c3230,#171a19); border-radius: 0 0 8px 8px; }
+    .phone {
+      position: absolute;
+      right: 7%;
+      top: 22%;
+      width: 280px;
+      background: #0f1211;
+      border-radius: 36px;
+      padding: 10px;
+      border: 2px solid #2a312f;
+      filter: drop-shadow(0 26px 34px rgba(13,21,20,.35));
+      z-index: 2;
+    }
+    .phone-screen {
+      border-radius: 28px; overflow: hidden; aspect-ratio: 390/844; background: #111;
+    }
+    .phone-screen img {
+      width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block;
+    }
+    .prop {
+      position: absolute;
+      left: 8%;
+      bottom: 7%;
+      width: 280px;
+      border-radius: 14px;
+      filter: drop-shadow(0 16px 22px rgba(13,21,20,.25));
+      z-index: 3;
+    }
+    .prop2 {
+      position: absolute;
+      right: 10%;
+      bottom: 8%;
+      width: 200px;
+      border-radius: 14px;
+      filter: drop-shadow(0 16px 22px rgba(13,21,20,.25));
+      z-index: 3;
+      transform: rotate(-6deg);
+    }
+    .footer {
+      margin-top: 32px; text-align: center; width: 100%;
+    }
+    .footer p { color: var(--muted); font-size: 18px; margin-bottom: 18px; }
+    .agency-label {
+      font-size: 12px; letter-spacing: 0.28em; text-transform: uppercase;
+      color: var(--teal); font-weight: 600; margin-bottom: 8px;
+    }
+    .agency-name { font-size: 28px; font-weight: 600; }
+    .agency-name span { color: #2f8f4e; margin-right: 6px; }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <p class="eyebrow">Web & mobile</p>
+    <h1>Un magasin élégant, partout</h1>
+    <div class="card">
+      <div class="laptop">
+        <div class="lid"><img src="01-home-desktop.png" alt="Desktop" /></div>
+        <div class="base"></div>
+      </div>
+      <div class="phone">
+        <div class="phone-screen">
+          <img src="05-product-mobile.png" alt="Mobile" />
+        </div>
+      </div>
+      <img class="prop" src="prop-galettes.webp" alt="Galettes" />
+      <img class="prop2" src="prop-cushion-red.webp" alt="Coussin" />
+    </div>
+    <div class="footer">
+      <p>Pensé pour le web et le téléphone</p>
+      <p class="agency-label">Une réalisation</p>
+      <p class="agency-name"><span>✦</span>revixa</p>
+    </div>
+  </div>
+</body>
+</html>

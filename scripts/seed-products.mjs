@@ -33,8 +33,8 @@ function slugify(value) {
 }
 
 const CATEGORIES = [
-  { name: 'Coussins', slug: 'coussins' },
-  { name: 'Rangement', slug: 'rangement' },
+  { name: 'Coussins', slug: 'coussins', bannerUrl: '/categories/coussins.webp' },
+  { name: 'Rangement', slug: 'rangement', bannerUrl: '/categories/rangement.webp' },
 ]
 
 const OLD_CATEGORY_SLUGS = ['femme', 'homme', 'parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous', 'textiles', 'accessoires']
@@ -82,6 +82,19 @@ const IMG = {
   decorativeCushionOrange: '/assets/decorative-cushion-orange.webp',
   decorativeCushionPurple: '/assets/decorative-cushion-purple.webp',
   decorativeCushionBlue: '/assets/decorative-cushion-blue.webp',
+  bolsterCushionColors: '/assets/bolster-cushion-colors.webp',
+  bolsterCushionRug: '/assets/bolster-cushion-rug.webp',
+  bolsterCushionBed: '/assets/bolster-cushion-bed.webp',
+  bolsterCushionSide: '/assets/bolster-cushion-side.webp',
+  bolsterCushionChair: '/assets/bolster-cushion-chair.webp',
+  bolsterCushionHero: '/assets/bolster-cushion-hero.webp',
+  rugCoverHero: '/assets/rug-cover-hero.webp',
+  rugCoverSizes: '/assets/rug-cover-sizes.webp',
+  rugCoverDrawstring: '/assets/rug-cover-drawstring.webp',
+  rugCoverFabric: '/assets/rug-cover-fabric.webp',
+  rugCoverCloset: '/assets/rug-cover-closet.webp',
+  rugCoverOrganized: '/assets/rug-cover-organized.webp',
+  rugCoverTransport: '/assets/rug-cover-transport.webp',
 }
 
 /** @typedef {{
@@ -120,6 +133,19 @@ const CATALOG_COLORS = [
   { name: 'Vert pistache', hex: '#93c572' },
 ]
 
+const BOLSTER_COLORS = [
+  { name: 'Fuchsia', hex: '#c2185b' },
+  { name: 'Bleu électrique', hex: '#1565c0' },
+  { name: 'Gris argent', hex: '#a8a8a8' },
+  { name: 'Gris anthracite', hex: '#374151' },
+]
+
+const RUG_COVER_COLORS = [
+  { name: 'Beige', hex: '#d6cbb8' },
+  { name: 'Noire', hex: '#1f2937' },
+  { name: 'Gris', hex: '#6b7280' },
+]
+
 /** @type {SeedProduct[]} */
 const PRODUCTS = [
   {
@@ -138,7 +164,14 @@ const PRODUCTS = [
     promoEnabled: true,
     promoLabel: 'Promotion',
     featured: true,
-    related: ['chairPadBackrest', 'chairPadPack4', 'readingPillow', 'sofaCushion', 'decorativeCushion'],
+    related: [
+      'chairPadBackrest',
+      'chairPadPack4',
+      'readingPillow',
+      'sofaCushion',
+      'decorativeCushion',
+      'bolsterCushion',
+    ],
   },
   {
     key: 'chairPadBackrest',
@@ -169,7 +202,14 @@ const PRODUCTS = [
     promoEnabled: true,
     promoLabel: 'Promotion',
     featured: true,
-    related: ['chairPad', 'chairPadPack4', 'readingPillow', 'sofaCushion', 'decorativeCushion'],
+    related: [
+      'chairPad',
+      'chairPadPack4',
+      'readingPillow',
+      'sofaCushion',
+      'decorativeCushion',
+      'bolsterCushion',
+    ],
   },
   {
     key: 'hc01',
@@ -195,7 +235,7 @@ const PRODUCTS = [
     promoLabel: 'Promotion',
     published: false,
     featured: false,
-    related: ['chairPad', 'chairPadBackrest', 'chairPadPack4'],
+    related: ['chairPad', 'chairPadBackrest', 'chairPadPack4', 'rugCoverStorage'],
   },
   {
     key: 'sr01',
@@ -214,7 +254,37 @@ const PRODUCTS = [
     promoLabel: 'Promotion',
     published: false,
     featured: false,
-    related: ['chairPad', 'chairPadBackrest', 'chairPadPack4'],
+    related: ['chairPad', 'chairPadBackrest', 'chairPadPack4', 'rugCoverStorage'],
+  },
+  {
+    key: 'rugCoverStorage',
+    name: 'Housse de rangement pour tapis',
+    aliases: ['Housse de rangement tapis', 'Housse tapis', 'Housses des tapis'],
+    brand: 'Deco Shop Plus',
+    description:
+      'Housse de rangement pour tapis en tissu resistant : protege contre la poussiere et l humidite, facile a ranger et a transporter. Fermeture a cordon simple et pratique. Cinq tailles disponibles de 1 m a 3 m pour tous vos tapis. Couleurs : Beige, Noire et Gris.',
+    price: '4.000',
+    category: 'rangement',
+    image: IMG.rugCoverHero,
+    images: [
+      IMG.rugCoverHero,
+      IMG.rugCoverSizes,
+      IMG.rugCoverOrganized,
+      IMG.rugCoverCloset,
+      IMG.rugCoverTransport,
+      IMG.rugCoverFabric,
+      IMG.rugCoverDrawstring,
+    ],
+    sizes: [
+      { name: '1 m', price: 4 },
+      { name: '1,5 m', price: 5 },
+      { name: '2 m', price: 6 },
+      { name: '2,5 m', price: 9 },
+      { name: '3 m', price: 10 },
+    ],
+    colors: RUG_COVER_COLORS,
+    featured: true,
+    related: ['sr01', 'hc01'],
   },
   {
     key: 'chairPadPack4',
@@ -247,7 +317,14 @@ const PRODUCTS = [
     sizes: ['Unique'],
     colors: CATALOG_COLORS,
     featured: true,
-    related: ['chairPad', 'chairPadBackrest', 'sofaCushion', 'headboardCushion', 'decorativeCushion'],
+    related: [
+      'chairPad',
+      'chairPadBackrest',
+      'sofaCushion',
+      'headboardCushion',
+      'decorativeCushion',
+      'bolsterCushion',
+    ],
   },
   {
     key: 'sofaCushion',
@@ -267,7 +344,13 @@ const PRODUCTS = [
       { name: 'Pack 3 coussins', units: 3, price: 104, compareAtPrice: 114, popular: true },
     ],
     featured: true,
-    related: ['readingPillow', 'chairPad', 'headboardCushion', 'decorativeCushion'],
+    related: [
+      'readingPillow',
+      'chairPad',
+      'headboardCushion',
+      'decorativeCushion',
+      'bolsterCushion',
+    ],
   },
   {
     key: 'headboardCushion',
@@ -282,7 +365,13 @@ const PRODUCTS = [
     sizes: ['90 cm', '120 cm', '140 cm', '160 cm', '180 cm'],
     colors: CATALOG_COLORS,
     featured: true,
-    related: ['readingPillow', 'sofaCushion', 'chairPad', 'decorativeCushion'],
+    related: [
+      'readingPillow',
+      'sofaCushion',
+      'chairPad',
+      'decorativeCushion',
+      'bolsterCushion',
+    ],
   },
   {
     key: 'decorativeCushion',
@@ -314,17 +403,52 @@ const PRODUCTS = [
     promoEnabled: true,
     promoLabel: 'Promotion',
     featured: true,
-    related: ['sofaCushion', 'readingPillow', 'chairPad', 'headboardCushion'],
+    related: ['sofaCushion', 'readingPillow', 'chairPad', 'headboardCushion', 'bolsterCushion'],
+  },
+  {
+    key: 'bolsterCushion',
+    name: 'Coussin traversin cylindrique en velours',
+    aliases: ['Coussin traversin cylindrique', 'Traversin velours', 'الكعبة'],
+    brand: 'Deco Shop Plus',
+    description:
+      'Coussin traversin cylindrique en velours anti-tache : une touche de confort pour le canapé, le fauteuil ou le lit. Forme cylindrique avec finition passepoil, doux au toucher et adaptable a tous les styles. Disponible en Fuchsia, Bleu électrique, Gris argent et Gris anthracite. Vendu à l unité ou en pack.',
+    price: '28.000',
+    compareAtPrice: '32.000',
+    category: 'coussins',
+    image: IMG.bolsterCushionColors,
+    images: [
+      IMG.bolsterCushionColors,
+      IMG.bolsterCushionRug,
+      IMG.bolsterCushionHero,
+      IMG.bolsterCushionSide,
+      IMG.bolsterCushionChair,
+      IMG.bolsterCushionBed,
+    ],
+    sizes: ['Unique'],
+    colors: BOLSTER_COLORS,
+    bundles: [
+      { name: 'Un seul coussin', units: 1, price: 28, compareAtPrice: 32, popular: false },
+      { name: 'Pack 2 coussins', units: 2, price: 54, compareAtPrice: 64, popular: false },
+      { name: 'Pack 3 coussins', units: 3, price: 79, compareAtPrice: 96, popular: false },
+      { name: 'Pack 4 coussins', units: 4, price: 100, compareAtPrice: 128, popular: true },
+    ],
+    promoEnabled: true,
+    promoLabel: 'Promotion',
+    featured: true,
+    related: ['sofaCushion', 'decorativeCushion', 'readingPillow', 'headboardCushion'],
   },
 ]
 
 async function ensureCategories() {
   for (const category of CATEGORIES) {
     await pool.query(
-      `INSERT INTO categories (name, slug, "createdAt", "updatedAt")
-       VALUES ($1, $2, NOW(), NOW())
-       ON CONFLICT (slug) DO UPDATE SET name = EXCLUDED.name, "updatedAt" = NOW()`,
-      [category.name, category.slug],
+      `INSERT INTO categories (name, slug, "bannerUrl", "createdAt", "updatedAt")
+       VALUES ($1, $2, $3, NOW(), NOW())
+       ON CONFLICT (slug) DO UPDATE SET
+         name = EXCLUDED.name,
+         "bannerUrl" = EXCLUDED."bannerUrl",
+         "updatedAt" = NOW()`,
+      [category.name, category.slug, category.bannerUrl],
     )
   }
 }

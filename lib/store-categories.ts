@@ -10,7 +10,13 @@ export const STORE_CATEGORIES: StoreCategory[] = [
     slug: 'coussins',
     name: 'Coussins',
     tagline: 'Galettes de chaise et coussins en velours anti-tache',
-    image: '/assets/chair-pad-stack.webp',
+    image: '/categories/coussins.webp',
+  },
+  {
+    slug: 'rangement',
+    name: 'Rangement',
+    tagline: 'Housses et sacs pour ranger, proteger et transporter',
+    image: '/categories/rangement.webp',
   },
 ]
 
@@ -35,6 +41,9 @@ export const SHOWCASE_GALLERY: ShowcaseImage[] = [
   { src: '/assets/sofa-cushion-colors.webp', alt: 'Coussin de canape', category: 'coussins' },
   { src: '/assets/reading-pillow-colors.webp', alt: 'Coussin de lecture', category: 'coussins' },
   { src: '/assets/headboard-cushion-colors.webp', alt: 'Coussin de tete de lit', category: 'coussins' },
+  { src: '/assets/rug-cover-hero.webp', alt: 'Housse de rangement pour tapis', category: 'rangement' },
+  { src: '/assets/rug-cover-organized.webp', alt: 'Rangement tapis organise', category: 'rangement' },
+  { src: '/assets/sr01.webp', alt: 'Sac de rangement vetements', category: 'rangement' },
 ]
 
 export function getShowcaseByCategory(category: string) {
@@ -51,7 +60,7 @@ export type DbCategory = {
   bannerUrl?: string | null
 }
 
-const RETIRED_CATEGORY_SLUGS = new Set(['textiles', 'accessoires', 'rangement', 'femme', 'homme', 'parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous'])
+const RETIRED_CATEGORY_SLUGS = new Set(['textiles', 'accessoires', 'femme', 'homme', 'parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous'])
 
 export function mergeStoreCategories(dbCategories: DbCategory[]): StoreCategory[] {
   const dbBySlug = new Map(dbCategories.map((category) => [category.slug, category]))

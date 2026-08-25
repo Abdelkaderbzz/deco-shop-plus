@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>Deco Shop Plus — Story mockup</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Avenir Next", "Segoe UI", sans-serif; background: #0d1514; }
+    .stage {
+      width: 1080px;
+      height: 1920px;
+      padding: 96px 64px 72px;
+      background:
+        radial-gradient(circle at 70% 20%, rgba(61,154,160,.28), transparent 42%),
+        linear-gradient(180deg, #0d1514 0%, #14201e 55%, #0f5c64 100%);
+      color: white;
+      display: flex;
+      flex-direction: column;
+    }
+    .eyebrow {
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      font-size: 16px;
+      color: #9ec4c7;
+      margin-bottom: 18px;
+    }
+    h1 {
+      font-size: 72px;
+      letter-spacing: -0.04em;
+      line-height: 1.02;
+      max-width: 10ch;
+    }
+    .sub {
+      margin-top: 20px;
+      color: #c5d4d1;
+      font-size: 26px;
+      line-height: 1.35;
+      max-width: 16ch;
+    }
+    .devices {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      padding: 48px 0 24px;
+    }
+    .laptop {
+      width: 620px;
+      filter: drop-shadow(0 30px 50px rgba(0,0,0,.4));
+    }
+    .laptop-screen {
+      background: #111;
+      border: 8px solid #1b1f1e;
+      border-bottom: 0;
+      border-radius: 12px 12px 0 0;
+      overflow: hidden;
+      aspect-ratio: 16 / 10;
+    }
+    .laptop-screen img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+    }
+    .laptop-base {
+      height: 14px;
+      background: linear-gradient(180deg, #2a2f2e, #161918);
+      border-radius: 0 0 8px 8px;
+    }
+    .phone {
+      width: 280px;
+      background: #0b0d0c;
+      border-radius: 36px;
+      padding: 10px;
+      border: 2px solid #2c3331;
+      filter: drop-shadow(0 28px 40px rgba(0,0,0,.45));
+      margin-top: 80px;
+    }
+    .phone-screen {
+      border-radius: 28px;
+      overflow: hidden;
+      aspect-ratio: 390 / 844;
+    }
+    .phone-screen img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+    }
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-size: 16px;
+      color: #9eb0ad;
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <p class="eyebrow">Projet livré</p>
+    <h1>Deco Shop Plus</h1>
+    <p class="sub">Boutique en ligne pour un atelier à Bizerte.</p>
+    <div class="devices">
+      <div class="laptop">
+        <div class="laptop-screen">
+          <img src="01-home-desktop.png" alt="Desktop" />
+        </div>
+        <div class="laptop-base"></div>
+      </div>
+      <div class="phone">
+        <div class="phone-screen">
+          <img src="04-home-mobile.png" alt="Mobile" />
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      <span>Revixa Agency</span>
+      <span>E-commerce</span>
+    </div>
+  </div>
+</body>
+</html>

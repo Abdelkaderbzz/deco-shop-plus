@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>03 — E-commerce clé en main</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --cream: #f3f6f4;
+      --card: #fbfcfa;
+      --teal: #0f5c64;
+      --ink: #1a2220;
+      --muted: #6a7a76;
+      --gold: #b08d4a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--cream); font-family: Manrope, sans-serif; color: var(--ink); }
+    .stage {
+      width: 1080px; height: 1920px;
+      padding: 72px 56px 56px;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .eyebrow {
+      font-size: 14px; letter-spacing: 0.28em; text-transform: uppercase;
+      color: var(--teal); font-weight: 600; margin-bottom: 12px;
+    }
+    .lead {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 52px; font-weight: 600; text-align: center;
+      line-height: 1.08; margin-bottom: 36px; max-width: 16ch;
+    }
+    .card {
+      width: 100%; flex: 1; background: var(--card); border-radius: 36px;
+      padding: 42px 36px 28px;
+      box-shadow: 0 24px 60px rgba(15,92,100,.08);
+      display: flex; flex-direction: column;
+    }
+    .logo {
+      width: 78px; height: 78px; border-radius: 50%; object-fit: cover;
+      display: block; margin: 0 auto 18px;
+      box-shadow: 0 8px 18px rgba(15,92,100,.18);
+    }
+    .card h2 {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 44px; text-align: center; font-weight: 600; line-height: 1.1;
+    }
+    .sub {
+      text-align: center; margin-top: 12px;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      font-size: 13px; color: var(--teal); font-weight: 600;
+    }
+    .divider {
+      width: 100px; height: 1px; background: var(--gold);
+      margin: 16px auto 28px; position: relative;
+    }
+    .divider::after {
+      content: "◆"; position: absolute; left: 50%; top: 50%;
+      transform: translate(-50%,-50%); background: var(--card);
+      padding: 0 8px; color: var(--gold); font-size: 10px;
+    }
+    .body {
+      display: grid; grid-template-columns: 0.9fr 1.2fr; gap: 18px; align-items: center;
+      flex: 1;
+    }
+    .features { display: flex; flex-direction: column; gap: 28px; padding-left: 8px; }
+    .feature { display: flex; align-items: center; gap: 14px; }
+    .icon {
+      width: 46px; height: 46px; border-radius: 50%;
+      border: 1.5px solid var(--gold); color: var(--teal);
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    .feature span { font-size: 18px; font-weight: 500; }
+    .device-wrap {
+      background: linear-gradient(160deg, #e8efec, #d5e1dd);
+      border-radius: 24px; padding: 28px 18px 18px;
+      min-height: 720px; position: relative; overflow: hidden;
+    }
+    .fabric {
+      position: absolute; inset: 45% -10% -10%;
+      background: linear-gradient(135deg, #0f5c64, #3d9aa0 45%, #dce7e4);
+      opacity: 0.35; border-radius: 40%;
+      filter: blur(2px);
+    }
+    .laptop {
+      position: relative; z-index: 1; width: 100%;
+      filter: drop-shadow(0 22px 28px rgba(13,21,20,.25));
+      transform: perspective(900px) rotateY(-8deg) rotateX(4deg);
+    }
+    .lid {
+      background: #1c1f1e; border: 8px solid #232726; border-bottom: 0;
+      border-radius: 10px 10px 0 0; overflow: hidden; aspect-ratio: 16/10;
+    }
+    .lid img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+    .base { height: 12px; background: linear-gradient(180deg,#2c3230,#171a19); border-radius: 0 0 6px 6px; }
+    .footer {
+      margin-top: 28px; text-align: center; width: 100%;
+    }
+    .footer p { color: var(--muted); font-size: 17px; margin-bottom: 16px; }
+    .agency-label {
+      font-size: 12px; letter-spacing: 0.28em; text-transform: uppercase;
+      color: var(--teal); font-weight: 600; margin-bottom: 8px;
+    }
+    .agency-name { font-size: 28px; font-weight: 600; }
+    .agency-name span { color: #2f8f4e; margin-right: 6px; }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <p class="eyebrow">E-commerce clé en main</p>
+    <p class="lead">Un magasin électronique prêt</p>
+    <div class="card">
+      <img class="logo" src="logo.webp" alt="Deco Shop Plus" />
+      <h2>Un magasin électronique prêt</h2>
+      <p class="sub">Coussins & déco maison</p>
+      <div class="divider"></div>
+      <div class="body">
+        <div class="features">
+          <div class="feature">
+            <div class="icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 20h8"/></svg>
+            </div>
+            <span>Catalogue visuel</span>
+          </div>
+          <div class="feature">
+            <div class="icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1.5"/><circle cx="17" cy="20" r="1.5"/><path d="M6 6L5 3H2"/></svg>
+            </div>
+            <span>Commande simple</span>
+          </div>
+          <div class="feature">
+            <div class="icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l1.5 4.5H18l-3.5 2.8 1.3 4.5L12 12.8 8.2 14.8l1.3-4.5L6 7.5h4.5z"/></svg>
+            </div>
+            <span>Design sur mesure</span>
+          </div>
+        </div>
+        <div class="device-wrap">
+          <div class="fabric"></div>
+          <div class="laptop">
+            <div class="lid"><img src="01-home-desktop.png" alt="Site" /></div>
+            <div class="base"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      <p>Coussins & galettes — atelier Bizerte</p>
+      <p class="agency-label">Une réalisation</p>
+      <p class="agency-name"><span>✦</span>revixa</p>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>Deco Shop Plus — Square portfolio card</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      background: #0d1514;
+    }
+    .stage {
+      width: 1080px;
+      height: 1080px;
+      padding: 64px 56px 48px;
+      background:
+        radial-gradient(circle at 85% 15%, rgba(61,154,160,.35), transparent 40%),
+        radial-gradient(circle at 10% 90%, rgba(15,92,100,.4), transparent 35%),
+        linear-gradient(160deg, #0d1514, #14201e 60%, #0f5c64);
+      color: white;
+      display: flex;
+      flex-direction: column;
+    }
+    .eyebrow {
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      font-size: 13px;
+      color: #9ec4c7;
+      margin-bottom: 14px;
+    }
+    h1 {
+      font-size: 54px;
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+      max-width: 14ch;
+    }
+    .sub {
+      margin-top: 14px;
+      color: #c5d4d1;
+      font-size: 18px;
+      max-width: 28ch;
+      line-height: 1.4;
+    }
+    .screen-wrap {
+      flex: 1;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-top: 40px;
+    }
+    .browser {
+      width: 920px;
+      background: #1a2220;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow: 0 40px 80px rgba(0,0,0,.45);
+    }
+    .chrome {
+      height: 36px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0 14px;
+      background: #222a28;
+    }
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #3d4845;
+    }
+    .dot:nth-child(1) { background: #ff5f57; }
+    .dot:nth-child(2) { background: #febc2e; }
+    .dot:nth-child(3) { background: #28c840; }
+    .browser img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      object-position: top center;
+    }
+    .footer {
+      margin-top: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #9eb0ad;
+      font-size: 14px;
+      letter-spacing: 0.06em;
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <p class="eyebrow">Completed project</p>
+    <h1>Deco Shop Plus</h1>
+    <p class="sub">Site e-commerce pour un atelier de coussins à Bizerte.</p>
+    <div class="screen-wrap">
+      <div class="browser">
+        <div class="chrome">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        </div>
+        <img src="01-home-desktop.png" alt="Deco Shop Plus homepage" />
+      </div>
+    </div>
+    <div class="footer">
+      <span>REVIXA AGENCY</span>
+      <span>WEB · E-COMMERCE</span>
+    </div>
+  </div>
+</body>
+</html>
