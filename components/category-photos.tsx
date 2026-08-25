@@ -20,13 +20,19 @@ export function CategoryPhotos({
             Coussins, galettes et solutions de rangement, à Cité El Waha, Bizerte.
           </p>
         </div>
-        <div className={categories.length === 1 ? 'mx-auto max-w-sm' : 'grid grid-cols-2 gap-3'}>
+        <div
+          className={
+            categories.length === 1
+              ? 'mx-auto max-w-[11rem] sm:max-w-[13rem]'
+              : 'mx-auto grid max-w-md grid-cols-2 gap-3 sm:max-w-lg'
+          }
+        >
           {categories.map((cat, index) => (
             <Link
               key={cat.slug}
               href={catalogHref({ category: cat.slug })}
               prefetch={false}
-              className="overflow-hidden rounded-[1.5rem] border border-border/60"
+              className="overflow-hidden rounded-2xl border border-border/60"
             >
               <div className="relative aspect-square overflow-hidden bg-secondary">
                 {cat.image ? (
@@ -35,12 +41,12 @@ export function CategoryPhotos({
                     alt={cat.name}
                     fill
                     priority={index < 2}
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    sizes="(max-width: 640px) 40vw, 200px"
                     className="object-cover"
                   />
                 ) : null}
               </div>
-              <p className="bg-card py-2.5 text-center text-xs font-medium text-muted-foreground">
+              <p className="bg-card py-2 text-center text-xs font-medium text-muted-foreground">
                 {cat.name}
               </p>
             </Link>

@@ -7,7 +7,7 @@ export function CategoryCard({ category }: { category: StoreCategory }) {
   return (
     <Link
       href={catalogHref({ category: category.slug })}
-      className="relative block overflow-hidden rounded-[1.75rem] border border-border/80 bg-card"
+      className="relative block overflow-hidden rounded-2xl border border-border/80 bg-card"
     >
       <div className="relative aspect-[4/5] overflow-hidden bg-secondary">
         {category.image ? (
@@ -15,17 +15,17 @@ export function CategoryCard({ category }: { category: StoreCategory }) {
             src={category.image}
             alt={category.name}
             fill
-            sizes="(max-width: 768px) 50vw, 25vw"
+            sizes="(max-width: 640px) 40vw, 200px"
             quality={70}
             className="object-cover"
           />
         ) : null}
         <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/25 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 p-4 text-left">
-          <p className="text-[11px] font-medium tracking-wide text-white">
+        <div className="absolute inset-x-0 bottom-0 p-3 text-left">
+          <p className="line-clamp-2 text-[10px] font-medium tracking-wide text-white/90">
             {category.tagline}
           </p>
-          <h3 className="mt-1 font-serif text-xl font-medium tracking-tight text-white">
+          <h3 className="mt-0.5 font-serif text-base font-medium tracking-tight text-white sm:text-lg">
             {category.name}
           </h3>
         </div>

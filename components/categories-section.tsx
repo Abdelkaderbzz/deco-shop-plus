@@ -15,7 +15,13 @@ export function CategoriesSection({ categories }: { categories: StoreCategory[] 
           </p>
         </div>
 
-        <div className={categories.length === 1 ? 'mx-auto max-w-sm' : 'grid grid-cols-2 gap-4'}>
+        <div
+          className={
+            categories.length === 1
+              ? 'mx-auto max-w-[11rem] sm:max-w-[13rem]'
+              : 'mx-auto grid max-w-md grid-cols-2 gap-3 sm:max-w-lg sm:gap-4'
+          }
+        >
           {categories.map((category) => (
             <CategoryCard key={category.slug} category={category} />
           ))}
