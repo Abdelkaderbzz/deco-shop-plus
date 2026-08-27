@@ -1,7 +1,7 @@
 export const MAX_PRODUCT_COLORS = 12
 
 export const DEFAULT_PROMO_LABEL = 'Promotion'
-export const DEFAULT_PROMO_BG = '#c2410c'
+export const DEFAULT_PROMO_BG = '#c81e1e'
 export const DEFAULT_PROMO_TEXT = '#ffffff'
 
 export type ProductColor = {

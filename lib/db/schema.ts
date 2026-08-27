@@ -171,7 +171,7 @@ export const products = pgTable('products', {
   published: boolean('published').notNull().default(true),
   promoEnabled: boolean('promoEnabled').notNull().default(false),
   promoLabel: text('promoLabel').notNull().default('Promotion'),
-  promoBgColor: text('promoBgColor').notNull().default('#e85d04'),
+  promoBgColor: text('promoBgColor').notNull().default('#c81e1e'),
   promoTextColor: text('promoTextColor').notNull().default('#ffffff'),
   createdAt: timestamp('createdAt').notNull().defaultNow(),
   updatedAt: timestamp('updatedAt').notNull().defaultNow(),

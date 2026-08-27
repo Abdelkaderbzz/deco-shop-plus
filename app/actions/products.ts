@@ -238,7 +238,7 @@ const getFeaturedProductsCached = unstable_cache(
       .where(and(eq(products.featured, true), eq(products.published, true)))
       .orderBy(desc(products.createdAt))
       .limit(4),
-  ['featured-products'],
+  ['featured-products', 'v3'],
   { revalidate: 120, tags: ['products'] },
 )
 
@@ -252,7 +252,7 @@ const getPromoProductsCached = unstable_cache(
       .where(and(eq(products.promoEnabled, true), eq(products.published, true)))
       .orderBy(desc(products.updatedAt))
       .limit(4),
-  ['promo-products'],
+  ['promo-products', 'v3'],
   { revalidate: 120, tags: ['products'] },
 )
 
@@ -266,7 +266,7 @@ const getLatestProductsCached = unstable_cache(
       .where(eq(products.published, true))
       .orderBy(desc(products.createdAt))
       .limit(4),
-  ['latest-products'],
+  ['latest-products', 'v2'],
   { revalidate: 120, tags: ['products'] },
 )
 
@@ -303,7 +303,7 @@ const getBestSellerProductsCached = unstable_cache(
 
     return rows.map(({ sold: _sold, ...product }) => product)
   },
-  ['best-seller-products'],
+  ['best-seller-products', 'v2'],
   { revalidate: 120, tags: ['products'] },
 )
 
@@ -320,7 +320,7 @@ export const getProductById = cache(async (id: number) => {
         .limit(1)
       return result[0] ?? null
     },
-    ['product-by-id', String(id), 'v6'],
+    ['product-by-id', String(id), 'v8'],
     { revalidate: 120, tags: ['products', `product-${id}`] },
   )()
 })
@@ -345,7 +345,7 @@ export const getPublishedProductByParam = cache(async (param: string) => {
         .limit(1)
       return result[0] ?? null
     },
-    ['product-by-param', key, 'v2'],
+    ['product-by-param', key, 'v3'],
     { revalidate: 120, tags: ['products'] },
   )()
 })
