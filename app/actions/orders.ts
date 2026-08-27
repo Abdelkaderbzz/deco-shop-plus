@@ -6,6 +6,7 @@ import { orderItems, orders, products } from '@/lib/db/schema'
 import { and, desc, eq, ilike, or, sql } from 'drizzle-orm'
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { getDeliveryFee } from './settings'
+import { sendMetaPurchaseEvent, type MetaAttribution } from '@/lib/meta-capi'
 import {
   ADMIN_PAGE_SIZE,
   buildPaginatedResult,
@@ -300,9 +301,27 @@ export async function saveAbandonedCheckout(input: unknown) {
 
 /** Public store checkout — no auth. */
 export async function createOrder(
-  data: Omit<CreateOrderInput, 'status'> & { checkoutDraftId?: string },
+  data: Omit<CreateOrderInput, 'status'> & {
+    checkoutDraftId?: string
+    meta?: MetaAttribution
+  },
 ) {
   const order = await insertOrderWithItems({ ...data, status: 'pending' })
+
+  if (data.items.length > 0 && order.status === 'pending') {
+    void sendMetaPurchaseEvent({
+      orderId: order.id,
+      value: Number.parseFloat(order.totalAmount),
+      items: data.items.map((item) => ({
+        productId: item.productId,
+        price: item.price,
+        quantity: item.quantity,
+      })),
+      customerPhone: data.customerPhone,
+      meta: data.meta,
+    })
+  }
+
   return order.id
 }
 
