@@ -81,7 +81,7 @@ export function HeroSection({ slides }: { slides: HeroSlide[] }) {
       onMouseLeave={() => setPaused(false)}
     >
       <div className="mx-auto max-w-7xl px-2 py-4 sm:px-3 md:py-5">
-        <div className="relative min-h-[56vh] overflow-hidden rounded-2xl border border-border/60 bg-[#0a3d42] md:min-h-[64vh]">
+        <div className="relative aspect-[1920/825] w-full overflow-hidden rounded-2xl border border-border/60 bg-[#eef5f4]">
           {slides.map((slide, slideIndex) => {
             const isActive = slideIndex === index
             const isNearby =
@@ -112,25 +112,18 @@ export function HeroSection({ slides }: { slides: HeroSlide[] }) {
                   fill
                   priority={slideIndex === 0}
                   fetchPriority={slideIndex === 0 ? 'high' : 'low'}
-                  quality={70}
+                  quality={80}
                   sizes="(max-width: 768px) 100vw, 1280px"
-                  className={`object-cover object-[72%_center] ${
-                    reduceMotion
-                      ? ''
-                      : `transition-transform duration-[6500ms] ease-out ${
-                          isActive ? 'scale-105' : 'scale-100'
-                        }`
-                  }`}
+                  className="object-contain object-center"
                 />
-                <div className="absolute inset-0 bg-linear-to-r from-[#0a3d42]/78 via-[#0a3d42]/38 to-transparent" />
               </div>
             )
           })}
 
-          <div className="relative z-10 mx-auto flex min-h-[56vh] max-w-7xl flex-col justify-end px-4 pb-16 pt-10 md:min-h-[64vh] md:justify-center md:px-10 md:pb-20 md:pt-14">
+          {current.ctaLabel ? (
             <div
+              className="absolute inset-x-0 bottom-14 z-10 flex justify-center px-4 md:bottom-16"
               key={current.id}
-              className="max-w-xl text-white"
               style={
                 reduceMotion
                   ? undefined
@@ -140,34 +133,19 @@ export function HeroSection({ slides }: { slides: HeroSlide[] }) {
                     }
               }
             >
-              {current.eyebrow ? (
-                <p className="text-[11px] font-medium uppercase tracking-[0.32em] text-white/85">
-                  {current.eyebrow}
-                </p>
-              ) : null}
-              <h1 className="mt-3 font-serif text-3xl font-medium tracking-tight text-white md:text-5xl lg:text-[3.25rem]">
-                {current.title}
-              </h1>
-              {current.subtitle ? (
-                <p className="mt-3 max-w-md text-sm font-normal leading-relaxed text-white/90 md:text-base">
-                  {current.subtitle}
-                </p>
-              ) : null}
-              {current.ctaLabel ? (
-                <div className="mt-5">
-                  <Link
-                    href={href}
-                    onClick={(event) => {
-                      if (scrollToTarget(href)) event.preventDefault()
-                    }}
-                    className="inline-flex min-h-11 items-center rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-foreground shadow-lg shadow-black/20"
-                  >
-                    {current.ctaLabel}
-                  </Link>
-                </div>
-              ) : null}
+              <Link
+                href={href}
+                onClick={(event) => {
+                  if (scrollToTarget(href)) event.preventDefault()
+                }}
+                className="inline-flex min-h-11 items-center rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-foreground shadow-lg shadow-black/25"
+              >
+                {current.ctaLabel}
+              </Link>
             </div>
-          </div>
+          ) : null}
+
+          <h1 className="sr-only">{current.title}</h1>
 
           {total > 1 && (
             <>
