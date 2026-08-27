@@ -47,18 +47,18 @@ const IMG = {
   sr01Filled: '/assets/sr01-filled.webp',
   sr01Pack: '/assets/sr01-pack.webp',
   sr01Handle: '/assets/sr01-handle.webp',
-  chairPad: '/assets/chair-pad-stack.webp',
+  chairPad: '/assets/chair-pad-primary.webp',
   chairPadFloor: '/assets/chair-pad-floor.webp',
   chairPadLifestyle: '/assets/chair-pad-lifestyle.webp',
   chairPadRed: '/assets/chair-pad-red.webp',
   chairPadRound: '/assets/chair-pad-round.webp',
-  chairPadBackrest: '/assets/chair-pad-backrest.webp',
+  chairPadBackrest: '/assets/chair-pad-backrest-primary.webp',
   chairPadBackrestGreen: '/assets/chair-pad-backrest-green.webp',
   chairPadBackrestOrange: '/assets/chair-pad-backrest-orange.webp',
   chairPadBackrestGrey: '/assets/chair-pad-backrest-grey.webp',
   chairPadBackrestFeatures: '/assets/chair-pad-backrest-features.webp',
   chairPadBackrestVelvet: '/assets/chair-pad-backrest-velvet.webp',
-  chairPadPack4: '/assets/chair-pad-pack-4.webp',
+  chairPadPack4: '/assets/chair-pad-pack-4-primary.webp',
   chairPadPack4Colors: '/assets/chair-pad-pack-4-colors.webp',
   chairPadPack4Chair: '/assets/chair-pad-pack-4-chair.webp',
   chairPadPack4Swatches: '/assets/chair-pad-pack-4-swatches.webp',
@@ -67,45 +67,66 @@ const IMG = {
   readingPillowGrey: '/assets/reading-pillow-grey.webp',
   readingPillowNavy: '/assets/reading-pillow-navy.webp',
   readingPillowColors: '/assets/reading-pillow-colors.webp',
+  readingPillowHero: '/assets/reading-pillow-primary.webp',
   sofaCushion: '/assets/sofa-cushion.webp',
   sofaCushionColors: '/assets/sofa-cushion-colors.webp',
+  sofaCushionHero: '/assets/sofa-cushion-primary.webp',
   sofaCushionShelf: '/assets/sofa-cushion-shelf.webp',
   sofaCushionPiping: '/assets/sofa-cushion-piping.webp',
   sofaCushionZip: '/assets/sofa-cushion-zip.webp',
   headboardCushion: '/assets/headboard-cushion.webp',
   headboardCushionColors: '/assets/headboard-cushion-colors.webp',
+  headboardCushionHero: '/assets/headboard-cushion-primary.webp',
   headboardCushionBed: '/assets/headboard-cushion-bed.webp',
   headboardCushionSide: '/assets/headboard-cushion-side.webp',
+  decorativeCushionHero: '/assets/decorative-cushion-primary.webp',
   decorativeCushionStack: '/assets/decorative-cushion-stack.webp',
   decorativeCushionRed: '/assets/decorative-cushion-red.webp',
   decorativeCushionGreen: '/assets/decorative-cushion-green.webp',
   decorativeCushionOrange: '/assets/decorative-cushion-orange.webp',
   decorativeCushionPurple: '/assets/decorative-cushion-purple.webp',
   decorativeCushionBlue: '/assets/decorative-cushion-blue.webp',
-  bolsterCushionHero: '/assets/bolster-cushion-hero-lifestyle.webp',
+  bolsterCushionHero: '/assets/bolster-cushion-primary.webp',
   bolsterCushionColors: '/assets/bolster-cushion-coloris.webp',
-  rugCoverHero: '/assets/rug-cover-primary.webp',
+  rugCoverHero: '/assets/rug-cover-housses-tapis-primary.webp',
   rugCoverSizes: '/assets/rug-cover-5-tailles.webp',
   rugCoverInterior: '/assets/rug-cover-interieur.webp',
   rugCoverFabric: '/assets/rug-cover-tissu-resistant.webp',
   rugCoverOrganized: '/assets/rug-cover-rangement-optimise.webp',
-  superFiestaHero: '/assets/super-fiesta-hero.webp',
+  superFiestaHero: '/assets/super-fiesta-primary.webp',
   superFiestaProduct: '/assets/super-fiesta-product.webp',
   superFiestaStack: '/assets/super-fiesta-stack.webp',
   superFiestaNuits: '/assets/super-fiesta-nuits.webp',
   superFiestaConfort: '/assets/super-fiesta-confort.webp',
   superFiestaZip: '/assets/super-fiesta-zip.webp',
   superFiestaSoft: '/assets/super-fiesta-soft.webp',
-  storageBoxLot5Hero: '/assets/storage-box-lot5-hero.webp',
+  storageBoxLot5Hero: '/assets/storage-box-lot5-primary.webp',
   storageBoxLot5Safe: '/assets/storage-box-lot5-safe.webp',
   storageBoxLot5Uses: '/assets/storage-box-lot5-uses.webp',
   storageBoxLot5Size: '/assets/storage-box-lot5-size.webp',
   storageBoxLot5Zip: '/assets/storage-box-lot5-zip.webp',
   storageBoxLot5Fabric: '/assets/storage-box-lot5-fabric.webp',
   storageBoxLot5Closet: '/assets/storage-box-lot5-closet.webp',
-  storageCubeLot5Hero: '/assets/storage-cube-lot5-hero.webp',
+  storageCubeLot5Hero: '/assets/storage-cube-lot5-primary.webp',
   storageCubeLot5Size: '/assets/storage-cube-lot5-size.webp',
   storageCubeLot5Features: '/assets/storage-cube-lot5-features.webp',
+  garmentCoverHero: '/assets/garment-cover-primary.webp',
+  garmentCoverPack: '/assets/garment-cover-pack.webp',
+  garmentCoverWater: '/assets/garment-cover-water.webp',
+  garmentCoverHandles: '/assets/garment-cover-handles.webp',
+  garmentCoverWindow: '/assets/garment-cover-window.webp',
+  garmentCoverZip: '/assets/garment-cover-zip.webp',
+  dressCover120Hero: '/assets/dress-cover-120-hero.webp',
+  dressCover120Pack: '/assets/dress-cover-120-pack.webp',
+  suitCover150Hero: '/assets/suit-cover-150-primary.webp',
+  suitCover150Rod: '/assets/suit-cover-150-rod.webp',
+  suitCover150Side: '/assets/suit-cover-150-side.webp',
+  suitCover150Front: '/assets/suit-cover-150-front.webp',
+  shoeCoverLot10Hero: '/assets/shoe-cover-lot10-hero.webp',
+  shoeCoverLot10Beige: '/assets/shoe-cover-lot10-beige.webp',
+  shoeCoverLot10Gray: '/assets/shoe-cover-lot10-gray.webp',
+  shoeCoverLot10Black: '/assets/shoe-cover-lot10-black.webp',
+  weddingDressCoverHero: '/assets/wedding-dress-cover-primary.webp',
 }
 
 /** @typedef {{
@@ -165,7 +186,7 @@ const PRODUCTS = [
     brand: 'Deco Shop Plus',
     description:
       'Galette de chaise capitonnée avec attaches aux coins pour la fixer au dossier. Matière de fabrication : velours anti-tache. Confortable pour cuisine, salle a manger ou bureau. Disponible en carre ou rond : Rouge, Jaune, Vert, Gris, Beige, Marine, Marron, Bordeaux et Vert pistache.',
-    price: '9.500',
+    price: '10.000',
     compareAtPrice: '15.000',
     category: 'coussins',
     image: IMG.chairPad,
@@ -246,7 +267,7 @@ const PRODUCTS = [
     promoLabel: 'Promotion',
     published: false,
     featured: false,
-    related: ['chairPad', 'chairPadBackrest', 'chairPadPack4', 'rugCoverStorage', 'storageBoxLot5', 'storageCubeLot5'],
+    related: ['chairPad', 'chairPadBackrest', 'chairPadPack4', 'rugCoverStorage', 'storageBoxLot5', 'storageCubeLot5', 'garmentCover'],
   },
   {
     key: 'sr01',
@@ -265,7 +286,7 @@ const PRODUCTS = [
     promoLabel: 'Promotion',
     published: false,
     featured: false,
-    related: ['chairPad', 'chairPadBackrest', 'chairPadPack4', 'rugCoverStorage', 'storageBoxLot5', 'storageCubeLot5'],
+    related: ['chairPad', 'chairPadBackrest', 'chairPadPack4', 'rugCoverStorage', 'storageBoxLot5', 'storageCubeLot5', 'garmentCover'],
   },
   {
     key: 'rugCoverStorage',
@@ -293,7 +314,7 @@ const PRODUCTS = [
     ],
     colors: RUG_COVER_COLORS,
     featured: true,
-    related: ['sr01', 'hc01', 'storageBoxLot5', 'storageCubeLot5'],
+    related: ['sr01', 'hc01', 'storageBoxLot5', 'storageCubeLot5', 'garmentCover'],
   },
   {
     key: 'chairPadPack4',
@@ -321,8 +342,8 @@ const PRODUCTS = [
       'Coussin de lecture ergonomique pour le lit ou le canape : dossier cale et rouleau de cou reglable. Boutons lateraux pour ajuster la hauteur de l appui-tete. Matière de fabrication : velours anti-tache. Confortable pour lire, regarder un ecran ou se reposer. Disponible en Rouge, Jaune, Vert, Gris, Beige, Marine, Marron, Bordeaux et Vert pistache.',
     price: '52.000',
     category: 'coussins',
-    image: IMG.readingPillowColors,
-    images: [IMG.readingPillowColors, IMG.readingPillow, IMG.readingPillowGrey, IMG.readingPillowNavy],
+    image: IMG.readingPillowHero,
+    images: [IMG.readingPillowHero, IMG.readingPillowColors, IMG.readingPillow, IMG.readingPillowGrey, IMG.readingPillowNavy],
     sizes: ['Unique'],
     colors: CATALOG_COLORS,
     featured: true,
@@ -343,8 +364,8 @@ const PRODUCTS = [
       'Coussin de canapé en velours anti-tache, forme rectangulaire 70 × 40 × 18 cm, finition passepoil et housse zippee amovible. Matière douce et dense pour le salon. Disponible en plusieurs couleurs pour habiller le canape ou le lit.',
     price: '38.000',
     category: 'coussins',
-    image: IMG.sofaCushionColors,
-    images: [IMG.sofaCushionColors, IMG.sofaCushion, IMG.sofaCushionShelf, IMG.sofaCushionPiping, IMG.sofaCushionZip],
+    image: IMG.sofaCushionHero,
+    images: [IMG.sofaCushionHero, IMG.sofaCushionColors, IMG.sofaCushion, IMG.sofaCushionShelf, IMG.sofaCushionPiping, IMG.sofaCushionZip],
     sizes: ['70x40x18'],
     colors: CATALOG_COLORS,
     bundles: [
@@ -367,11 +388,17 @@ const PRODUCTS = [
     brand: 'Deco Shop Plus',
     description:
       'Coussin de tete de lit en forme de cale : dossier capitonne pour s installer confortablement dans le lit. Poche laterale pour telephone, lunettes ou telecommande. Matière de fabrication : velours anti-tache. Boutons recouverts. Ideal pour lire ou regarder un ecran. Dimensions : 90, 120, 140, 160 et 180 cm. Disponible en Rouge, Jaune, Vert, Gris, Beige, Marine, Marron, Bordeaux et Vert pistache.',
-    price: '82.000',
+    price: '85.000',
     category: 'coussins',
-    image: IMG.headboardCushionColors,
-    images: [IMG.headboardCushionColors, IMG.headboardCushion, IMG.headboardCushionBed, IMG.headboardCushionSide],
-    sizes: ['90 cm', '120 cm', '140 cm', '160 cm', '180 cm'],
+    image: IMG.headboardCushionHero,
+    images: [IMG.headboardCushionHero, IMG.headboardCushionColors, IMG.headboardCushion, IMG.headboardCushionBed, IMG.headboardCushionSide],
+    sizes: [
+      { name: '90 cm', price: 85 },
+      { name: '120 cm', price: 105 },
+      { name: '140 cm', price: 138 },
+      { name: '160 cm', price: 158 },
+      { name: '180 cm', price: 178 },
+    ],
     colors: CATALOG_COLORS,
     featured: true,
     related: [
@@ -392,8 +419,9 @@ const PRODUCTS = [
     price: '10.000',
     compareAtPrice: '14.000',
     category: 'coussins',
-    image: IMG.decorativeCushionStack,
+    image: IMG.decorativeCushionHero,
     images: [
+      IMG.decorativeCushionHero,
       IMG.decorativeCushionStack,
       IMG.decorativeCushionRed,
       IMG.decorativeCushionGreen,
@@ -503,7 +531,7 @@ const PRODUCTS = [
     promoEnabled: true,
     promoLabel: 'Promotion',
     featured: true,
-    related: ['rugCoverStorage', 'sr01', 'hc01', 'storageCubeLot5'],
+    related: ['rugCoverStorage', 'sr01', 'hc01', 'storageCubeLot5', 'garmentCover'],
   },
   {
     key: 'storageCubeLot5',
@@ -530,7 +558,145 @@ const PRODUCTS = [
     promoEnabled: true,
     promoLabel: 'Promotion',
     featured: true,
-    related: ['storageBoxLot5', 'rugCoverStorage', 'sr01', 'hc01'],
+    related: ['storageBoxLot5', 'rugCoverStorage', 'sr01', 'hc01', 'garmentCover'],
+  },
+  {
+    key: 'garmentCover',
+    name: 'Housse de Vêtements – Protection & Rangement',
+    aliases: [
+      'Housse de vetements',
+      'Housse vetements protection rangement',
+      'Housse de rangement vetements',
+    ],
+    brand: 'Deco Shop Plus',
+    description:
+      'Protegez vos vetements de la poussiere, de l humidite et des mauvaises odeurs avec notre housse de rangement pratique, resistante et respirante. Fenetre transparente, fermeture eclair et poignees pour transporter facilement. Ideale pour organiser votre garde-robe et preserver vos habits.',
+    price: '26.000',
+    compareAtPrice: '30.000',
+    category: 'rangement',
+    image: IMG.garmentCoverHero,
+    images: [
+      IMG.garmentCoverHero,
+      IMG.garmentCoverPack,
+      IMG.garmentCoverWater,
+      IMG.garmentCoverHandles,
+      IMG.garmentCoverWindow,
+      IMG.garmentCoverZip,
+    ],
+    sizes: ['Unique'],
+    colors: [{ name: 'Noir', hex: '#1f2937' }],
+    bundles: [
+      { name: 'Pack 2 housses', units: 2, price: 26, compareAtPrice: 30, popular: false },
+      { name: 'Pack 3 housses', units: 3, price: 36, compareAtPrice: 45, popular: true },
+      { name: 'Pack 4 housses', units: 4, price: 44, compareAtPrice: 60, popular: false },
+    ],
+    promoEnabled: true,
+    promoLabel: 'Promotion',
+    featured: true,
+    related: ['rugCoverStorage', 'storageBoxLot5', 'storageCubeLot5', 'sr01', 'hc01', 'dressCover120', 'suitCover150', 'weddingDressCover'],
+  },
+  {
+    key: 'dressCover120',
+    name: 'Housse de rangement 1.2 m pour Robes & Manteaux',
+    aliases: [
+      'Housse rangement 1.2m robes manteaux',
+      'Housse robes et manteaux 1.2 m',
+      'Pack 4 housses 1.2 m',
+    ],
+    brand: 'Deco Shop Plus',
+    description:
+      'Protegez vos robes, manteaux et vetements longs avec notre housse de rangement 1.2 m. Tissu resistant et durable, protection contre la poussiere, l humidite et les salissures. Fermeture eclair solide, ideale a la maison ou en voyage. Pack de 4 housses.',
+    price: '22.000',
+    category: 'rangement',
+    image: IMG.dressCover120Hero,
+    images: [IMG.dressCover120Hero, IMG.dressCover120Pack],
+    sizes: ['1,2 m'],
+    colors: [{ name: 'Noir', hex: '#1f2937' }],
+    featured: true,
+    related: ['suitCover150', 'garmentCover', 'weddingDressCover', 'rugCoverStorage', 'storageBoxLot5', 'storageCubeLot5'],
+  },
+  {
+    key: 'suitCover150',
+    name: 'Housse de rangement 1.5 m pour Costumes',
+    aliases: [
+      'Housse rangement 1.5m costumes',
+      'Housse costumes 1.5 m',
+      'Pack 4 housses costumes',
+    ],
+    brand: 'Deco Shop Plus',
+    description:
+      'Gardez vos costumes elegants, propres et parfaitement proteges avec notre housse de rangement 1.5 m. Grande longueur pour costumes, vestes et vetements longs. Tissu resistant, fermeture eclair solide, pratique au quotidien et en voyage. Pack de 4 housses.',
+    price: '28.000',
+    category: 'rangement',
+    image: IMG.suitCover150Hero,
+    images: [
+      IMG.suitCover150Hero,
+      IMG.suitCover150Rod,
+      IMG.suitCover150Side,
+      IMG.suitCover150Front,
+    ],
+    sizes: ['1,5 m'],
+    colors: [{ name: 'Noir', hex: '#1f2937' }],
+    featured: true,
+    related: ['dressCover120', 'garmentCover', 'weddingDressCover', 'rugCoverStorage', 'storageBoxLot5', 'storageCubeLot5', 'shoeCoverLot10'],
+  },
+  {
+    key: 'shoeCoverLot10',
+    name: 'Pack de 10 Housses de Rangement pour Chaussures – Protection Anti-Poussière',
+    aliases: [
+      'Pack 10 housses chaussures',
+      'Housses de rangement chaussures lot 10',
+      'Housse chaussures anti-poussiere',
+    ],
+    brand: 'Deco Shop Plus',
+    description:
+      'Protegez et rangez facilement vos chaussures avec notre pack de 10 housses de rangement. Tissu resistant et fenetre transparente pour garder vos chaussures propres et les identifier rapidement. Fermeture pratique, format leger et conception peu encombrante. Ideales pour organiser votre dressing, votre placard ou vos valises.',
+    price: '25.000',
+    category: 'rangement',
+    image: IMG.shoeCoverLot10Hero,
+    images: [
+      IMG.shoeCoverLot10Hero,
+      IMG.shoeCoverLot10Beige,
+      IMG.shoeCoverLot10Gray,
+      IMG.shoeCoverLot10Black,
+    ],
+    sizes: ['28 × 38 cm'],
+    colors: [
+      { name: 'Blanc', hex: '#f5f5f5' },
+      { name: 'Beige', hex: '#d6cbb8' },
+      { name: 'Noir', hex: '#1f2937' },
+      { name: 'Gris', hex: '#6b7280' },
+    ],
+    featured: true,
+    related: ['dressCover120', 'garmentCover', 'weddingDressCover', 'rugCoverStorage', 'storageBoxLot5', 'storageCubeLot5'],
+  },
+  {
+    key: 'weddingDressCover',
+    name: 'Housse de Protection pour Robes de Mariée & Robes de Soirée – 1,80 m',
+    aliases: [
+      'Housse robes de mariee',
+      'Housse robes de soiree 1.80 m',
+      'Housse protection robe longue',
+    ],
+    brand: 'Deco Shop Plus',
+    description:
+      'Protegez vos robes longues, robes de mariee et robes de soiree avec une housse elegante et resistante de 1,80 m. Protection contre la poussiere et l humidite, facile a ranger et a transporter. Conception reutilisable pour garder vos robes propres et bien protegees. Couleurs : Blanc, Noir et Beige.',
+    price: '25.000',
+    category: 'rangement',
+    image: IMG.weddingDressCoverHero,
+    images: [IMG.weddingDressCoverHero],
+    sizes: ['1,80 m'],
+    colors: [
+      { name: 'Blanc', hex: '#f5f5f5' },
+      { name: 'Noir', hex: '#1f2937' },
+      { name: 'Beige', hex: '#d6cbb8' },
+    ],
+    bundles: [
+      { name: '1 housse', units: 1, price: 25, popular: false },
+      { name: 'Pack de 2 housses', units: 2, price: 48, popular: true },
+    ],
+    featured: true,
+    related: ['garmentCover', 'dressCover120', 'suitCover150', 'rugCoverStorage', 'storageBoxLot5'],
   },
 ]
 
@@ -605,7 +771,7 @@ async function ensureHero() {
 async function ensureHeroSlides() {
   const slides = [
     [
-      '/assets/campaign-atelier.webp',
+      '/assets/carousel-atelier.webp',
       'Atelier Deco Shop Plus a Cite El Waha, Bizerte',
       'Cité El Waha · Bizerte',
       'Un atelier. Des coussins.',
@@ -616,29 +782,18 @@ async function ensureHeroSlides() {
       0,
     ],
     [
-      '/assets/campaign-matiere.webp',
-      'Velours et tissus Deco Shop Plus',
-      'Matières',
-      'Le velours, le confort, la couleur',
-      'Des tissus denses, des finitions soignées — pour le salon comme pour le lit.',
-      'Voir les coussins',
-      'custom',
-      '/categorie/coussins',
+      '/assets/carousel-details.webp',
+      'Coussins et textiles maison Deco Shop Plus',
+      'Des détails qui font la différence',
+      'Coussins & Textiles Maison',
+      'Plus de confort, plus de style ! Jusqu\'à -37% sur une sélection.',
+      'Voir les promotions',
+      'promotions',
+      '',
       1,
     ],
     [
-      '/assets/campaign-couleurs.webp',
-      'Couleurs de l atelier Deco Shop Plus',
-      "L'offre de l'atelier",
-      'Quatre galettes, une table',
-      'Un pack pour habiller la salle à manger, aux couleurs que vous choisissez.',
-      "Voir l'offre",
-      'custom',
-      '/products/25',
-      2,
-    ],
-    [
-      '/assets/campaign-maison.webp',
+      '/assets/carousel-maison.webp',
       'Maison et lecture, univers Deco Shop Plus',
       'Maison',
       "S'installer. Lire. Rester.",
@@ -646,9 +801,11 @@ async function ensureHeroSlides() {
       'Les nouveautés',
       'nouveautes',
       '',
-      3,
+      2,
     ],
   ]
+
+  const activeImageUrls = slides.map((slide) => slide[0])
 
   await pool.query(
     `DELETE FROM hero_slides
@@ -686,6 +843,13 @@ async function ensureHeroSlides() {
       )
     }
   }
+
+  await pool.query(
+    `UPDATE hero_slides
+     SET published = false, "updatedAt" = NOW()
+     WHERE published = true AND "imageUrl" <> ALL($1::text[])`,
+    [activeImageUrls],
+  )
 }
 
 async function ensureSiteBanner() {
@@ -731,7 +895,7 @@ async function upsertProduct(product) {
 
   const promoEnabled = Boolean(product.promoEnabled)
   const promoLabel = product.promoLabel || 'Promotion'
-  const promoBgColor = product.promoBgColor || '#e85d04'
+  const promoBgColor = product.promoBgColor || '#c81e1e'
   const promoTextColor = product.promoTextColor || '#ffffff'
   const published = product.published !== false
   const featured = published && Boolean(product.featured)
