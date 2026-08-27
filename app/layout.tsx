@@ -2,6 +2,7 @@ import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Montserrat } from 'next/font/google'
 import { StorefrontScale } from '@/components/storefront-scale'
+import { MetaPixel } from '@/components/meta-pixel'
 import { ThemeScript } from '@/components/theme-script'
 import { ToastProvider } from '@/components/toast-provider'
 import { SITE_LOCALE, SITE_OG_LOCALE } from '@/lib/locale'
@@ -95,6 +96,7 @@ export default function RootLayout({
     <html lang={SITE_LOCALE} className={`storefront bg-background ${montserrat.variable}`} suppressHydrationWarning>
       <body className={`${montserrat.className} font-sans antialiased`} suppressHydrationWarning>
         <ThemeScript />
+        <MetaPixel />
         <StorefrontScale />
         <ToastProvider>{children}</ToastProvider>
         {process.env.VERCEL === '1' && <Analytics />}

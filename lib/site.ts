@@ -62,3 +62,7 @@ export const STORE_FAQS = [
       'Oui, contactez-nous sur WhatsApp dans les 7 jours si l’article n’a pas été utilisé.',
   },
 ] as const
+
+/** Meta (Facebook) Pixel — override with NEXT_PUBLIC_META_PIXEL_ID. */
+export const META_PIXEL_ID =
+  process.env.NEXT_PUBLIC_META_PIXEL_ID?.trim() || '1225080913168946'
