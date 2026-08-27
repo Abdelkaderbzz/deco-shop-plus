@@ -15,6 +15,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import { MetaPixelInitiateCheckout } from '@/components/meta-pixel-initiate-checkout'
+import { readMetaAttribution } from '@/lib/meta-cookies'
+import { trackPurchase } from '@/lib/meta-pixel'
 import { getCheckoutDraftId, markCheckoutCompleted, useAbandonedCheckout } from '@/lib/use-abandoned-checkout'
 import { useEffect, useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -36,6 +39,7 @@ export default function CheckoutPage() {
   const router = useRouter()
   const toast = useToast()
   const [deliveryFee, setDeliveryFee] = useState(7)
+  const [deliveryFeeReady, setDeliveryFeeReady] = useState(false)
 
   const {
     register,
@@ -89,7 +93,10 @@ export default function CheckoutPage() {
   )
 
   useEffect(() => {
-    getDeliveryFee().then(setDeliveryFee).catch(() => setDeliveryFee(7))
+    getDeliveryFee()
+      .then((fee) => setDeliveryFee(fee))
+      .catch(() => setDeliveryFee(7))
+      .finally(() => setDeliveryFeeReady(true))
   }, [])
 
   const grandTotal = total + deliveryFee
@@ -119,8 +126,18 @@ export default function CheckoutPage() {
           quantity: i.quantity,
           price: i.price,
         })),
+        meta: readMetaAttribution(),
       })
       markCheckoutCompleted()
+      trackPurchase(
+        orderId,
+        items.map((item) => ({
+          productId: item.productId,
+          price: item.price,
+          quantity: item.quantity,
+        })),
+        grandTotal,
+      )
       clearCart()
       toast.success('Commande confirmee avec succes.')
       router.push(`/checkout/success?orderId=${orderId}`)
@@ -145,6 +162,11 @@ export default function CheckoutPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-2 py-8 sm:px-3">
+      <MetaPixelInitiateCheckout
+        items={items}
+        value={grandTotal}
+        ready={deliveryFeeReady}
+      />
       <Reveal className="mb-8">
         <p className="text-sm font-semibold uppercase tracking-wide text-primary">Votre commande</p>
         <h1 className="mt-2 font-serif text-2xl font-semibold text-foreground">Panier</h1>

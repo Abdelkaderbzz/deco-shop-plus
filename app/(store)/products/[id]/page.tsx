@@ -13,12 +13,14 @@ import { productHref } from '@/lib/catalog-href'
 import { parseProductColors, isPromoActive } from '@/lib/product-colors'
 import { parseProductBundles } from '@/lib/product-bundles'
 import { parseProductImages } from '@/lib/product-images'
-import { hasVariableSizePrices, parseProductSizes, uniqueDimensionLabel } from '@/lib/product-sizes'
+import { hasVariableSizePrices, lowestSizePrice, parseProductSizes, uniqueDimensionLabel } from '@/lib/product-sizes'
+import { parsePrice } from '@/lib/product-price'
 import { breadcrumbJsonLd, pageAlternates, productJsonLd, productMetaDescription } from '@/lib/seo'
 import { PRODUCT_FABRIC, SITE } from '@/lib/site'
 import { isNumericProductParam } from '@/lib/slug'
 import { getCategoryLabel } from '@/lib/store-categories'
 import { Breadcrumbs } from '@/components/breadcrumbs'
+import { MetaPixelViewContent } from '@/components/meta-pixel-view-content'
 import { AddToCartButton } from './add-to-cart-button'
 import { notFound, permanentRedirect } from 'next/navigation'
 import { connection } from 'next/server'
@@ -132,9 +134,16 @@ export default async function ProductDetailPage({
   const images = parseProductImages(product)
   const promo = isPromoActive(product)
   const categoryPath = `/categorie/${product.category}`
+  const basePrice = parsePrice(product.price) ?? 0
+  const viewContentPrice = lowestSizePrice(sizes, basePrice) || basePrice
 
   return (
     <div className="mx-auto max-w-7xl px-2 py-8 sm:px-3">
+      <MetaPixelViewContent
+        productId={product.id}
+        productName={product.name}
+        price={viewContentPrice}
+      />
       <JsonLd data={productJsonLd(product)} />
       <JsonLd
         data={breadcrumbJsonLd([

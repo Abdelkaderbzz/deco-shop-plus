@@ -18,6 +18,9 @@ import { getGovernorateLabel, GOVERNORATE_SELECT_OPTIONS } from '@/lib/tunisia-g
 import { productOrderSchema, type ProductOrderFormValues } from '@/lib/validations'
 import { useRouter } from 'next/navigation'
 import { getCheckoutDraftId, markCheckoutCompleted, useAbandonedCheckout } from '@/lib/use-abandoned-checkout'
+import { getDeliveryFee } from '@/app/actions/settings'
+import { readMetaAttribution } from '@/lib/meta-cookies'
+import { trackAddToCart, trackPurchase } from '@/lib/meta-pixel'
 import { useRef, useState, type FormEvent } from 'react'
 import type { ZodError } from 'zod'
 
@@ -338,6 +341,12 @@ export function AddToCartButton({
       imageUrl: product.imageUrl ?? undefined,
       stock,
     })
+    trackAddToCart({
+      productId: product.id,
+      productName: product.name,
+      price: selectedPrice,
+      quantity: 1,
+    })
     setAdded(true)
     window.setTimeout(() => setAdded(false), 2000)
   }
@@ -385,8 +394,21 @@ export function AddToCartButton({
         customerAddress: values.customerAddress.trim(),
         notes: values.notes.trim() || undefined,
         items: [orderItem()],
+        meta: readMetaAttribution(),
       })
       markCheckoutCompleted()
+      const deliveryFee = await getDeliveryFee()
+      trackPurchase(
+        orderId,
+        [
+          {
+            productId: product.id,
+            price: selectedPrice,
+            quantity: 1,
+          },
+        ],
+        selectedPrice + deliveryFee,
+      )
       toast.success('Commande confirmee avec succes.')
       router.push(`/checkout/success?orderId=${orderId}`)
     } catch (error) {
