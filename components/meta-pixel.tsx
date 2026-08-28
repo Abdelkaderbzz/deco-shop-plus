@@ -4,6 +4,8 @@ import { META_PIXEL_ID } from '@/lib/site'
 export function MetaPixel() {
   if (!META_PIXEL_ID) return null
 
+  const testEventCode = process.env.NEXT_PUBLIC_META_TEST_EVENT_CODE?.trim() || ''
+
   return (
     <>
       <Script id="meta-pixel" strategy="afterInteractive">
@@ -18,6 +20,11 @@ export function MetaPixel() {
           'https://connect.facebook.net/en_US/fbevents.js');
           fbq('init', '${META_PIXEL_ID}');
           fbq('track', 'PageView');
+          ${
+            testEventCode
+              ? `fetch('/api/meta-test-event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({eventName:'PageView',eventSourceUrl:location.href}),keepalive:true}).catch(function(){});`
+              : ''
+          }
         `}
       </Script>
       <noscript>

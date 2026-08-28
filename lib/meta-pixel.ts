@@ -5,6 +5,7 @@ import {
   metaPurchaseEventId,
   type MetaLineItem,
 } from '@/lib/meta-pixel-events'
+import { readMetaCookies } from '@/lib/meta-cookies'
 
 type Fbq = (
   command: 'track',
@@ -18,14 +19,43 @@ function fbq(): Fbq | undefined {
   return (window as Window & { fbq?: Fbq }).fbq
 }
 
+function testEventCode() {
+  return process.env.NEXT_PUBLIC_META_TEST_EVENT_CODE?.trim() || ''
+}
+
+/** Mirror to CAPI with test_event_code so Events Manager → Test events lights up. */
+function mirrorToTestEvents(
+  eventName: string,
+  params?: Record<string, unknown>,
+  eventId?: string,
+) {
+  if (!testEventCode()) return
+  const cookies = readMetaCookies()
+  void fetch('/api/meta-test-event', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      eventName,
+      eventId,
+      customData: params,
+      eventSourceUrl: window.location.href,
+      fbp: cookies.fbp,
+      fbc: cookies.fbc,
+    }),
+    keepalive: true,
+  }).catch(() => {})
+}
+
 function track(event: string, params?: Record<string, unknown>, eventId?: string) {
   const pixel = fbq()
-  if (!pixel) return
-  if (eventId) {
-    pixel('track', event, params, { eventID: eventId })
-  } else {
-    pixel('track', event, params)
+  if (pixel) {
+    if (eventId) {
+      pixel('track', event, params, { eventID: eventId })
+    } else {
+      pixel('track', event, params)
+    }
   }
+  mirrorToTestEvents(event, params, eventId)
 }
 
 export type { MetaLineItem } from '@/lib/meta-pixel-events'
