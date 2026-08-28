@@ -88,7 +88,7 @@ const IMG = {
   decorativeCushionBlue: '/assets/decorative-cushion-blue.webp',
   bolsterCushionHero: '/assets/bolster-cushion-primary.webp',
   bolsterCushionColors: '/assets/bolster-cushion-coloris.webp',
-  rugCoverHero: '/assets/rug-cover-housses-tapis-primary.webp',
+  rugCoverHero: '/assets/rug-cover-housses-tapis-v2.webp',
   rugCoverSizes: '/assets/rug-cover-5-tailles.webp',
   rugCoverInterior: '/assets/rug-cover-interieur.webp',
   rugCoverFabric: '/assets/rug-cover-tissu-resistant.webp',
