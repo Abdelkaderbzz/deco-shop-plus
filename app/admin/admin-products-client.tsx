@@ -170,8 +170,8 @@ export function AdminProductsClient({
       name: product.name,
       brand: product.brand,
       description: product.description ?? '',
-      price: product.price,
-      compareAtPrice: product.compareAtPrice ?? '',
+      price: String(product.price ?? ''),
+      compareAtPrice: product.compareAtPrice != null ? String(product.compareAtPrice) : '',
       category: product.category,
       images: parseProductImages(product),
       sizes: sizesToFormValues(product.sizes, parsePrice(product.price) ?? 0),
@@ -187,6 +187,16 @@ export function AdminProductsClient({
       promoTextColor: product.promoTextColor || DEFAULT_PROMO_TEXT,
     })
     setShowForm(true)
+  }
+
+  function onInvalid() {
+    toast.error('Corrigez les champs en erreur avant d’enregistrer.')
+    requestAnimationFrame(() => {
+      const firstError = document.querySelector<HTMLElement>(
+        '[aria-invalid="true"], .border-red-400, [data-field-error]',
+      )
+      firstError?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    })
   }
 
   function onSubmit(form: ProductFormValues) {
@@ -407,7 +417,7 @@ export function AdminProductsClient({
           title={editingProduct ? 'Modifier le produit' : 'Nouveau produit'}
           onClose={() => !isPending && setShowForm(false)}
         >
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form noValidate onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-4">
             <div>
               <label className={adminLabelCls}>NOM *</label>
               <input type="text" className={adminInputWithError(!!errors.name)} {...register('name')} />
@@ -425,7 +435,9 @@ export function AdminProductsClient({
                   type="number"
                   step="0.001"
                   className={adminInputWithError(!!errors.price)}
-                  {...register('price')}
+                  {...register('price', {
+                    setValueAs: (value) => (value == null || value === '' ? '' : String(value)),
+                  })}
                 />
                 <AdminFieldError message={errors.price?.message} />
                 <p className="mt-1 text-xs text-slate-500">
@@ -458,7 +470,9 @@ export function AdminProductsClient({
                 min={0}
                 step={1}
                 className={adminInputWithError(!!errors.stock)}
-                {...register('stock')}
+                {...register('stock', {
+                  setValueAs: (value) => (value == null || value === '' ? '' : String(value)),
+                })}
               />
               <AdminFieldError message={errors.stock?.message} />
               <p className="mt-1 text-xs text-slate-500">

@@ -14,6 +14,20 @@ export const loginSchema = z.object({
 
 export type LoginFormValues = z.infer<typeof loginSchema>
 
+/** Absolute http(s) URLs or site-relative paths like `/assets/…`. */
+export const productImageUrlSchema = z
+  .string()
+  .min(1, 'URL invalide')
+  .refine((value) => {
+    if (value.startsWith('/') && !value.startsWith('//')) return true
+    try {
+      const url = new URL(value)
+      return url.protocol === 'http:' || url.protocol === 'https:'
+    } catch {
+      return false
+    }
+  }, { message: 'URL invalide' })
+
 export const productSchema = z
   .object({
     name: z.string().min(1, 'Nom requis').max(200, 'Nom trop long'),
@@ -33,7 +47,7 @@ export const productSchema = z
         { message: 'Ancien prix invalide' },
       ),
     category: z.string().min(1, 'Categorie requise'),
-    images: z.array(z.string().url('URL invalide')).max(8, 'Maximum 8 images par produit'),
+    images: z.array(productImageUrlSchema).max(8, 'Maximum 8 images par produit'),
     sizes: z
       .array(
         z.object({

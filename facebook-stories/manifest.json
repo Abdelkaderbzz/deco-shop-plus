@@ -1,0 +1,163 @@
+[
+  {
+    "key": "chairPad",
+    "name": "Galette de chaise capitonnée",
+    "file": "galette-de-chaise-capitonnee.jpg",
+    "source": "/assets/chair-pad-primary.webp",
+    "size": "1080x1920"
+  },
+  {
+    "key": "chairPadBackrest",
+    "name": "Galette de chaise capitonnée dossier et assise",
+    "file": "galette-de-chaise-capitonnee-dossier-et-assise.jpg",
+    "source": "/assets/chair-pad-backrest-primary.webp",
+    "size": "1080x1920"
+  },
+  {
+    "key": "hc01",
+    "name": "Pack de 3 Housses à Chaussures Imperméables HC01",
+    "file": "pack-de-3-housses-a-chaussures-impermeables-hc01.jpg",
+    "source": "/assets/hc01.webp",
+    "size": "1080x1920"
+  },
+  {
+    "key": "sr01",
+    "name": "Sac de Rangement SR01 - Vêtements",
+    "file": "sac-de-rangement-sr01-vetements.jpg",
+    "source": "/assets/sr01.webp",
+    "size": "1080x1920"
+  },
+  {
+    "key": "rugCoverStorage",
+    "name": "Housse de rangement pour tapis",
+    "file": "housse-de-rangement-pour-tapis.jpg",
+    "source": "/assets/rug-cover-housses-tapis-v2.webp",
+    "size": "1080x1920"
+  },
+  {
+    "key": "chairPadPack4",
+    "name": "Pack de 4 galettes de chaise rondes capitonnées",
+    "file": "pack-de-4-galettes-de-chaise-rondes-capitonnees.jpg",
+    "source": "/assets/chair-pad-pack-4-primary.webp",
+    "size": "1080x1920"
+  },
+  {
+    "key": "readingPillow",
+    "name": "Coussin de lecture",
+    "file": "coussin-de-lecture.jpg",
+    "source": "/assets/reading-pillow-primary.webp",
+    "size": "1080x1920"
+  },
+  {
+    "key": "sofaCushion",
+    "name": "Coussin de canapé",
+    "file": "coussin-de-canape.jpg",
+    "source": "/assets/sofa-cushion-primary.webp",
+    "size": "1080x1920"
+  },
+  {
+    "key": "headboardCushion",
+    "name": "Coussin de tête de lit",
+    "file": "coussin-de-tete-de-lit.jpg",
+    "source": "/assets/headboard-cushion-primary.webp",
+    "size": "1080x1920"
+  },
+  {
+    "key": "decorativeCushion",
+    "name": "Coussin décoratif",
+    "file": "coussin-decoratif.jpg",
+    "source": "/assets/decorative-cushion-primary.webp",
+    "size": "1080x1920"
+  },
+  {
+    "key": "bolsterCushion",
+    "name": "Coussin traversin cylindrique en velours",
+    "file": "coussin-traversin-cylindrique-en-velours.jpg",
+    "source": "/assets/bolster-cushion-primary.webp",
+    "size": "1080x1920"
+  },
+  {
+    "key": "superFiestaPillow",
+    "name": "Oreiller Orthopédique Super Fiesta – 65 × 45 cm",
+    "file": "oreiller-orthopedique-super-fiesta-65-45-cm.jpg",
+    "source": "/assets/super-fiesta-primary.webp",
+    "size": "1080x1920"
+  },
+  {
+    "key": "storageBoxLot5",
+    "name": "Lot de 5 Boîtes de Rangement Pliables – Grande Capacité 70 × 60 × 30 cm",
+    "file": "lot-de-5-boites-de-rangement-pliables-grande-capacite-70-60-30-cm.jpg",
+    "source": "/assets/storage-box-lot5-primary.webp",
+    "size": "1080x1920"
+  },
+  {
+    "key": "storageCubeLot5",
+    "name": "Lot de 5 Cubes de Rangement Pliables – 50 × 40 × 40 cm",
+    "file": "lot-de-5-cubes-de-rangement-pliables-50-40-40-cm.jpg",
+    "source": "/assets/storage-cube-lot5-primary.webp",
+    "size": "1080x1920"
+  },
+  {
+    "key": "garmentCover",
+    "name": "Housse de Vêtements – Protection & Rangement",
+    "file": "housse-de-vetements-protection-rangement.jpg",
+    "source": "/assets/garment-cover-primary.webp",
+    "size": "1080x1920"
+  },
+  {
+    "key": "dressCover120",
+    "name": "Housse de rangement 1.2 m pour Robes & Manteaux",
+    "file": "housse-de-rangement-1-2-m-pour-robes-manteaux.jpg",
+    "source": "/assets/dress-cover-120-hero.webp",
+    "size": "1080x1920"
+  },
+  {
+    "key": "suitCover150",
+    "name": "Housse de rangement 1.5 m pour Costumes",
+    "file": "housse-de-rangement-1-5-m-pour-costumes.jpg",
+    "source": "/assets/suit-cover-150-primary.webp",
+    "size": "1080x1920"
+  },
+  {
+    "key": "shoeCoverLot10",
+    "name": "Pack de 10 Housses de Rangement pour Chaussures – Protection Anti-Poussière",
+    "file": "pack-de-10-housses-de-rangement-pour-chaussures-protection-anti-poussiere.jpg",
+    "source": "/assets/shoe-cover-lot10-hero.webp",
+    "size": "1080x1920"
+  },
+  {
+    "key": "weddingDressCover",
+    "name": "Housse de Protection pour Robes de Mariée & Robes de Soirée – 1,80 m",
+    "file": "housse-de-protection-pour-robes-de-mariee-robes-de-soiree-1-80-m.jpg",
+    "source": "/assets/wedding-dress-cover-primary.webp",
+    "size": "1080x1920"
+  },
+  {
+    "key": "closetOrganizer",
+    "name": "Organiseur de armoire",
+    "file": "organiseur-de-armoire.jpg",
+    "source": "/assets/closet-organizer-primary.webp",
+    "size": "1080x1920"
+  },
+  {
+    "key": "handbagOrganizer",
+    "name": "Rangement pour les sacs à main",
+    "file": "rangement-pour-les-sacs-a-main.jpg",
+    "source": "/assets/handbag-organizer-primary.webp",
+    "size": "1080x1920"
+  },
+  {
+    "key": "doorDraftStopper",
+    "name": "Boudin de porte",
+    "file": "boudin-de-porte.jpg",
+    "source": "/assets/door-draft-stopper-primary.webp",
+    "size": "1080x1920"
+  },
+  {
+    "key": "mattressProtector",
+    "name": "Protège-Matelas TNT Polypropylène – Fermeture Éclair",
+    "file": "protege-matelas-tnt-polypropylene-fermeture-eclair.jpg",
+    "source": "/assets/mattress-protector-primary.webp",
+    "size": "1080x1920"
+  }
+]

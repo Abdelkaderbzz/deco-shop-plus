@@ -10,7 +10,11 @@ export const adminFieldErrorCls = 'mt-1 text-xs font-medium text-red-600'
 
 export function AdminFieldError({ message }: { message?: string }) {
   if (!message) return null
-  return <p className={adminFieldErrorCls}>{message}</p>
+  return (
+    <p data-field-error className={adminFieldErrorCls}>
+      {message}
+    </p>
+  )
 }
 
 export function adminInputWithError(hasError: boolean) {

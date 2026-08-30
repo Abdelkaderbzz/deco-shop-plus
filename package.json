@@ -17,7 +17,8 @@
     "seed:dummy:clear": "node scripts/seed-dummy-data.mjs --clear",
     "seed:test": "node scripts/migrate.mjs && node scripts/create-admin.mjs && node scripts/seed-products.mjs --force && node scripts/seed-dummy-data.mjs",
     "db:migrate": "node scripts/migrate.mjs",
-    "images:optimize": "node scripts/optimize-images.mjs"
+    "images:optimize": "node scripts/optimize-images.mjs",
+    "stories:export": "node scripts/export-facebook-stories.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
