@@ -7,6 +7,9 @@ import { ProductCard } from '@/components/product-card'
 import { CatalogToolbar } from './catalog-toolbar'
 import { catalogHref } from '@/lib/catalog-href'
 import { breadcrumbJsonLd, collectionPageJsonLd } from '@/lib/seo'
+import { getStorefrontI18n } from '@/lib/i18n/get-locale'
+import { localizeCategories } from '@/lib/i18n/categories'
+import { localizeProduct } from '@/lib/i18n/products'
 import { SITE } from '@/lib/site'
 import { mergeStoreCategories } from '@/lib/store-categories'
 import { STORE_PAGE_SIZE } from '@/lib/pagination'
@@ -21,7 +24,8 @@ export async function CatalogPage({
   search: string
   page: number
 }) {
-  const [productPage, categories] = await Promise.all([
+  const [{ dict, locale }, productPage, categories] = await Promise.all([
+    getStorefrontI18n(),
     getStoreProductsPaginated({
       page,
       pageSize: STORE_PAGE_SIZE,
@@ -30,22 +34,22 @@ export async function CatalogPage({
     }),
     getCategories(),
   ])
-  const storeCategories = mergeStoreCategories(categories)
+  const storeCategories = localizeCategories(mergeStoreCategories(categories), dict)
   const selected = storeCategories.find((item) => item.slug === category)
-  const name = selected ? `${selected.name} | ${SITE.name}` : `Boutique | ${SITE.name}`
+  const name = selected ? `${selected.name} | ${SITE.name}` : `${dict.catalog.title} | ${SITE.name}`
   const description = selected
-    ? `${selected.name} en velours anti-tache chez ${SITE.name} à ${SITE.neighborhood}, ${SITE.city}. ${selected.tagline}.`
-    : SITE.description
+    ? `${selected.name} ${dict.site.fabric} ${SITE.name} ${dict.site.neighborhood}, ${dict.site.city}. ${selected.tagline}.`
+    : dict.site.description
   const path = catalogHref({ category, search, page: search ? page : 1 })
   const crumbs = selected
     ? [
-        { name: 'Accueil', path: '/' },
-        { name: 'Boutique', path: '/products' },
+        { name: dict.nav.home, path: '/' },
+        { name: dict.nav.shop, path: '/products' },
         { name: selected.name, path: catalogHref({ category: selected.slug }) },
       ]
     : [
-        { name: 'Accueil', path: '/' },
-        { name: 'Boutique', path: '/products' },
+        { name: dict.nav.home, path: '/' },
+        { name: dict.nav.shop, path: '/products' },
       ]
   const labels = storeCategories.map((item) => ({ slug: item.slug, name: item.name }))
 
@@ -59,7 +63,7 @@ export async function CatalogPage({
           products: productPage.items.map((product) => ({
             id: product.id,
             slug: product.slug,
-            name: product.name,
+            name: localizeProduct(product, locale).name,
           })),
         })}
       />
@@ -76,11 +80,11 @@ export async function CatalogPage({
       {productPage.total === 0 ? (
         category !== 'all' && selected ? (
           <p className="py-8 text-center text-sm font-light tracking-widest text-muted-foreground">
-            Produits bientot disponibles dans cette categorie
+            {dict.catalog.emptyCategory}
           </p>
         ) : (
           <div className="py-24 text-center">
-            <p className="text-sm font-light tracking-widest text-muted-foreground">AUCUN PRODUIT TROUVE</p>
+            <p className="text-sm font-light tracking-widest text-muted-foreground">{dict.catalog.emptySearch}</p>
           </div>
         )
       ) : (
@@ -99,8 +103,7 @@ export async function CatalogPage({
           {productPage.totalPages > 1 ? (
             <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
               <p className="text-sm font-light text-muted-foreground">
-                Page {productPage.page} / {productPage.totalPages} · {productPage.total} produit
-                {productPage.total > 1 ? 's' : ''}
+                {dict.catalog.page(productPage.page, productPage.totalPages, productPage.total)}
               </p>
               <div className="flex items-center gap-2">
                 {productPage.page > 1 ? (
@@ -109,11 +112,11 @@ export async function CatalogPage({
                     prefetch={false}
                     className="inline-flex min-h-11 items-center gap-1 rounded-full border border-border px-4 py-2 text-xs font-light tracking-widest text-muted-foreground"
                   >
-                    Precedent
+                    {dict.catalog.prev}
                   </Link>
                 ) : (
                   <span className="inline-flex min-h-11 cursor-not-allowed items-center gap-1 rounded-full border border-border px-4 py-2 text-xs font-light tracking-widest text-muted-foreground opacity-40">
-                    Precedent
+                    {dict.catalog.prev}
                   </span>
                 )}
                 {productPage.page < productPage.totalPages ? (
@@ -122,11 +125,11 @@ export async function CatalogPage({
                     prefetch={false}
                     className="inline-flex min-h-11 items-center gap-1 rounded-full border border-border px-4 py-2 text-xs font-light tracking-widest text-muted-foreground"
                   >
-                    Suivant
+                    {dict.catalog.next}
                   </Link>
                 ) : (
                   <span className="inline-flex min-h-11 cursor-not-allowed items-center gap-1 rounded-full border border-border px-4 py-2 text-xs font-light tracking-widest text-muted-foreground opacity-40">
-                    Suivant
+                    {dict.catalog.next}
                   </span>
                 )}
               </div>

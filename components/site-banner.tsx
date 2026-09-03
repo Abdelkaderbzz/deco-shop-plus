@@ -2,6 +2,7 @@
 
 import type { ActiveBanner } from '@/app/actions/banners'
 import { readableForeground } from '@/lib/contrast'
+import { useI18n } from '@/lib/i18n/provider'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
@@ -22,6 +23,7 @@ function storageKey(banner: ActiveBanner) {
 }
 
 export function SiteBanner({ banner }: { banner: ActiveBanner }) {
+  const { dict } = useI18n()
   const [dismissed, setDismissed] = useState(false)
   const key = storageKey(banner)
 
@@ -92,7 +94,7 @@ export function SiteBanner({ banner }: { banner: ActiveBanner }) {
           <button
             type="button"
             onClick={dismiss}
-            aria-label="Fermer l'annonce"
+            aria-label={dict.nav.closeBanner}
             className="flex min-h-11 min-w-11 shrink-0 items-center justify-center opacity-70 transition-opacity hover:opacity-100"
           >
             <svg

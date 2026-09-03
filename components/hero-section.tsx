@@ -1,5 +1,7 @@
 'use client'
 
+import { localizeHeroSlide } from '@/lib/i18n/hero'
+import { useI18n } from '@/lib/i18n/provider'
 import { resolveHeroCtaHref, type HeroSlide } from '@/lib/hero-slides'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -16,13 +18,15 @@ function scrollToTarget(href: string) {
 }
 
 export function HeroSection({ slides }: { slides: HeroSlide[] }) {
+  const { dict } = useI18n()
+  const localized = slides.map((slide) => localizeHeroSlide(slide, dict))
   const [index, setIndex] = useState(0)
   const [direction, setDirection] = useState<1 | -1>(1)
   const [paused, setPaused] = useState(false)
   const [loadNearby, setLoadNearby] = useState(false)
   const [reduceMotion, setReduceMotion] = useState(false)
-  const total = slides.length
-  const current = slides[index] ?? slides[0]
+  const total = localized.length
+  const current = localized[index] ?? localized[0]
 
   const goTo = useCallback(
     (next: number) => {
@@ -82,7 +86,7 @@ export function HeroSection({ slides }: { slides: HeroSlide[] }) {
     >
       <div className="mx-auto max-w-7xl px-2 py-4 sm:px-3 md:py-5">
         <div className="relative aspect-[1920/825] w-full overflow-hidden rounded-2xl border border-border/60 bg-[#eef5f4]">
-          {slides.map((slide, slideIndex) => {
+          {localized.map((slide, slideIndex) => {
             const isActive = slideIndex === index
             const isNearby =
               isActive ||
@@ -150,7 +154,7 @@ export function HeroSection({ slides }: { slides: HeroSlide[] }) {
           {total > 1 && (
             <>
               <div className="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 items-center gap-0.5">
-                {slides.map((slide, slideIndex) => {
+                {localized.map((slide, slideIndex) => {
                   const active = slideIndex === index
                   return (
                     <button
@@ -158,7 +162,7 @@ export function HeroSection({ slides }: { slides: HeroSlide[] }) {
                       type="button"
                       onClick={() => goTo(slideIndex)}
                       className="flex h-11 w-11 items-center justify-center"
-                      aria-label={`Aller au slide ${slideIndex + 1}`}
+                      aria-label={dict.hero.goto(slideIndex + 1)}
                       aria-current={active ? 'true' : undefined}
                     >
                       <span
@@ -183,16 +187,16 @@ export function HeroSection({ slides }: { slides: HeroSlide[] }) {
               <button
                 type="button"
                 onClick={() => goTo(index - 1)}
-                className="absolute bottom-4 left-3 z-20 hidden h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-black/35 text-lg text-white backdrop-blur-sm md:flex"
-                aria-label="Slide precedent"
+                className="absolute bottom-4 start-3 z-20 hidden h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-black/35 text-lg text-white backdrop-blur-sm md:flex"
+                aria-label={dict.hero.prev}
               >
                 ‹
               </button>
               <button
                 type="button"
                 onClick={() => goTo(index + 1)}
-                className="absolute bottom-4 right-3 z-20 hidden h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-black/35 text-lg text-white backdrop-blur-sm md:flex"
-                aria-label="Slide suivant"
+                className="absolute bottom-4 end-3 z-20 hidden h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-black/35 text-lg text-white backdrop-blur-sm md:flex"
+                aria-label={dict.hero.next}
               >
                 ›
               </button>

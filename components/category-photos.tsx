@@ -1,6 +1,9 @@
+'use client'
+
 import Image from 'next/image'
 import Link from 'next/link'
 import { catalogHref } from '@/lib/catalog-href'
+import { useI18n } from '@/lib/i18n/provider'
 import type { StoreCategory } from '@/lib/store-categories'
 
 export function CategoryPhotos({
@@ -10,14 +13,15 @@ export function CategoryPhotos({
   category: string
   categories: StoreCategory[]
 }) {
+  const { dict } = useI18n()
   if (category === 'all') {
     return (
       <div className="mb-10">
         <div className="mb-8 text-center">
-          <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-primary">Catalogue</p>
-          <h1 className="mt-2 font-serif text-4xl font-medium tracking-tight text-foreground">Boutique</h1>
+          <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-primary">{dict.catalog.eyebrow}</p>
+          <h1 className="mt-2 font-serif text-4xl font-medium tracking-tight text-foreground">{dict.catalog.title}</h1>
           <p className="mx-auto mt-3 max-w-md text-sm text-muted-foreground">
-            Coussins, galettes et solutions de rangement, à Cité El Waha, Bizerte.
+            {dict.catalog.subtitle}
           </p>
         </div>
         <div
@@ -72,7 +76,7 @@ export function CategoryPhotos({
             className="object-cover"
           />
         ) : null}
-        <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/30 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/30 to-transparent rtl:bg-linear-to-l" />
         <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-10">
           <p className="text-[11px] font-medium tracking-wide text-white">{storeCategory.tagline}</p>
           <h1 className="mt-2 font-serif text-3xl font-medium tracking-tight text-white md:text-4xl">

@@ -16,7 +16,10 @@ import { parseProductImages } from '@/lib/product-images'
 import { hasVariableSizePrices, lowestSizePrice, parseProductSizes, uniqueDimensionLabel } from '@/lib/product-sizes'
 import { parsePrice } from '@/lib/product-price'
 import { breadcrumbJsonLd, pageAlternates, productJsonLd, productMetaDescription } from '@/lib/seo'
-import { PRODUCT_FABRIC, SITE } from '@/lib/site'
+import { getStorefrontI18n } from '@/lib/i18n/get-locale'
+import { localizeCategories, localizeCategoryLabel } from '@/lib/i18n/categories'
+import { localizeProduct } from '@/lib/i18n/products'
+import { SITE } from '@/lib/site'
 import { isNumericProductParam } from '@/lib/slug'
 import { getCategoryLabel } from '@/lib/store-categories'
 import { Breadcrumbs } from '@/components/breadcrumbs'
@@ -48,20 +51,26 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   await connection()
   const { id } = await params
-  const [product, categories] = await Promise.all([
+  const [{ dict, locale }, productRow, categories] = await Promise.all([
+    getStorefrontI18n(),
     getPublishedProductByParam(id),
     getCategories(),
   ])
-  if (!product) {
-    return { title: 'Produit introuvable', robots: { index: false, follow: true } }
+  if (!productRow) {
+    return { title: dict.product.notFound, robots: { index: false, follow: true } }
   }
 
-  if (product.slug && isNumericProductParam(id)) {
-    permanentRedirect(productHref(product))
+  if (productRow.slug && isNumericProductParam(id)) {
+    permanentRedirect(productHref(productRow))
   }
 
-  const categoryLabel = getCategoryLabel(product.category, categories)
-  const description = productMetaDescription(product)
+  const product = localizeProduct(productRow, locale)
+  const categoryLabel = localizeCategoryLabel(
+    product.category,
+    getCategoryLabel(product.category, categories),
+    dict,
+  )
+  const description = productMetaDescription(product, locale)
   const url = productHref(product)
   const gallery = parseProductImages(product)
   const images =
@@ -73,19 +82,16 @@ export async function generateMetadata({
       : undefined
 
   return {
-    title: `${product.name} à ${SITE.city}`,
+    title: dict.product.title(product.name, dict.site.city),
     description,
     keywords: [
       product.name,
       product.brand,
       categoryLabel,
-      PRODUCT_FABRIC,
-      'galette de chaise',
-      'coussin',
+      dict.site.fabric,
       SITE.city,
-      SITE.neighborhood,
-      'livraison Tunisie',
-      'paiement à la livraison',
+      dict.site.neighborhood,
+      ...dict.site.keywords,
     ],
     alternates: pageAlternates(url),
     openGraph: {
@@ -116,16 +122,23 @@ export default async function ProductDetailPage({
 }) {
   await connection()
   const { id } = await params
-  const [product, categories] = await Promise.all([
+  const [{ dict, locale }, productRow, categories] = await Promise.all([
+    getStorefrontI18n(),
     getPublishedProductByParam(id),
     getCategories(),
   ])
-  if (!product) notFound()
-  if (product.slug && isNumericProductParam(id)) {
-    permanentRedirect(productHref(product))
+  if (!productRow) notFound()
+  if (productRow.slug && isNumericProductParam(id)) {
+    permanentRedirect(productHref(productRow))
   }
 
-  const categoryLabel = getCategoryLabel(product.category, categories)
+  const product = localizeProduct(productRow, locale)
+
+  const categoryLabel = localizeCategoryLabel(
+    product.category,
+    getCategoryLabel(product.category, categories),
+    dict,
+  )
 
   const sizes = parseProductSizes(product.sizes, Number.parseFloat(product.price) || 0)
   const dimension = uniqueDimensionLabel(sizes)
@@ -144,11 +157,11 @@ export default async function ProductDetailPage({
         productName={product.name}
         price={viewContentPrice}
       />
-      <JsonLd data={productJsonLd(product)} />
+      <JsonLd data={productJsonLd(product, locale)} />
       <JsonLd
         data={breadcrumbJsonLd([
-          { name: 'Accueil', path: '/' },
-          { name: 'Boutique', path: '/products' },
+          { name: dict.nav.home, path: '/' },
+          { name: dict.nav.shop, path: '/products' },
           { name: categoryLabel, path: categoryPath },
           { name: product.name, path: productHref(product) },
         ])}
@@ -156,8 +169,8 @@ export default async function ProductDetailPage({
       <Reveal className="mb-8">
         <Breadcrumbs
           items={[
-            { name: 'Accueil', href: '/' },
-            { name: 'Boutique', href: '/products' },
+            { name: dict.nav.home, href: '/' },
+            { name: dict.nav.shop, href: '/products' },
             { name: categoryLabel, href: categoryPath },
             { name: product.name },
           ]}
@@ -190,23 +203,6 @@ export default async function ProductDetailPage({
 
           <div className="h-px w-16 bg-primary/30" />
 
-          {product.description && (
-            <p className="text-sm font-light leading-relaxed text-muted-foreground">
-              {product.description}
-            </p>
-          )}
-
-          <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm">
-            <dt className="text-muted-foreground">Matière de fabrication</dt>
-            <dd className="font-medium text-foreground">{PRODUCT_FABRIC}</dd>
-            {dimension ? (
-              <>
-                <dt className="text-muted-foreground">Dimensions</dt>
-                <dd className="font-medium text-foreground">{dimension}</dd>
-              </>
-            ) : null}
-          </dl>
-
           {!product.inStock ? (
             <>
               <ProductPrice
@@ -217,7 +213,7 @@ export default async function ProductDetailPage({
                 from={hasVariableSizePrices(sizes)}
               />
               <div className="rounded-full bg-black px-4 py-3 text-center text-sm font-semibold tracking-wide text-white">
-                Épuisé
+                {dict.product.outOfStock}
               </div>
             </>
           ) : (
@@ -230,6 +226,23 @@ export default async function ProductDetailPage({
               accentColor={promo ? product.promoBgColor : null}
             />
           )}
+
+          {product.description && (
+            <p className="text-sm font-light leading-relaxed text-muted-foreground">
+              {product.description}
+            </p>
+          )}
+
+          <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm">
+            <dt className="text-muted-foreground">{dict.product.fabric}</dt>
+            <dd className="font-medium text-foreground">{dict.site.fabric}</dd>
+            {dimension ? (
+              <>
+                <dt className="text-muted-foreground">{dict.product.dimensions}</dt>
+                <dd className="font-medium text-foreground">{dimension}</dd>
+              </>
+            ) : null}
+          </dl>
 
           <ProductTrustBox className="mt-1" />
         </Reveal>
@@ -249,20 +262,27 @@ async function RelatedProducts({
   productId: number
   categories: { slug: string; name: string }[]
 }) {
-  const relatedProducts = await getRelatedProducts(productId)
+  const [{ dict }, relatedProducts] = await Promise.all([
+    getStorefrontI18n(),
+    getRelatedProducts(productId),
+  ])
   if (relatedProducts.length === 0) return null
+  const labels = localizeCategories(
+    categories.map((c) => ({ slug: c.slug, name: c.name, tagline: c.name, image: '' })),
+    dict,
+  )
 
   return (
     <section className="mt-10 border-t border-border pt-6">
       <Reveal className="mb-4">
-        <p className="text-[10px] font-medium uppercase tracking-[0.24em] text-primary">Selection</p>
+        <p className="text-[10px] font-medium uppercase tracking-[0.24em] text-primary">{dict.product.relatedEyebrow}</p>
         <h2 className="mt-1 text-lg font-medium tracking-tight text-foreground">
-          Vous aimerez aussi
+          {dict.product.relatedTitle}
         </h2>
       </Reveal>
       <div className="-mx-2 flex gap-3 overflow-x-auto px-2 pb-2 sm:-mx-3 sm:px-3 [scrollbar-width:thin]">
         {relatedProducts.map((related) => (
-          <ProductCard key={related.id} product={related} categories={categories} variant="list" />
+          <ProductCard key={related.id} product={related} categories={labels} variant="list" />
         ))}
       </div>
     </section>

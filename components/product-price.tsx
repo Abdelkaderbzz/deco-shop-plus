@@ -1,4 +1,7 @@
+'use client'
+
 import { readableForeground } from '@/lib/contrast'
+import { useI18n } from '@/lib/i18n/provider'
 import {
   formatPriceTnd,
   getDiscountPercent,
@@ -23,6 +26,7 @@ export function ProductPrice({
   accentColor,
   from = false,
 }: ProductPriceProps) {
+  const { dict } = useI18n()
   const current = parsePrice(price) ?? 0
   const percent = getDiscountPercent(price, compareAtPrice)
   const compareAt = parsePrice(compareAtPrice)
@@ -30,11 +34,11 @@ export function ProductPrice({
   const fromLabel = from ? (
     <span
       className={cn(
-        'mr-1 font-medium text-muted-foreground',
+        'me-1 font-medium text-muted-foreground',
         size === 'lg' ? 'text-sm' : size === 'xs' ? 'text-[10px]' : 'text-xs',
       )}
     >
-      À partir de
+      {dict.product.fromPrice}
     </span>
   ) : null
 

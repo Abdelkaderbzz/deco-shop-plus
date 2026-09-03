@@ -1,4 +1,7 @@
+'use client'
+
 import { FACEBOOK_URL, PHONE_HREF, WHATSAPP_URL } from '@/lib/social-links'
+import { useI18n } from '@/lib/i18n/provider'
 import { SITE } from '@/lib/site'
 
 function WhatsAppIcon({ className }: { className?: string }) {
@@ -29,14 +32,15 @@ const followButtonCls =
   'inline-flex min-h-11 items-center gap-2.5 rounded-full border border-border px-6 py-3 text-sm font-medium text-foreground transition-all hover:border-primary hover:bg-primary/5 hover:text-primary'
 
 export function InstagramSectionHeader() {
+  const { dict } = useI18n()
   return (
     <div className="mb-8 text-center">
-      <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-primary">Commande</p>
+      <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-primary">{dict.contact.eyebrow}</p>
       <h2 className="mt-2 font-serif text-3xl font-medium tracking-tight text-foreground">
-        Ecrivez-nous
+        {dict.contact.title}
       </h2>
       <p className="mx-auto mt-3 max-w-md text-sm text-muted-foreground">
-        Stock du jour et coussins — reponse rapide sur WhatsApp.
+        {dict.contact.subtitle}
       </p>
     </div>
   )

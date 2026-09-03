@@ -38,9 +38,18 @@ export const GOVERNORATE_SELECT_OPTIONS = TUNISIA_GOVERNORATES.map((g) => ({
   label: `${g.name} (${g.nameAr})`,
 }))
 
-export function getGovernorateLabel(slug: string | null | undefined) {
+export function governorateSelectOptions(locale: 'ar' | 'fr' = 'fr') {
+  return TUNISIA_GOVERNORATES.map((g) => ({
+    value: g.slug,
+    label: locale === 'ar' ? `${g.nameAr} (${g.name})` : `${g.name} (${g.nameAr})`,
+  }))
+}
+
+export function getGovernorateLabel(slug: string | null | undefined, locale: 'ar' | 'fr' = 'fr') {
   if (!slug) return null
   const governorate = TUNISIA_GOVERNORATES.find((g) => g.slug === slug)
   if (!governorate) return slug
-  return `${governorate.name} (${governorate.nameAr})`
+  return locale === 'ar'
+    ? `${governorate.nameAr} (${governorate.name})`
+    : `${governorate.name} (${governorate.nameAr})`
 }

@@ -6,6 +6,7 @@ import {
   type ProductBundle,
 } from '@/lib/product-bundles'
 import { formatPriceTnd, getDiscountPercent } from '@/lib/product-price'
+import { useI18n } from '@/lib/i18n/provider'
 
 export function ProductBundleOptions({
   bundles,
@@ -18,12 +19,13 @@ export function ProductBundleOptions({
   onSelect: (name: string) => void
   remainingUnits: number
 }) {
+  const { dict } = useI18n()
   if (bundles.length === 0) return null
 
   return (
     <fieldset className="min-w-0">
       <legend className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-        Choisissez votre pack
+        {dict.product.choosePack}
       </legend>
       <div className="flex flex-col gap-2.5">
         {bundles.map((bundle) => {
@@ -54,7 +56,7 @@ export function ProductBundleOptions({
               />
               {bundle.popular ? (
                 <span className="absolute inset-x-0 top-0 rounded-t-[14px] bg-red-600 px-3 py-1 text-center text-[10px] font-bold uppercase tracking-wider text-white">
-                  Le plus populaire
+                  {dict.product.mostPopular}
                 </span>
               ) : null}
               <span
@@ -71,13 +73,13 @@ export function ProductBundleOptions({
                   <span className="text-sm font-semibold text-foreground">{bundle.name}</span>
                   {savings > 0 ? (
                     <span className="rounded-md bg-gradient-to-r from-primary to-accent px-2 py-0.5 text-[11px] font-semibold text-primary-foreground">
-                      Economisez {formatBundleSavings(savings)}dt
+                      {dict.product.save(formatBundleSavings(savings))}
                     </span>
                   ) : null}
                 </span>
                 <span className="mt-0.5 block text-[11px] text-muted-foreground">
-                  {bundle.units} piece{bundle.units > 1 ? 's' : ''}
-                  {disabled ? ' · stock insuffisant' : ''}
+                  {dict.product.pieces(bundle.units)}
+                  {disabled ? ` · ${dict.product.insufficientStock}` : ''}
                 </span>
               </span>
 

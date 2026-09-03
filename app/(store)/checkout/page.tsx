@@ -9,8 +9,11 @@ import { Reveal } from '@/components/reveal'
 import { useToast } from '@/components/toast-provider'
 import { getErrorMessage } from '@/lib/get-error-message'
 import { formatPriceTnd } from '@/lib/product-price'
-import { GOVERNORATE_SELECT_OPTIONS } from '@/lib/tunisia-governorates'
-import { checkoutSchema, type CheckoutFormValues } from '@/lib/validations'
+import { checkoutSchemaFor } from '@/lib/i18n/storefront-schemas'
+import { useI18n } from '@/lib/i18n/provider'
+import { localizeProductName } from '@/lib/i18n/products'
+import { governorateSelectOptions } from '@/lib/tunisia-governorates'
+import type { CheckoutFormValues } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -36,10 +39,12 @@ function StoreFieldError({ message }: { message?: string }) {
 
 export default function CheckoutPage() {
   const { items, total, removeItem, updateQuantity, clearCart } = useCart()
+  const { dict, locale } = useI18n()
   const router = useRouter()
   const toast = useToast()
   const [deliveryFee, setDeliveryFee] = useState(7)
   const [deliveryFeeReady, setDeliveryFeeReady] = useState(false)
+  const schema = checkoutSchemaFor(dict.validation)
 
   const {
     register,
@@ -48,7 +53,7 @@ export default function CheckoutPage() {
     watch,
     formState: { errors, isSubmitting },
   } = useForm<CheckoutFormValues>({
-    resolver: zodResolver(checkoutSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       customerName: '',
       customerPhone: '',
@@ -103,7 +108,7 @@ export default function CheckoutPage() {
 
   async function onSubmit(values: CheckoutFormValues) {
     if (items.length === 0) {
-      toast.error('Votre panier est vide.')
+      toast.error(dict.checkout.emptyError)
       return
     }
 
@@ -139,22 +144,22 @@ export default function CheckoutPage() {
         grandTotal,
       )
       clearCart()
-      toast.success('Commande confirmee avec succes.')
+      toast.success(dict.product.orderConfirmed)
       router.push(`/checkout/success?orderId=${orderId}`)
     } catch (error) {
-      toast.error(getErrorMessage(error, 'Une erreur est survenue. Veuillez reessayer.'))
+      toast.error(getErrorMessage(error, dict.product.error))
     }
   }
 
   if (items.length === 0) {
     return (
       <Reveal className="flex min-h-[60vh] flex-col items-center justify-center gap-6 px-4 text-center">
-        <p className="text-sm font-light tracking-widest text-muted-foreground">VOTRE PANIER EST VIDE</p>
+        <p className="text-sm font-light tracking-widest text-muted-foreground">{dict.checkout.empty}</p>
         <Link
           href="/products"
           className="rounded-full border border-primary bg-primary/5 px-8 py-3 text-xs font-light tracking-[0.3em] text-primary transition-all hover:bg-primary hover:text-primary-foreground"
         >
-          VOIR LA BOUTIQUE
+          {dict.checkout.seeShop}
         </Link>
       </Reveal>
     )
@@ -168,8 +173,8 @@ export default function CheckoutPage() {
         ready={deliveryFeeReady}
       />
       <Reveal className="mb-8">
-        <p className="text-sm font-semibold uppercase tracking-wide text-primary">Votre commande</p>
-        <h1 className="mt-2 font-serif text-2xl font-semibold text-foreground">Panier</h1>
+        <p className="text-sm font-semibold uppercase tracking-wide text-primary">{dict.checkout.yourOrder}</p>
+        <h1 className="mt-2 font-serif text-2xl font-semibold text-foreground">{dict.checkout.title}</h1>
       </Reveal>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-5">
@@ -182,7 +187,7 @@ export default function CheckoutPage() {
               {item.imageUrl && (
                 <Image
                   src={item.imageUrl}
-                  alt={item.productName}
+                  alt={localizeProductName(item.productName, locale)}
                   width={80}
                   height={100}
                   sizes="80px"
@@ -192,7 +197,9 @@ export default function CheckoutPage() {
               <div className="flex flex-1 flex-col justify-between">
                 <div>
                   <p className="text-[10px] tracking-widest text-primary">{item.productBrand.toUpperCase()}</p>
-                  <p className="text-sm font-light text-foreground">{item.productName}</p>
+                  <p className="text-sm font-light text-foreground">
+                    {localizeProductName(item.productName, locale)}
+                  </p>
                   <p className="text-[11px] text-muted-foreground">
                     {[item.bundle, item.size, item.color].filter(Boolean).join(' · ')}
                   </p>
@@ -235,28 +242,28 @@ export default function CheckoutPage() {
           ))}
 
           <div className="mt-6 rounded-2xl border-2 border-primary/20 bg-card p-6">
-            <p className={storeSectionCls}>Livraison</p>
-            <p className="text-sm font-semibold text-foreground">Livraison a domicile</p>
+            <p className={storeSectionCls}>{dict.checkout.delivery}</p>
+            <p className="text-sm font-semibold text-foreground">{dict.checkout.homeDelivery}</p>
             <p className="mt-1 text-sm font-medium text-primary">
               {formatPriceTnd(deliveryFee)} TND
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              Partout en Tunisie, paiement a la livraison.
+              {dict.checkout.cod}
             </p>
           </div>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="lg:col-span-2 space-y-6">
           <div className="rounded-2xl border-2 border-primary/20 bg-card p-6">
-            <p className={storeSectionCls}>Vos coordonnees</p>
+            <p className={storeSectionCls}>{dict.checkout.details}</p>
             <div className="space-y-5">
               <div>
                 <label className={storeLabelCls}>
-                  Nom complet <span className="text-primary">*</span>
+                  {dict.product.fullName} <span className="text-primary">*</span>
                 </label>
                 <input
                   type="text"
-                  placeholder="Ex: Fatma Ben Ali"
+                  placeholder={dict.product.namePlaceholder}
                   className={errors.customerName ? storeInputErrorCls : storeInputCls}
                   {...register('customerName')}
                 />
@@ -264,11 +271,11 @@ export default function CheckoutPage() {
               </div>
               <div>
                 <label className={storeLabelCls}>
-                  Numero de telephone <span className="text-primary">*</span>
+                  {dict.checkout.phone} <span className="text-primary">*</span>
                 </label>
                 <input
                   type="tel"
-                  placeholder="Ex: 22 123 456"
+                  placeholder={dict.product.phonePlaceholder}
                   className={errors.customerPhone ? storeInputErrorCls : storeInputCls}
                   {...register('customerPhone')}
                 />
@@ -276,7 +283,7 @@ export default function CheckoutPage() {
               </div>
               <div>
                 <label className={storeLabelCls}>
-                  Gouvernorat <span className="text-primary">*</span>
+                  {dict.product.governorate} <span className="text-primary">*</span>
                 </label>
                 <Controller
                   control={control}
@@ -285,8 +292,8 @@ export default function CheckoutPage() {
                     <StoreSelect
                       value={field.value}
                       onChange={field.onChange}
-                      options={GOVERNORATE_SELECT_OPTIONS}
-                      placeholder="Choisir votre gouvernorat"
+                      options={governorateSelectOptions(locale)}
+                      placeholder={dict.product.governoratePlaceholder}
                       hasError={!!errors.customerGovernorate}
                     />
                   )}
@@ -295,21 +302,21 @@ export default function CheckoutPage() {
               </div>
               <div>
                 <label className={storeLabelCls}>
-                  Adresse de livraison <span className="text-primary">*</span>
+                  {dict.checkout.deliveryAddress} <span className="text-primary">*</span>
                 </label>
                 <textarea
                   rows={3}
-                  placeholder="Rue, ville, point de repere..."
+                  placeholder={dict.product.addressPlaceholder}
                   className={`${errors.customerAddress ? storeInputErrorCls : storeInputCls} resize-none`}
                   {...register('customerAddress')}
                 />
                 <StoreFieldError message={errors.customerAddress?.message} />
               </div>
               <div>
-                <label className={storeLabelCls}>Notes (optionnel)</label>
+                <label className={storeLabelCls}>{dict.checkout.notes}</label>
                 <textarea
                   rows={2}
-                  placeholder="Instructions supplementaires..."
+                  placeholder={dict.checkout.notesPlaceholder}
                   className={`${errors.notes ? storeInputErrorCls : storeInputCls} resize-none`}
                   {...register('notes')}
                 />
@@ -319,18 +326,18 @@ export default function CheckoutPage() {
           </div>
 
           <div className="space-y-3 rounded-2xl border-2 border-primary/20 bg-secondary/40 p-6">
-            <p className={storeSectionCls}>Recapitulatif</p>
+            <p className={storeSectionCls}>{dict.checkout.summary}</p>
             <div className="flex justify-between text-base text-foreground">
-              <span>Sous-total</span>
+              <span>{dict.checkout.subtotal}</span>
               <span className="font-medium">{formatPriceTnd(total)} TND</span>
             </div>
             <div className="flex justify-between text-base text-foreground">
-              <span>Livraison</span>
+              <span>{dict.checkout.delivery}</span>
               <span className="font-medium">{formatPriceTnd(deliveryFee)} TND</span>
             </div>
             <div className="h-px bg-primary/20" />
             <div className="flex justify-between items-center text-foreground">
-              <span className="text-base font-semibold">Total a payer</span>
+              <span className="text-base font-semibold">{dict.checkout.total}</span>
               <span className="text-2xl font-semibold tabular-nums text-primary">
                 {formatPriceTnd(grandTotal)} TND
               </span>
@@ -344,7 +351,7 @@ export default function CheckoutPage() {
             disabled={isSubmitting}
             className="w-full rounded-full bg-primary py-4 text-sm font-semibold tracking-wide text-primary-foreground shadow-md shadow-primary/30 transition-all hover:opacity-95 disabled:opacity-60"
           >
-            {isSubmitting ? 'Envoi en cours...' : 'Confirmer la commande'}
+            {isSubmitting ? dict.product.sending : dict.checkout.confirm}
           </button>
         </form>
       </div>

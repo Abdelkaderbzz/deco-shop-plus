@@ -7,6 +7,8 @@ import { parseProductImages } from '@/lib/product-images'
 import { parsePrice } from '@/lib/product-price'
 import { hasVariableSizePrices, parseProductSizes, uniqueDimensionLabel } from '@/lib/product-sizes'
 import { PRODUCT_FABRIC, SITE, STORE_FAQS, STORE_RETURN_DAYS } from '@/lib/site'
+import type { Dictionary } from '@/lib/i18n/dictionary'
+import { DEFAULT_LOCALE, LOCALE_META, type Locale } from '@/lib/i18n/config'
 import { FACEBOOK_URL, MAPS_URL, WHATSAPP_URL } from '@/lib/social-links'
 import { STORE_CATEGORIES } from '@/lib/store-categories'
 import { absoluteUrl, getSiteUrl } from '@/lib/site-url'
@@ -37,6 +39,8 @@ export function pageAlternates(path: string): NonNullable<Metadata['alternates']
   return {
     canonical: path,
     languages: {
+      'ar-TN': path,
+      ar: path,
       'fr-TN': path,
       fr: path,
       'x-default': path,
@@ -78,12 +82,23 @@ function clipMeta(text: string, max = 158) {
   return `${clean.slice(0, max - 1).trimEnd()}…`
 }
 
-export function productMetaDescription(product: {
-  name: string
-  description?: string | null
-}) {
+export function productMetaDescription(
+  product: {
+    name: string
+    description?: string | null
+  },
+  locale: Locale = 'fr',
+) {
   const location = `${SITE.neighborhood}, ${SITE.city}`
   const body = product.description?.trim()
+  if (locale === 'ar') {
+    if (body) {
+      return clipMeta(`${body} مخمل مقاوم للبقع. التوصيل في كامل تونس. ${SITE.name}، حي الواحة، بنزرت.`)
+    }
+    return clipMeta(
+      `${product.name} بمخمل مقاوم للبقع عند ${SITE.name} في حي الواحة، بنزرت. الدفع عند الاستلام، التوصيل في كامل تونس.`,
+    )
+  }
   if (body) {
     return clipMeta(
       `${body} ${PRODUCT_FABRIC}. Livraison en Tunisie. ${SITE.name}, ${location}.`,
@@ -267,26 +282,30 @@ export function collectionPageJsonLd({
   }
 }
 
-export function homePageJsonLd() {
+export function homePageJsonLd(dict?: Dictionary, locale: 'ar' | 'fr' = DEFAULT_LOCALE) {
+  const title = dict
+    ? dict.home.title(SITE.name, dict.site.neighborhood, dict.site.city)
+    : `${SITE.name} | Décoration à ${SITE.neighborhood}, ${SITE.city}`
   return {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
     '@id': `${getSiteUrl()}/#webpage`,
     url: getSiteUrl(),
-    name: `${SITE.name} | Décoration à ${SITE.neighborhood}, ${SITE.city}`,
-    description: SITE.description,
-    inLanguage: 'fr-TN',
+    name: title,
+    description: dict?.site.description ?? SITE.description,
+    inLanguage: LOCALE_META[locale].htmlLang,
     isPartOf: { '@id': websiteId() },
     about: { '@id': localBusinessId() },
     primaryImageOfPage: logoImage(),
   }
 }
 
-export function faqJsonLd() {
+export function faqJsonLd(dict?: Dictionary) {
+  const items = dict?.faq.items ?? STORE_FAQS
   return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    mainEntity: STORE_FAQS.map((item) => ({
+    mainEntity: items.map((item) => ({
       '@type': 'Question',
       name: item.question,
       acceptedAnswer: {
@@ -312,7 +331,7 @@ export function productJsonLd(product: {
   inStock: boolean
   category: string
   sizes?: string | null
-}) {
+}, locale: Locale = 'fr') {
   const fallback = parsePrice(product.price)
   const sizes = parseProductSizes(product.sizes, fallback ?? 0)
   const dimension = uniqueDimensionLabel(sizes)
@@ -351,7 +370,7 @@ export function productJsonLd(product: {
     '@type': 'Product',
     '@id': `${offerUrl}#product`,
     name: product.name,
-    description: productMetaDescription(product),
+    description: productMetaDescription(product, locale),
     sku: String(product.id),
     mpn: String(product.id),
     url: offerUrl,

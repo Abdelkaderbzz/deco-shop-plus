@@ -2,7 +2,9 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getCategories } from '@/app/actions/categories'
 import { catalogHref } from '@/lib/catalog-href'
-import { PRODUCT_FABRIC, SITE } from '@/lib/site'
+import { getStorefrontI18n } from '@/lib/i18n/get-locale'
+import { categoryCopy } from '@/lib/i18n/categories'
+import { SITE } from '@/lib/site'
 import { pageAlternates } from '@/lib/seo'
 import { getMergedCategoryBySlug, mergeStoreCategories, STORE_CATEGORIES } from '@/lib/store-categories'
 import { normalizePage } from '@/lib/pagination'
@@ -31,9 +33,13 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params
   const { search, page } = await searchParams
-  const categories = await getCategories()
+  const [{ dict }, categories] = await Promise.all([getStorefrontI18n(), getCategories()])
   const category = getMergedCategoryBySlug(slug, categories)
-  if (!category) return { title: 'Catégorie', robots: { index: false, follow: true } }
+  if (!category) return { title: dict.catalog.categoryMissing, robots: { index: false, follow: true } }
+
+  const copy = categoryCopy(dict, slug)
+  const name = copy?.name ?? category.name
+  const tagline = copy?.tagline ?? category.tagline
 
   const trimmedSearch = search?.trim() ?? ''
   const pageNum = normalizePage(page)
@@ -45,35 +51,42 @@ export async function generateMetadata({
 
   if (trimmedSearch) {
     return {
-      title: `« ${trimmedSearch} » dans ${category.name}`,
-      description: `Recherche ${category.name.toLowerCase()} chez ${SITE.name} à ${SITE.city}.`,
+      title: dict.catalog.inCategory(trimmedSearch, name),
+      description: dict.catalog.searchDescription(trimmedSearch, SITE.name, dict.site.city),
       alternates: pageAlternates(canonical),
       robots: { index: false, follow: true },
     }
   }
 
-  const title = `${category.name} à ${SITE.city}`
-  const description = `${category.name} en ${PRODUCT_FABRIC} chez ${SITE.name} à ${SITE.neighborhood}, ${SITE.city}. ${category.tagline}. Livraison partout en Tunisie, paiement à la livraison.`
+  const title = dict.catalog.categoryTitle(name, dict.site.city)
+  const description = dict.catalog.categoryDescription(
+    name,
+    dict.site.fabric,
+    SITE.name,
+    dict.site.neighborhood,
+    dict.site.city,
+    tagline,
+  )
 
   return {
     title,
     description,
     keywords: [
-      category.name,
+      name,
       SITE.name,
-      SITE.city,
-      SITE.neighborhood,
-      category.tagline,
-      PRODUCT_FABRIC,
-      'décoration Tunisie',
+      dict.site.city,
+      dict.site.neighborhood,
+      tagline,
+      dict.site.fabric,
+      ...dict.site.keywords,
     ],
     alternates: pageAlternates(canonical),
     robots: pageNum > 1 ? { index: false, follow: true } : undefined,
     openGraph: {
-      title: `${category.name} | ${SITE.name}`,
+      title: `${name} | ${SITE.name}`,
       description,
       url: canonical,
-      images: category.image ? [{ url: category.image, alt: category.name }] : undefined,
+      images: category.image ? [{ url: category.image, alt: name }] : undefined,
     },
   }
 }

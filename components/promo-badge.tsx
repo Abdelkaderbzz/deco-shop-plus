@@ -26,7 +26,7 @@ export function PromoBadge({ product, className }: PromoBadgeProps) {
   return (
     <span
       className={cn(
-        'absolute top-3 left-3 z-10 rounded-md px-2.5 py-1 text-[11px] font-semibold tracking-wide shadow-sm',
+        'absolute top-3 start-3 z-10 rounded-md px-2.5 py-1 text-[11px] font-semibold tracking-wide shadow-sm',
         className,
       )}
       style={{ backgroundColor, color }}

@@ -9,13 +9,14 @@ import { getErrorMessage } from '@/lib/get-error-message'
 import type { ProductColor } from '@/lib/product-colors'
 import { lineStockUnits, type ProductBundle } from '@/lib/product-bundles'
 import { formatPriceTnd, parsePrice } from '@/lib/product-price'
-import { hasVariableSizePrices, priceForSize, type ProductSize } from '@/lib/product-sizes'
-import { stockLabel } from '@/lib/product-stock'
+import { priceForSize, type ProductSize } from '@/lib/product-sizes'
 import { SITE } from '@/lib/site'
 import { whatsappMessageUrl } from '@/lib/social-links'
 import { StoreSelect } from '@/components/store-select'
-import { getGovernorateLabel, GOVERNORATE_SELECT_OPTIONS } from '@/lib/tunisia-governorates'
-import { productOrderSchema, type ProductOrderFormValues } from '@/lib/validations'
+import { getGovernorateLabel, governorateSelectOptions } from '@/lib/tunisia-governorates'
+import { productOrderSchemaFor } from '@/lib/i18n/storefront-schemas'
+import { useI18n } from '@/lib/i18n/provider'
+import type { ProductOrderFormValues } from '@/lib/validations'
 import { useRouter } from 'next/navigation'
 import { getCheckoutDraftId, markCheckoutCompleted, useAbandonedCheckout } from '@/lib/use-abandoned-checkout'
 import { getDeliveryFee } from '@/app/actions/settings'
@@ -89,6 +90,8 @@ function ProductOrderForm({
   onWhatsApp: (values: ProductOrderFormValues) => void
   abandonedItems: CartItem[]
 }) {
+  const { dict, locale } = useI18n()
+  const schema = productOrderSchemaFor(dict.validation)
   const formRef = useRef<HTMLFormElement>(null)
   const [errors, setErrors] = useState<Partial<Record<keyof ProductOrderFormValues, string>>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -121,7 +124,7 @@ function ProductOrderForm({
   function parsedValues() {
     const form = formRef.current
     if (!form) return null
-    const result = productOrderSchema.safeParse(readProductOrderForm(form))
+    const result = schema.safeParse(readProductOrderForm(form))
     if (!result.success) {
       setErrors(orderFieldErrors(result.error))
       return null
@@ -152,23 +155,23 @@ function ProductOrderForm({
       className="rounded-2xl border-2 border-primary/25 bg-card p-5 shadow-sm"
     >
       <div className="mb-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Commander ce produit</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">{dict.product.orderThis}</p>
         <p className="mt-1 text-sm text-muted-foreground">
-          Indiquez vos coordonnees pour confirmer la commande, ou envoyez-la directement sur WhatsApp.
+          {dict.product.orderHint}
         </p>
       </div>
 
       <div className="space-y-4">
         <div>
           <label htmlFor="product-order-name" className={fieldLabelCls}>
-            Nom complet <span className="text-primary">*</span>
+            {dict.product.fullName} <span className="text-primary">*</span>
           </label>
           <input
             id="product-order-name"
             name="customerName"
             type="text"
             autoComplete="name"
-            placeholder="Ex: Fatma Ben Ali"
+            placeholder={dict.product.namePlaceholder}
             aria-invalid={Boolean(errors.customerName)}
             aria-describedby={errors.customerName ? 'product-order-name-error' : undefined}
             className={errors.customerName ? fieldInputErrorCls : fieldInputCls}
@@ -178,7 +181,7 @@ function ProductOrderForm({
 
         <div>
           <label htmlFor="product-order-phone" className={fieldLabelCls}>
-            Telephone <span className="text-primary">*</span>
+            {dict.product.phone} <span className="text-primary">*</span>
           </label>
           <input
             id="product-order-phone"
@@ -186,7 +189,7 @@ function ProductOrderForm({
             type="tel"
             autoComplete="tel"
             inputMode="tel"
-            placeholder="Ex: 22 123 456"
+            placeholder={dict.product.phonePlaceholder}
             aria-invalid={Boolean(errors.customerPhone)}
             aria-describedby={errors.customerPhone ? 'product-order-phone-error' : undefined}
             className={errors.customerPhone ? fieldInputErrorCls : fieldInputCls}
@@ -196,14 +199,14 @@ function ProductOrderForm({
 
         <div>
           <label htmlFor="product-order-governorate" className={fieldLabelCls}>
-            Gouvernorat <span className="text-primary">*</span>
+            {dict.product.governorate} <span className="text-primary">*</span>
           </label>
           <StoreSelect
             id="product-order-governorate"
             name="customerGovernorate"
             defaultValue=""
-            options={GOVERNORATE_SELECT_OPTIONS}
-            placeholder="Choisir votre gouvernorat"
+            options={governorateSelectOptions(locale)}
+            placeholder={dict.product.governoratePlaceholder}
             hasError={Boolean(errors.customerGovernorate)}
           />
           <FieldError id="product-order-governorate-error" message={errors.customerGovernorate} />
@@ -211,14 +214,14 @@ function ProductOrderForm({
 
         <div>
           <label htmlFor="product-order-address" className={fieldLabelCls}>
-            Adresse <span className="text-primary">*</span>
+            {dict.product.address} <span className="text-primary">*</span>
           </label>
           <textarea
             id="product-order-address"
             name="customerAddress"
             rows={3}
             autoComplete="street-address"
-            placeholder="Rue, ville, point de repere..."
+            placeholder={dict.product.addressPlaceholder}
             aria-invalid={Boolean(errors.customerAddress)}
             aria-describedby={errors.customerAddress ? 'product-order-address-error' : undefined}
             className={`${errors.customerAddress ? fieldInputErrorCls : fieldInputCls} resize-none`}
@@ -228,13 +231,13 @@ function ProductOrderForm({
 
         <div>
           <label htmlFor="product-order-note" className={fieldLabelCls}>
-            Note <span className="font-medium text-muted-foreground">(optionnel)</span>
+            {dict.product.note} <span className="font-medium text-muted-foreground">({dict.product.optional})</span>
           </label>
           <textarea
             id="product-order-note"
             name="notes"
             rows={2}
-            placeholder="Couleur preferee, horaire, instructions..."
+            placeholder={dict.product.notePlaceholder}
             aria-invalid={Boolean(errors.notes)}
             aria-describedby={errors.notes ? 'product-order-note-error' : undefined}
             className={`${errors.notes ? fieldInputErrorCls : fieldInputCls} resize-none`}
@@ -250,9 +253,9 @@ function ProductOrderForm({
           className="w-full rounded-full bg-primary py-4 text-base font-semibold tracking-wide text-primary-foreground shadow-lg shadow-primary/35 transition-all hover:brightness-110 hover:shadow-xl hover:shadow-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50"
         >
           <span className="inline-flex items-center justify-center gap-2">
-            {isSubmitting ? 'Envoi en cours...' : 'Commander maintenant'}
+            {isSubmitting ? dict.product.sending : dict.product.orderNow}
             {!isSubmitting && (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden className="rtl:rotate-180">
                 <path d="M5 12h14M13 6l6 6-6 6" />
               </svg>
             )}
@@ -269,7 +272,7 @@ function ProductOrderForm({
           className="inline-flex w-full items-center justify-center gap-2.5 rounded-full bg-[#25D366] py-3.5 text-sm font-semibold text-white shadow-md shadow-[#25D366]/30 transition-all hover:bg-[#20bd5a] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2 disabled:opacity-50"
         >
           <WhatsAppIcon />
-          Commander sur WhatsApp
+          {dict.product.orderWhatsApp}
         </button>
       </div>
     </form>
@@ -292,6 +295,7 @@ export function AddToCartButton({
   accentColor?: string | null
 }) {
   const { addItem, items } = useCart()
+  const { dict, locale } = useI18n()
   const router = useRouter()
   const toast = useToast()
   const fallbackPrice = parsePrice(product.price) ?? 0
@@ -310,7 +314,6 @@ export function AddToCartButton({
       ? selectedBundle.compareAtPrice.toFixed(3)
       : null
     : product.compareAtPrice
-  const showSizePrices = hasVariableSizePrices(sizeOptions) && bundles.length === 0
   const inCart = items
     .filter((item) => item.productId === product.id)
     .reduce((sum, item) => sum + lineStockUnits(item.quantity, item.bundleUnits), 0)
@@ -352,36 +355,37 @@ export function AddToCartButton({
   }
 
   function buildWhatsAppMessage(values: ProductOrderFormValues) {
+    const w = dict.whatsapp
     const lines = [
-      `Bonjour ${SITE.name},`,
-      'Je souhaite commander :',
+      w.hello(SITE.name),
+      w.want,
       '',
-      `Produit : ${product.name}`,
-      `Marque : ${product.brand}`,
+      `${w.product} : ${product.name}`,
+      `${w.brand} : ${product.brand}`,
       selectedSize
-        ? `${/\d+\s*cm/i.test(selectedSize) ? 'Dimensions' : 'Taille / format'} : ${selectedSize}`
+        ? `${/\d+\s*cm/i.test(selectedSize) ? w.dimensions : w.size} : ${selectedSize}`
         : null,
-      selectedColor ? `Couleur : ${selectedColor}` : null,
-      selectedBundle ? `Pack : ${selectedBundle.name} (${selectedBundle.units} pcs)` : null,
-      `Prix : ${formatPriceTnd(selectedPrice)} TND`,
+      selectedColor ? `${w.color} : ${selectedColor}` : null,
+      selectedBundle ? `${w.pack} : ${selectedBundle.name} (${selectedBundle.units} ${w.pcs})` : null,
+      `${w.price} : ${formatPriceTnd(selectedPrice)} TND`,
       '',
-      values.customerName.trim() ? `Nom complet : ${values.customerName.trim()}` : null,
-      values.customerPhone.trim() ? `Telephone : ${values.customerPhone.trim()}` : null,
+      values.customerName.trim() ? `${w.name} : ${values.customerName.trim()}` : null,
+      values.customerPhone.trim() ? `${w.phone} : ${values.customerPhone.trim()}` : null,
       values.customerGovernorate
-        ? `Gouvernorat : ${getGovernorateLabel(values.customerGovernorate) ?? values.customerGovernorate}`
+        ? `${w.governorate} : ${getGovernorateLabel(values.customerGovernorate, locale) ?? values.customerGovernorate}`
         : null,
-      values.customerAddress.trim() ? `Adresse : ${values.customerAddress.trim()}` : null,
+      values.customerAddress.trim() ? `${w.address} : ${values.customerAddress.trim()}` : null,
     ].filter((line): line is string => line !== null)
 
     const note = values.notes.trim()
-    if (note) lines.push(`Note : ${note}`)
+    if (note) lines.push(`${w.note} : ${note}`)
 
     return lines.join('\n')
   }
 
   async function onCommander(values: ProductOrderFormValues) {
     if (!canSelect) {
-      toast.error(remaining <= 0 ? 'Plus de stock pour ce produit.' : 'Choisissez la taille et la couleur.')
+      toast.error(remaining <= 0 ? dict.product.noStockProduct : dict.product.chooseOptions)
       return
     }
 
@@ -409,16 +413,16 @@ export function AddToCartButton({
         ],
         selectedPrice + deliveryFee,
       )
-      toast.success('Commande confirmee avec succes.')
+      toast.success(dict.product.orderConfirmed)
       router.push(`/checkout/success?orderId=${orderId}`)
     } catch (error) {
-      toast.error(getErrorMessage(error, 'Une erreur est survenue. Veuillez reessayer.'))
+      toast.error(getErrorMessage(error, dict.product.error))
     }
   }
 
   function onWhatsApp(values: ProductOrderFormValues) {
     if (!canSelect) {
-      toast.error(remaining <= 0 ? 'Plus de stock pour ce produit.' : 'Choisissez la taille et la couleur.')
+      toast.error(remaining <= 0 ? dict.product.noStockProduct : dict.product.chooseOptions)
       return
     }
 
@@ -447,7 +451,7 @@ export function AddToCartButton({
 
       {colors.length > 0 && (
         <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Couleur</p>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">{dict.product.color}</p>
           <div className="flex flex-wrap gap-2">
             {colors.map((color) => {
               const selected = selectedColor === color.name
@@ -479,8 +483,8 @@ export function AddToCartButton({
         <div>
           <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
             {sizeOptions.some((size) => /\d+\s*cm/i.test(size.name))
-              ? 'Dimensions'
-              : 'Taille / format'}
+              ? dict.product.dimensions
+              : dict.product.size}
           </p>
           <div className="flex flex-wrap gap-2">
             {sizeOptions.map((size) => (
@@ -494,19 +498,20 @@ export function AddToCartButton({
                     : 'border-border text-muted-foreground hover:border-primary/40 hover:bg-primary/5 hover:text-primary'
                 }`}
               >
-                {size.name}
-                {showSizePrices ? (
-                  <span className={`ml-1.5 text-[11px] ${selectedSize === size.name ? 'opacity-80' : ''}`}>
-                    {formatPriceTnd(size.price)} TND
-                  </span>
-                ) : null}
+                {size.name === 'Unique' ? dict.product.uniqueSize : size.name}
               </button>
             ))}
           </div>
         </div>
       )}
 
-      <p className="text-xs font-medium text-muted-foreground">{stockLabel(remaining)}</p>
+      <p className="text-xs font-medium text-muted-foreground">
+        {remaining <= 0
+          ? dict.product.outOfStock
+          : remaining === 1
+            ? dict.product.lastPiece
+            : dict.product.inStock(remaining)}
+      </p>
 
       <ProductOrderForm
         canSelect={canSelect}
@@ -521,7 +526,7 @@ export function AddToCartButton({
         disabled={!canSelect}
         className="w-full rounded-full border border-border py-3 text-sm font-medium text-muted-foreground transition-all hover:border-primary hover:bg-primary/5 hover:text-primary disabled:opacity-40"
       >
-        {added ? 'Ajoute au panier' : remaining <= 0 ? 'Plus de stock' : 'Ajouter au panier'}
+        {added ? dict.product.added : remaining <= 0 ? dict.product.noStock : dict.product.addToCart}
       </button>
     </div>
   )

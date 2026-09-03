@@ -1,4 +1,9 @@
+'use client'
+
+import { useI18n } from '@/lib/i18n/provider'
+
 export function ProductTrustBox({ className }: { className?: string }) {
+  const { dict } = useI18n()
   return (
     <div
       className={`overflow-hidden rounded-2xl border border-border bg-card text-sm text-foreground ${className ?? ''}`}
@@ -23,7 +28,7 @@ export function ProductTrustBox({ className }: { className?: string }) {
           <circle cx="17.5" cy="8.5" r="3.2" />
           <path d="M17.5 7.2v1.5l1.1.7" />
         </svg>
-        <p>Livraison rapide sur toute la Tunisie</p>
+        <p>{dict.trust.delivery}</p>
       </div>
       <div className="mx-4 h-px bg-border" />
       <div className="flex items-center gap-3 px-4 py-3.5">
@@ -42,7 +47,7 @@ export function ProductTrustBox({ className }: { className?: string }) {
           <polygon points="12 3 14.9 9 21.5 9.8 16.6 14.3 18 21 12 17.6 6 21 7.4 14.3 2.5 9.8 9.1 9" />
         </svg>
         <p>
-          Qualité <span className="font-semibold">premium</span>
+          {dict.trust.quality} <span className="font-semibold">{dict.trust.premium}</span>
         </p>
       </div>
     </div>

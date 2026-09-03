@@ -45,10 +45,6 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/:path*',
-        headers: [{ key: 'Content-Language', value: 'fr-TN' }],
-      },
-      {
         source: '/assets/:path*',
         headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
       },

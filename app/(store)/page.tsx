@@ -20,6 +20,8 @@ import {
 } from '@/components/store-skeletons'
 import { TestimonialsSection } from '@/components/testimonials-section'
 import { mergeStoreCategories } from '@/lib/store-categories'
+import { getStorefrontI18n } from '@/lib/i18n/get-locale'
+import { localizeCategories } from '@/lib/i18n/categories'
 import { SITE, SITE_KEYWORDS } from '@/lib/site'
 import { JsonLd } from '@/components/json-ld'
 import { StoreFaq } from '@/components/store-faq'
@@ -30,16 +32,20 @@ import { Suspense, type ReactNode } from 'react'
 
 export const dynamic = 'force-dynamic'
 
-export const metadata: Metadata = {
-  title: { absolute: `${SITE.name} | Décoration à ${SITE.neighborhood}, ${SITE.city}` },
-  description: SITE.description,
-  keywords: [...SITE_KEYWORDS],
-  alternates: pageAlternates('/'),
-  openGraph: {
-    title: `${SITE.name} | Décoration à ${SITE.neighborhood}, ${SITE.city}`,
-    description: SITE.description,
-    url: '/',
-  },
+export async function generateMetadata(): Promise<Metadata> {
+  const { dict } = await getStorefrontI18n()
+  const title = dict.home.title(SITE.name, dict.site.neighborhood, dict.site.city)
+  return {
+    title: { absolute: title },
+    description: dict.site.description,
+    keywords: [SITE.name, ...dict.site.keywords, ...SITE_KEYWORDS],
+    alternates: pageAlternates('/'),
+    openGraph: {
+      title,
+      description: dict.site.description,
+      url: '/',
+    },
+  }
 }
 
 function HomeProductSection({
@@ -83,71 +89,88 @@ async function HomeHero() {
 }
 
 async function HomeCategories() {
-  const categories = await getCategories()
-  return <CategoriesSection categories={mergeStoreCategories(categories)} />
+  const [{ dict }, categories] = await Promise.all([getStorefrontI18n(), getCategories()])
+  return <CategoriesSection categories={localizeCategories(mergeStoreCategories(categories), dict)} />
 }
 
 async function HomePromotions() {
-  const [products, categories] = await Promise.all([getPromoProducts(), getCategories()])
+  const [{ dict }, products, categories] = await Promise.all([
+    getStorefrontI18n(),
+    getPromoProducts(),
+    getCategories(),
+  ])
   return (
     <HomeProductSection
       id="promotions"
-      eyebrow="Offres"
-      title="Promotions"
+      eyebrow={dict.home.offers}
+      title={dict.home.promotions}
       products={products}
-      categories={categories}
+      categories={localizeCategories(mergeStoreCategories(categories), dict)}
     />
   )
 }
 
 async function HomeLatest() {
-  const [products, categories] = await Promise.all([getLatestProducts(), getCategories()])
+  const [{ dict }, products, categories] = await Promise.all([
+    getStorefrontI18n(),
+    getLatestProducts(),
+    getCategories(),
+  ])
   return (
     <HomeProductSection
       id="nouveautes"
-      eyebrow="Arrivees"
-      title="Derniers articles"
+      eyebrow={dict.home.arrivals}
+      title={dict.home.latest}
       products={products}
-      categories={categories}
+      categories={localizeCategories(mergeStoreCategories(categories), dict)}
     />
   )
 }
 
 async function HomeBestSellers() {
-  const [products, categories] = await Promise.all([getBestSellerProducts(), getCategories()])
+  const [{ dict }, products, categories] = await Promise.all([
+    getStorefrontI18n(),
+    getBestSellerProducts(),
+    getCategories(),
+  ])
   return (
     <HomeProductSection
       id="best-sellers"
-      eyebrow="Selection clients"
-      title="Les plus vendus"
+      eyebrow={dict.home.clientsPick}
+      title={dict.home.bestSellers}
       products={products}
-      categories={categories}
+      categories={localizeCategories(mergeStoreCategories(categories), dict)}
     />
   )
 }
 
 async function HomeFeatured() {
-  const [products, categories] = await Promise.all([getFeaturedProducts(), getCategories()])
+  const [{ dict }, products, categories] = await Promise.all([
+    getStorefrontI18n(),
+    getFeaturedProducts(),
+    getCategories(),
+  ])
   return (
     <HomeProductSection
       id="coups-de-coeur"
-      eyebrow="Selection"
-      title="Coups de coeur"
+      eyebrow={dict.home.selection}
+      title={dict.home.favorites}
       products={products}
-      categories={categories}
+      categories={localizeCategories(mergeStoreCategories(categories), dict)}
       action={
         <Link
           href="/products"
           className="inline-flex min-h-11 items-center rounded-full border border-border px-8 py-3 text-sm font-medium text-foreground transition-all hover:border-primary hover:bg-primary/5 hover:text-primary"
         >
-          Toute la boutique
+          {dict.home.allShop}
         </Link>
       }
     />
   )
 }
 
-export default function HomePage() {
+export default async function HomePage() {
+  const { dict, locale } = await getStorefrontI18n()
   return (
     <div>
       <Suspense fallback={<HeroSkeleton />}>
@@ -177,8 +200,8 @@ export default function HomePage() {
       <TestimonialsSection />
 
       <StoreFaq />
-      <JsonLd data={homePageJsonLd()} />
-      <JsonLd data={faqJsonLd()} />
+      <JsonLd data={homePageJsonLd(dict, locale)} />
+      <JsonLd data={faqJsonLd(dict)} />
 
       <section className="below-fold border-t border-border bg-secondary/40 py-14 md:py-16">
         <div className="mx-auto max-w-7xl px-2 sm:px-3">

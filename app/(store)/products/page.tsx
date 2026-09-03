@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { catalogHref } from '@/lib/catalog-href'
-import { PRODUCT_FABRIC, SITE, SITE_KEYWORDS } from '@/lib/site'
+import { getStorefrontI18n } from '@/lib/i18n/get-locale'
+import { SITE, SITE_KEYWORDS } from '@/lib/site'
 import { pageAlternates } from '@/lib/seo'
 import { normalizePage } from '@/lib/pagination'
 import { CatalogSkeleton } from '@/components/store-skeletons'
@@ -15,6 +16,7 @@ export async function generateMetadata({
 }: {
   searchParams: Promise<{ search?: string; category?: string; page?: string }>
 }): Promise<Metadata> {
+  const { dict } = await getStorefrontI18n()
   const params = await searchParams
   const search = params.search?.trim() ?? ''
   const page = normalizePage(params.page)
@@ -22,22 +24,32 @@ export async function generateMetadata({
 
   if (search) {
     return {
-      title: `Recherche « ${search} »`,
-      description: `Résultats pour « ${search} » chez ${SITE.name} à ${SITE.city}.`,
+      title: dict.catalog.searchTitle(search),
+      description: dict.catalog.searchDescription(search, SITE.name, dict.site.city),
       alternates: pageAlternates(canonical),
       robots: { index: false, follow: true },
     }
   }
 
   return {
-    title: `Boutique déco à ${SITE.city}`,
-    description: `Parcourez les galettes de chaise et coussins en ${PRODUCT_FABRIC} chez ${SITE.name} à ${SITE.neighborhood}, ${SITE.city}. Livraison partout en Tunisie, paiement à la livraison.`,
-    keywords: ['boutique déco', SITE.city, PRODUCT_FABRIC, ...SITE_KEYWORDS],
+    title: dict.catalog.shopTitle(dict.site.city),
+    description: dict.catalog.shopDescription(
+      dict.site.fabric,
+      SITE.name,
+      dict.site.neighborhood,
+      dict.site.city,
+    ),
+    keywords: [dict.catalog.title, dict.site.city, dict.site.fabric, ...dict.site.keywords, ...SITE_KEYWORDS],
     alternates: pageAlternates('/products'),
     robots: page > 1 ? { index: false, follow: true } : undefined,
     openGraph: {
-      title: `Boutique | ${SITE.name}`,
-      description: `Galettes et coussins en ${PRODUCT_FABRIC} à ${SITE.city}. Livraison en Tunisie.`,
+      title: `${dict.catalog.title} | ${SITE.name}`,
+      description: dict.catalog.shopDescription(
+        dict.site.fabric,
+        SITE.name,
+        dict.site.neighborhood,
+        dict.site.city,
+      ),
       url: '/products',
     },
   }

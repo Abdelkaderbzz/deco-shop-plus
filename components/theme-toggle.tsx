@@ -1,6 +1,7 @@
 'use client'
 
 import { applyTheme, readDocumentTheme, type Theme } from '@/lib/theme'
+import { useI18n } from '@/lib/i18n/provider'
 
 function SunIcon() {
   return (
@@ -20,6 +21,7 @@ function MoonIcon() {
 }
 
 export function ThemeToggle({ className = '' }: { className?: string }) {
+  const { dict } = useI18n()
   function toggle() {
     const next: Theme = readDocumentTheme() === 'dark' ? 'light' : 'dark'
     applyTheme(next)
@@ -29,17 +31,17 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
     <button
       type="button"
       onClick={toggle}
-      aria-label="Changer le theme"
-      title="Changer le theme"
+      aria-label={dict.nav.theme}
+      title={dict.nav.theme}
       className={`relative flex min-h-11 min-w-11 items-center justify-center text-foreground transition-colors hover:text-primary ${className}`}
     >
       <span className="dark:hidden">
         <MoonIcon />
-        <span className="sr-only">Passer en mode sombre</span>
+        <span className="sr-only">{dict.nav.darkMode}</span>
       </span>
       <span className="hidden dark:inline">
         <SunIcon />
-        <span className="sr-only">Passer en mode clair</span>
+        <span className="sr-only">{dict.nav.lightMode}</span>
       </span>
     </button>
   )

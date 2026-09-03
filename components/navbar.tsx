@@ -1,8 +1,10 @@
 'use client'
 
+import { LanguageSwitcher } from '@/components/language-switcher'
 import { Logo } from '@/components/logo'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { useCart } from '@/components/cart-context'
+import { useI18n } from '@/lib/i18n/provider'
 import { PHONE_HREF } from '@/lib/social-links'
 import { SITE } from '@/lib/site'
 import { catalogHref } from '@/lib/catalog-href'
@@ -12,10 +14,11 @@ import { useState } from 'react'
 
 export function Navbar({ storeCategories }: { storeCategories: StoreCategory[] }) {
   const { count } = useCart()
+  const { dict } = useI18n()
   const [menuOpen, setMenuOpen] = useState(false)
 
   const navLinks = [
-    { href: '/products', label: 'Boutique' },
+    { href: '/products', label: dict.nav.shop },
     ...storeCategories.map((category) => ({
       href: catalogHref({ category: category.slug }),
       label: category.name,
@@ -27,7 +30,7 @@ export function Navbar({ storeCategories }: { storeCategories: StoreCategory[] }
       <div className="hidden border-b border-border/60 bg-primary text-primary-foreground sm:block">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-2 py-1.5 text-[11px] tracking-[0.14em] sm:px-3">
           <p className="py-1">
-            {SITE.neighborhood}, {SITE.city}
+            {dict.site.neighborhood}, {dict.site.city}
           </p>
           <a href={PHONE_HREF} className="inline-flex min-h-11 items-center transition-opacity hover:opacity-80">
             {SITE.phoneDisplay}
@@ -36,7 +39,7 @@ export function Navbar({ storeCategories }: { storeCategories: StoreCategory[] }
       </div>
 
       <div className="mx-auto flex max-w-7xl items-center justify-between px-2 py-2.5 sm:px-3">
-        <Link href="/" className="flex min-h-11 items-center gap-3" aria-label={`${SITE.name} — Accueil`}>
+        <Link href="/" className="flex min-h-11 items-center gap-3" aria-label={`${SITE.name} — ${dict.nav.home}`}>
           <Logo size="sm" />
         </Link>
 
@@ -53,10 +56,11 @@ export function Navbar({ storeCategories }: { storeCategories: StoreCategory[] }
         </nav>
 
         <div className="flex items-center gap-1 sm:gap-2">
+          <LanguageSwitcher />
           <ThemeToggle />
           <Link
             href="/checkout"
-            aria-label={count > 0 ? `Panier, ${count} article${count > 1 ? 's' : ''}` : 'Panier'}
+            aria-label={dict.nav.cartCount(count)}
             className="relative flex min-h-11 min-w-11 items-center justify-center gap-2 text-sm font-medium text-foreground transition-colors hover:text-primary"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
@@ -64,9 +68,9 @@ export function Navbar({ storeCategories }: { storeCategories: StoreCategory[] }
               <line x1="3" y1="6" x2="21" y2="6" />
               <path d="M16 10a4 4 0 01-8 0" />
             </svg>
-            <span className="sr-only">Panier</span>
+            <span className="sr-only">{dict.nav.cart}</span>
             {count > 0 && (
-              <span className="absolute right-0 top-0 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-medium text-primary-foreground">
+              <span className="absolute end-0 top-0 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-medium text-primary-foreground">
                 {count}
               </span>
             )}
@@ -77,7 +81,7 @@ export function Navbar({ storeCategories }: { storeCategories: StoreCategory[] }
             className="flex min-h-11 min-w-11 flex-col items-center justify-center gap-1.5 lg:hidden"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-expanded={menuOpen}
-            aria-label={menuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+            aria-label={menuOpen ? dict.nav.closeMenu : dict.nav.openMenu}
           >
             <span className={`block h-px w-6 bg-foreground transition-all ${menuOpen ? 'translate-y-2.5 rotate-45' : ''}`} />
             <span className={`block h-px w-6 bg-foreground transition-all ${menuOpen ? 'opacity-0' : ''}`} />

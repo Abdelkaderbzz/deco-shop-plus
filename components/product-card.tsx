@@ -1,3 +1,5 @@
+'use client'
+
 import Image from 'next/image'
 import Link from 'next/link'
 import { EpuiseBadge } from '@/components/epuise-badge'
@@ -7,6 +9,8 @@ import { isPromoActive } from '@/lib/product-colors'
 import { parsePrice } from '@/lib/product-price'
 import { hasVariableSizePrices, parseProductSizes } from '@/lib/product-sizes'
 import { productHref } from '@/lib/catalog-href'
+import { useI18n } from '@/lib/i18n/provider'
+import { localizeProduct } from '@/lib/i18n/products'
 import { getCategoryLabel } from '@/lib/store-categories'
 
 type Product = {
@@ -40,15 +44,15 @@ function ProductHoverOverlays({
   return (
     <>
       {!product.inStock ? (
-        <EpuiseBadge className={compact ? 'top-2 left-2 px-2.5 py-0.5 text-[10px]' : undefined} />
+        <EpuiseBadge className={compact ? 'top-2 start-2 px-2.5 py-0.5 text-[10px]' : undefined} />
       ) : (
         <>
           <PromoBadge
             product={product}
-            className={compact ? 'top-2 left-2 px-2 py-0.5 text-[10px]' : undefined}
+            className={compact ? 'top-2 start-2 px-2 py-0.5 text-[10px]' : undefined}
           />
           {!promo && !compact && (
-            <div className="absolute top-3 left-3">
+            <div className="absolute top-3 start-3">
               <span className="bg-card/90 px-2.5 py-1 text-[10px] font-medium tracking-wide text-primary">
                 {categoryLabel}
               </span>
@@ -61,7 +65,7 @@ function ProductHoverOverlays({
 }
 
 export function ProductCard({
-  product,
+  product: rawProduct,
   categories,
   variant = 'grid',
   priority = false,
@@ -71,6 +75,8 @@ export function ProductCard({
   variant?: 'grid' | 'list'
   priority?: boolean
 }) {
+  const { locale } = useI18n()
+  const product = localizeProduct(rawProduct, locale)
   const categoryLabel = getCategoryLabel(product.category, categories)
   const promo = isPromoActive(product)
   const from = hasVariableSizePrices(

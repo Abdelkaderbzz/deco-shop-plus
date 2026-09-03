@@ -1,4 +1,7 @@
+'use client'
+
 import { MarqueeRow } from '@/components/testimonial-marquee'
+import { useI18n } from '@/lib/i18n/provider'
 import {
   TESTIMONIAL_SOURCES,
   facebookTestimonials,
@@ -10,16 +13,17 @@ const ROW_DURATION_SECONDS = { top: 78, bottom: 94 } as const
 
 export function TestimonialsSection() {
   const sources = usedTestimonialSources()
+  const { dict } = useI18n()
 
   return (
     <section className="below-fold border-t border-border bg-secondary py-12 md:py-14">
       <div className="mx-auto mb-8 max-w-7xl px-2 text-center sm:px-3">
-        <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-primary">Avis</p>
+        <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-primary">{dict.testimonials.eyebrow}</p>
         <h2 className="mt-2 font-serif text-3xl font-medium tracking-tight text-foreground">
-          Elles nous font confiance
+          {dict.testimonials.title}
         </h2>
         <p className="mx-auto mt-3 max-w-lg text-sm text-muted-foreground">
-          Commentaires Facebook, messages WhatsApp et Instagram a Bizerte.
+          {dict.testimonials.subtitle}
         </p>
       </div>
 
@@ -35,8 +39,8 @@ export function TestimonialsSection() {
           duration={ROW_DURATION_SECONDS.bottom}
         />
 
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-linear-to-r from-secondary to-transparent sm:w-20 lg:w-28" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-linear-to-l from-secondary to-transparent sm:w-20 lg:w-28" />
+        <div className="pointer-events-none absolute inset-y-0 start-0 z-10 w-8 bg-linear-to-r from-secondary to-transparent rtl:bg-linear-to-l sm:w-20 lg:w-28" />
+        <div className="pointer-events-none absolute inset-y-0 end-0 z-10 w-8 bg-linear-to-l from-secondary to-transparent rtl:bg-linear-to-r sm:w-20 lg:w-28" />
       </div>
 
       {sources.length > 0 ? (

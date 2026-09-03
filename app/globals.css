@@ -1,14 +1,31 @@
 @import 'tailwindcss';
 @import 'shadcn/tailwind.css';
 
-html {
-  scroll-behavior: smooth;
+html[dir='rtl'] {
+  --font-sans: var(--font-cairo), ui-sans-serif, system-ui, sans-serif;
+}
+
+html[dir='ltr'] {
+  --font-sans: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+}
+
+html[dir='rtl'] .uppercase {
+  text-transform: none;
+  letter-spacing: 0.03em;
+}
+
+html[dir='rtl'] [class*='tracking-'] {
+  letter-spacing: 0.03em;
+}
+
+html[dir='rtl'] .hero-dot-progress {
+  transform-origin: right center;
 }
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-montserrat);
   --font-serif: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -135,11 +152,6 @@ html {
   .font-serif {
     font-synthesis: none;
   }
-  .font-serif.font-thin,
-  .font-serif.font-extralight,
-  .font-serif.font-light {
-    font-weight: 400;
-  }
 
   button:not(:disabled),
   [type='button']:not(:disabled),
@@ -167,6 +179,32 @@ html {
   input[type='file']::file-selector-button {
     cursor: pointer;
   }
+}
+
+html.storefront body {
+  font-weight: 600;
+}
+html.storefront .font-thin,
+html.storefront .font-extralight,
+html.storefront .font-light,
+html.storefront .font-normal {
+  font-weight: 600;
+}
+html.storefront .font-medium {
+  font-weight: 700;
+}
+html.storefront .font-semibold {
+  font-weight: 700;
+}
+html.storefront .font-bold {
+  font-weight: 800;
+}
+html.storefront .font-serif,
+html.storefront .font-serif.font-thin,
+html.storefront .font-serif.font-extralight,
+html.storefront .font-serif.font-light,
+html.storefront .font-serif.font-medium {
+  font-weight: 700;
 }
 
 /* Infinite testimonial marquee.

@@ -1,7 +1,9 @@
 'use client'
 
 import Image from 'next/image'
-import { useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+
+const AUTOPLAY_MS = 3500
 
 export function ProductGallery({
   images,
@@ -13,7 +15,36 @@ export function ProductGallery({
   badge?: ReactNode
 }) {
   const [activeIndex, setActiveIndex] = useState(0)
-  const activeImage = images[activeIndex]
+  const [reduceMotion, setReduceMotion] = useState(false)
+  const lastManualAt = useRef(0)
+  const total = images.length
+  const canAutoplay = total > 1
+
+  const goTo = useCallback((index: number) => {
+    lastManualAt.current = Date.now()
+    setActiveIndex(index)
+  }, [])
+
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const sync = () => setReduceMotion(media.matches)
+    sync()
+    media.addEventListener('change', sync)
+    return () => media.removeEventListener('change', sync)
+  }, [])
+
+  useEffect(() => {
+    if (!canAutoplay) return
+
+    const tick = () => {
+      if (document.hidden) return
+      if (Date.now() - lastManualAt.current < AUTOPLAY_MS) return
+      setActiveIndex((prev) => (prev + 1) % total)
+    }
+
+    const timer = window.setInterval(tick, AUTOPLAY_MS)
+    return () => window.clearInterval(timer)
+  }, [canAutoplay, total])
 
   if (images.length === 0) {
     return (
@@ -27,27 +58,51 @@ export function ProductGallery({
 
   return (
     <div className="space-y-4">
-      <div className="relative aspect-square overflow-hidden border border-border bg-secondary">
-        <Image
-          src={activeImage}
-          alt={alt}
-          fill
-          priority
-          sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-cover"
-        />
+      <div
+        className="relative aspect-square overflow-hidden border border-border bg-secondary"
+        aria-roledescription="carousel"
+        aria-label={alt}
+        data-gallery-index={activeIndex}
+      >
+        {images.map((url, index) => {
+          const isActive = index === activeIndex
+          return (
+            <div
+              key={`${url}-${index}`}
+              className={`absolute inset-0 ${isActive ? 'z-1' : 'pointer-events-none z-0'} ${
+                reduceMotion
+                  ? isActive
+                    ? 'opacity-100'
+                    : 'opacity-0'
+                  : `transition-opacity duration-700 ease-out ${isActive ? 'opacity-100' : 'opacity-0'}`
+              }`}
+              aria-hidden={!isActive}
+            >
+              <Image
+                src={url}
+                alt={isActive ? alt : ''}
+                fill
+                priority={index === 0}
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover"
+              />
+            </div>
+          )
+        })}
         {badge}
       </div>
 
-      {images.length > 1 && (
-        <div className="grid grid-cols-5 gap-2">
+      {canAutoplay && (
+        <div className="grid grid-cols-5 gap-2" role="tablist" aria-label={alt}>
           {images.map((url, index) => (
             <button
               key={`${url}-${index}`}
               type="button"
+              role="tab"
+              aria-selected={index === activeIndex}
               onPointerDown={(event) => {
                 if (event.button !== 0) return
-                setActiveIndex(index)
+                goTo(index)
               }}
               className={`relative aspect-square overflow-hidden border ${
                 index === activeIndex ? 'border-primary' : 'border-border hover:border-primary/40'

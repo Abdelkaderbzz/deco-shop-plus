@@ -1,4 +1,7 @@
+'use client'
+
 import Link from 'next/link'
+import { useI18n } from '@/lib/i18n/provider'
 
 export type BreadcrumbItem = {
   name: string
@@ -6,9 +9,10 @@ export type BreadcrumbItem = {
 }
 
 export function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
+  const { dict } = useI18n()
   return (
     <nav
-      aria-label="Fil d’Ariane"
+      aria-label={dict.nav.breadcrumb}
       className="mb-6 flex flex-wrap items-center gap-2 text-xs font-medium text-muted-foreground"
     >
       {items.map((item, index) => (
