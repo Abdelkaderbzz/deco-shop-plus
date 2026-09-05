@@ -124,7 +124,7 @@ const PRODUCT_AR: Record<string, ProductArCopy> = {
   'protege-matelas-tnt-polypropylene-fermeture-eclair': {
     name: 'Protège-matelas TNT – سحّاب',
     description:
-      'احموا الـ Matelas ومتخلّوش على الراحة. Protège-matelas TNT polypropylène يلفّ الـ Matelas الكل بـ fermeture éclair من حول، باش يثبت مليح ويحمي في اليومي. TNT جودة، تثبيت بلا لاستيك، خفيف، متين وسهل للتنظيف. المقاسات: 90×190، 120×190، 140×190، 160×200 و 180×200 صم.',
+      'احموا الـ Matelas ومتخلّوش على الراحة. Protège-matelas TNT polypropylène يلفّ الـ Matelas الكل بـ fermeture éclair من حول، باش يثبت مليح ويحمي في اليومي. TNT جودة، تثبيت بلا لاستيك، خفيف، متين وسهل للتنظيف. المقاسات: 90×190، 120×190، 140×190، 160×190، 160×200 و 180×200 صم.',
   },
 }
 

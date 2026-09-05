@@ -827,8 +827,8 @@ const PRODUCTS = [
     ],
     brand: 'Deco Shop Plus',
     description:
-      'Protegez votre matelas tout en gardant un confort optimal. Ce protege-matelas en TNT polypropylene non tisse enveloppe entierement votre matelas grace a sa fermeture eclair tout autour, pour un maintien parfait et une protection efficace au quotidien. TNT de qualite, maintien sans elastique, leger, resistant et facile a entretenir. Tailles : 90x190, 120x190, 140x190, 160x200 et 180x200 cm.',
-    price: '8.000',
+      'Protegez votre matelas tout en gardant un confort optimal. Ce protege-matelas en TNT polypropylene non tisse enveloppe entierement votre matelas grace a sa fermeture eclair tout autour, pour un maintien parfait et une protection efficace au quotidien. TNT de qualite, maintien sans elastique, leger, resistant et facile a entretenir. Tailles : 90x190, 120x190, 140x190, 160x190, 160x200 et 180x200 cm.',
+    price: '20.000',
     category: 'rangement',
     image: IMG.mattressProtectorHero,
     images: [
@@ -837,11 +837,12 @@ const PRODUCTS = [
       IMG.mattressProtectorWaterproof,
     ],
     sizes: [
-      { name: '90 × 190 cm', price: 8 },
-      { name: '120 × 190 cm', price: 11 },
-      { name: '140 × 190 cm', price: 13 },
-      { name: '160 × 200 cm', price: 15 },
-      { name: '180 × 200 cm', price: 18 },
+      { name: '90 × 190 cm', price: 20 },
+      { name: '120 × 190 cm', price: 24 },
+      { name: '140 × 190 cm', price: 32 },
+      { name: '160 × 190 cm', price: 35 },
+      { name: '160 × 200 cm', price: 42 },
+      { name: '180 × 200 cm', price: 45 },
     ],
     colors: [{ name: 'Blanc', hex: '#f5f5f5' }],
     featured: true,
