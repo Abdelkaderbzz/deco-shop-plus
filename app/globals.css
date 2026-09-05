@@ -208,27 +208,31 @@ html.storefront .font-serif.font-medium {
 }
 
 /* Infinite testimonial marquee.
-   The track holds two identical passes side by side, so shifting it by exactly
-   -50% lands on the start of the second pass — visually identical to frame 0,
-   which is what makes the loop seamless. */
+   Always LTR so translate -50% loops cleanly even when the page is RTL.
+   The track holds two identical passes side by side; shifting by -50%
+   lands on the second pass — visually identical to frame 0. */
 .marquee {
   overflow: hidden;
+  direction: ltr;
+  unicode-bidi: isolate;
 }
 
 .marquee-track {
   display: flex;
+  flex-direction: row;
   align-items: stretch;
   width: max-content;
   transform: translate3d(0, 0, 0);
-}
-
-.marquee-track[data-active] {
   will-change: transform;
   animation: marquee-drift-left var(--marquee-duration, 70s) linear infinite;
 }
 
-.marquee-track[data-active][data-direction='right'] {
+.marquee-track[data-direction='right'] {
   animation-name: marquee-drift-right;
+}
+
+.marquee-track[data-paused] {
+  animation-play-state: paused;
 }
 
 .marquee:hover .marquee-track,

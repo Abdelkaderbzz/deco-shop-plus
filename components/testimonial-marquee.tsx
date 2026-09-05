@@ -1,14 +1,15 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FacebookCommentCard, InstagramCommentCard, WhatsAppCommentCard } from '@/components/testimonial-cards'
 import type { TestimonialItem } from '@/lib/testimonials'
 
 const ITEM_CLS = 'flex w-72 shrink-0 px-1 py-1 sm:w-80 lg:w-[22rem]'
 
 function repeatsFor(count: number) {
-  return Math.max(1, Math.ceil(4 / Math.max(count, 1)))
+  // Enough cards so one pass is wider than the viewport on large screens.
+  return Math.max(2, Math.ceil(6 / Math.max(count, 1)))
 }
 
 function TestimonialItemCard({ item, decorative }: { item: TestimonialItem; decorative: boolean }) {
@@ -53,40 +54,35 @@ export function MarqueeRow({
   direction: 'left' | 'right'
   duration: number
 }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [active, setActive] = useState(false)
+  const [reduceMotion, setReduceMotion] = useState(false)
 
   useEffect(() => {
-    const node = ref.current
-    if (!node) return
-
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-
-    const observer = new IntersectionObserver(
-      ([entry]) => setActive(entry.isIntersecting),
-      { rootMargin: '80px 0px' },
-    )
-    observer.observe(node)
-    return () => observer.disconnect()
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const sync = () => setReduceMotion(media.matches)
+    sync()
+    media.addEventListener('change', sync)
+    return () => media.removeEventListener('change', sync)
   }, [])
 
   if (items.length === 0) return null
 
   const pass = Array.from({ length: repeatsFor(items.length) }, () => items).flat()
+  const loop = [...pass, ...pass]
 
   return (
-    <div ref={ref} className="marquee">
+    <div className="marquee py-1">
       <ul
         className="marquee-track"
         data-direction={direction}
-        data-active={active ? 'true' : undefined}
+        data-paused={reduceMotion ? '' : undefined}
         style={{ '--marquee-duration': `${duration}s` } as React.CSSProperties}
+        aria-label={direction === 'left' ? 'Avis clients' : undefined}
       >
-        {[...pass, ...pass].map((item, index) => (
+        {loop.map((item, index) => (
           <TestimonialItemCard
             key={`${item.id}-${index}`}
             item={item}
-            decorative={index >= items.length}
+            decorative={index >= pass.length}
           />
         ))}
       </ul>

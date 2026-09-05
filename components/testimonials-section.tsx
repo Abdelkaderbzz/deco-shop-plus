@@ -28,16 +28,18 @@ export function TestimonialsSection() {
       </div>
 
       <div className="relative border-y border-border/60">
-        <MarqueeRow
-          items={facebookTestimonials()}
-          direction="left"
-          duration={ROW_DURATION_SECONDS.top}
-        />
-        <MarqueeRow
-          items={socialTestimonials()}
-          direction="right"
-          duration={ROW_DURATION_SECONDS.bottom}
-        />
+        <div className="flex flex-col gap-1 py-1">
+          <MarqueeRow
+            items={facebookTestimonials()}
+            direction="left"
+            duration={ROW_DURATION_SECONDS.top}
+          />
+          <MarqueeRow
+            items={socialTestimonials()}
+            direction="right"
+            duration={ROW_DURATION_SECONDS.bottom}
+          />
+        </div>
 
         <div className="pointer-events-none absolute inset-y-0 start-0 z-10 w-8 bg-linear-to-r from-secondary to-transparent rtl:bg-linear-to-l sm:w-20 lg:w-28" />
         <div className="pointer-events-none absolute inset-y-0 end-0 z-10 w-8 bg-linear-to-l from-secondary to-transparent rtl:bg-linear-to-r sm:w-20 lg:w-28" />
