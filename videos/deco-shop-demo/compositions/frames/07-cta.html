@@ -1,0 +1,44 @@
+<template>
+  <style>
+    @font-face{font-family:'Montserrat';src:url('assets/fonts/Montserrat-Regular.woff2') format('woff2');font-weight:400 700;font-style:normal;font-display:block;}
+    *{margin:0;padding:0;box-sizing:border-box}
+    #root{position:relative;width:1080px;height:1920px;overflow:hidden;font-family:Montserrat,sans-serif;color:#1A2220}
+    .clip{position:absolute;inset:0}
+    .bg{background:linear-gradient(165deg,#E4EBE7,#F1F4F2)}
+    .topbar{position:absolute;left:40px;top:28px;font-size:16px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#0F5C64}
+    .phone{position:absolute;left:90px;top:80px;width:900px;height:1280px;border-radius:48px;background:#111;padding:12px;overflow:hidden;opacity:0}
+    .phone img{width:100%;height:100%;object-fit:contain;object-position:bottom;border-radius:38px}
+    .hl{position:absolute;left:12%;right:12%;top:68%;display:flex;align-items:center;justify-content:center;padding:16px 32px;border:2px solid #25D366;border-radius:999px;background:rgba(247,251,250,.95);color:#128C7E;font-size:28px;font-weight:600;opacity:0;white-space:nowrap}
+    .end{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;opacity:0;background:rgba(228,235,231,.97)}
+    .mono{width:130px;height:130px;border:3px solid #0F5C64;border-radius:50%;display:flex;align-items:center;justify-content:center}
+    .mono img{width:72px;height:72px;object-fit:contain}
+    .headline{font-size:50px;font-weight:600;text-align:center;max-width:860px;line-height:1.15}
+    .url{font-size:32px;font-weight:600;color:#0F5C64}
+    .wa{background:#25D366;color:#fff;font-size:28px;font-weight:600;padding:18px 36px;border-radius:999px}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <div data-hf-id="hf-bhok" id="root" data-composition-id="07-cta" data-width="1080" data-height="1920" data-start="0" data-duration="9">
+    <div data-hf-id="hf-jfmr" class="clip bg" id="f07-bg" data-start="0" data-duration="9" data-track-index="0"></div>
+    <div data-hf-id="hf-qqt2" class="clip topbar" id="f07-top" data-start="0" data-duration="9" data-track-index="1">DECO SHOP PLUS</div>
+    <div data-hf-id="hf-p6iv" class="clip phone" id="f07-phone" data-start="0" data-duration="9" data-track-index="2">
+      <img data-hf-id="hf-m234" id="f07-page" src="assets/m-home-cta.png" alt="">
+      <div data-hf-id="hf-4zn4" class="hl" id="f07-hl">WhatsApp 56 405 932</div>
+    </div>
+    <div data-hf-id="hf-4l7a" class="clip end" id="f07-end" data-start="0" data-duration="9" data-track-index="3">
+      <div data-hf-id="hf-z4uc" class="mono" id="f07-mono"><img data-hf-id="hf-s7cr" src="assets/favicon.png" alt=""></div>
+      <div data-hf-id="hf-ru0p" class="headline" id="f07-headline">Votre maison mérite mieux</div>
+      <div data-hf-id="hf-roe8" class="url" id="f07-url">decoshopplus.com</div>
+      <div data-hf-id="hf-rohc" class="wa" id="f07-wa">WhatsApp 56 405 932</div>
+    </div>
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    gsap.set(['#f07-phone','#f07-hl','#f07-end'],{opacity:0});
+    tl.fromTo('#f07-phone',{opacity:0,scale:.94},{opacity:1,scale:1,duration:.8,ease:'power3.out'},0);
+    tl.fromTo('#f07-hl',{opacity:0,scale:.92},{opacity:1,scale:1,duration:.45},2.0);
+    tl.to('#f07-phone',{opacity:0,scale:.92,duration:.5,ease:'power2.in'},3.4);
+    tl.fromTo('#f07-end',{opacity:0,scale:.95},{opacity:1,scale:1,duration:.7,ease:'power3.out'},3.6);
+    window.__timelines["07-cta"] = tl;
+  </script>
+</template>

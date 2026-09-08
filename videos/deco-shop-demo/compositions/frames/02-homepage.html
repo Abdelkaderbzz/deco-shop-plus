@@ -1,0 +1,43 @@
+<template>
+  <style>
+    @font-face{font-family:'Montserrat';src:url('assets/fonts/Montserrat-Regular.woff2') format('woff2');font-weight:400 700;font-style:normal;font-display:block;}
+    *{margin:0;padding:0;box-sizing:border-box}
+    #root{position:relative;width:1080px;height:1920px;overflow:hidden;font-family:Montserrat,sans-serif;color:#1A2220}
+    .clip{position:absolute;inset:0}
+    
+.bg{background:linear-gradient(165deg,#E4EBE7 0%,#F1F4F2 50%,#d8e4df 100%)}
+.topbar{position:absolute;left:40px;top:28px;font-size:16px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#0F5C64}
+.phone{position:absolute;left:70px;top:64px;width:940px;height:1520px;border-radius:52px;background:#111;padding:14px;overflow:hidden;box-shadow:0 24px 70px rgba(26,34,32,.25)}
+.screen{width:100%;height:100%;border-radius:40px;overflow:hidden;background:#F1F4F2;position:relative}
+.screen img.page{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:contain;object-position:top center;transform-origin:50% 15%}
+.hl{position:absolute;border:5px solid #0F5C64;border-radius:22px;box-shadow:0 0 0 8px rgba(15,92,100,.16);pointer-events:none;opacity:0}
+.label{position:absolute;left:60px;right:60px;top:1610px;text-align:center;font-size:26px;font-weight:600;color:#0F5C64;opacity:0}
+
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <div data-hf-id="hf-ofx2" id="root" data-composition-id="02-homepage" data-width="1080" data-height="1920" data-start="0" data-duration="8">
+    
+      <div data-hf-id="hf-9jk0" class="clip bg" id="f02-homepage-bg" data-start="0" data-duration="8" data-track-index="0"></div>
+      <div data-hf-id="hf-fyu3" class="clip topbar" id="f02-homepage-top" data-start="0" data-duration="8" data-track-index="1">DECO SHOP PLUS</div>
+      <div data-hf-id="hf-z0j4" class="clip phone" id="f02-homepage-phone" data-start="0" data-duration="8" data-track-index="2">
+        <div data-hf-id="hf-cdmk" class="screen"><img data-hf-id="hf-mtuj" class="page" id="f02-homepage-p0" src="assets/m-home-00.png" alt="" style="opacity:1"><img data-hf-id="hf-keqg" class="page" id="f02-homepage-p1" src="assets/m-home-02.png" alt="" style="opacity:0"></div>
+      </div>
+      <div data-hf-id="hf-hw42" class="clip label" id="f02-homepage-label" data-start="0" data-duration="8" data-track-index="4">Boutique en ligne</div>
+    
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    gsap.set('#f02-homepage-phone',{opacity:0}); gsap.set('#f02-homepage-label',{opacity:0,y:14});
+
+    gsap.set('#f02-homepage-p0',{scale:1.02});
+    gsap.set('#f02-homepage-p1',{opacity:0});
+    tl.fromTo('#f02-homepage-phone',{opacity:0,scale:.94},{opacity:1,scale:1,duration:.9,ease:'power3.out'},0);
+    tl.to('#f02-homepage-p0',{scale:1.0, duration:2.2, ease:'power2.inOut'},1.2);
+    tl.to('#f02-homepage-p0',{opacity:0,duration:.5},4.4);
+    tl.fromTo('#f02-homepage-p1',{opacity:0},{opacity:1,duration:.55,ease:'power2.out'},4.4);
+    tl.fromTo('#f02-homepage-label',{opacity:0,y:14},{opacity:1,y:0,duration:.5,ease:'power3.out'},6.4);
+  
+    window.__timelines["02-homepage"] = tl;
+  </script>
+</template>

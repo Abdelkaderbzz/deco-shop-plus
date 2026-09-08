@@ -1,0 +1,339 @@
+{
+  "typography": [
+    {
+      "role": "display",
+      "fontFamily": "Montserrat",
+      "fontSize": "28.8px",
+      "fontWeight": "500",
+      "lineHeight": "36px",
+      "letterSpacing": "-0.72px",
+      "color": "#1A2220",
+      "sampleText": "Housse de rangement pour tapis"
+    },
+    {
+      "role": "body",
+      "fontFamily": "Montserrat",
+      "fontSize": "19.2px",
+      "fontWeight": "600",
+      "lineHeight": "25.6px",
+      "letterSpacing": "normal",
+      "color": "#1A2220",
+      "sampleText": "4,000 TND"
+    },
+    {
+      "role": "heading",
+      "fontFamily": "Montserrat",
+      "fontSize": "14.4px",
+      "fontWeight": "500",
+      "lineHeight": "22.4px",
+      "letterSpacing": "-0.36px",
+      "color": "#1A2220",
+      "sampleText": "Vous aimerez aussi"
+    },
+    {
+      "role": "link",
+      "fontFamily": "Montserrat",
+      "fontSize": "12.8px",
+      "fontWeight": "400",
+      "lineHeight": "19.2px",
+      "letterSpacing": "normal",
+      "color": "#1A2220",
+      "sampleText": "Deco Shop Plus"
+    },
+    {
+      "role": "heading-3",
+      "fontFamily": "Montserrat",
+      "fontSize": "11.2px",
+      "fontWeight": "500",
+      "lineHeight": "14px",
+      "letterSpacing": "normal",
+      "color": "#1A2220",
+      "sampleText": "Lot de 5 Boîtes de Rangement Pliables – Grande Capacité 70 ×"
+    },
+    {
+      "role": "label",
+      "fontFamily": "Montserrat",
+      "fontSize": "11.2px",
+      "fontWeight": "600",
+      "lineHeight": "16px",
+      "letterSpacing": "normal",
+      "color": "#1A2220",
+      "sampleText": "Nom complet *"
+    }
+  ],
+  "spacing": {
+    "observed": [
+      2,
+      3,
+      5,
+      6,
+      8,
+      10,
+      11,
+      13,
+      16,
+      19,
+      26,
+      38
+    ],
+    "baseUnit": 8
+  },
+  "radius": [
+    "10.24px",
+    "17.92px",
+    "23.04px",
+    "3.35544e+07px"
+  ],
+  "shadows": [
+    {
+      "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, oklab(0.435449 -0.06285 -0.0304212 / 0.2) 0px 1px 3px 0px, oklab(0.435449 -0.06285 -0.0304212 / 0.2) 0px 1px 2px -1px",
+      "count": 1
+    },
+    {
+      "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.1) 0px 1px 2px -1px",
+      "count": 1
+    },
+    {
+      "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, oklab(0.435449 -0.06285 -0.0304212 / 0.35) 0px 10px 15px -3px, oklab(0.435449 -0.06285 -0.0304212 / 0.35) 0px 4px 6px -4px",
+      "count": 1
+    },
+    {
+      "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, oklab(0.76095 -0.174004 0.101529 / 0.3) 0px 4px 6px -1px, oklab(0.76095 -0.174004 0.101529 / 0.3) 0px 2px 4px -2px",
+      "count": 1
+    }
+  ],
+  "buttons": [
+    {
+      "label": "button",
+      "background": "transparent",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#F7FBFA",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "border": "0px solid rgb(212, 221, 216)",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "height": "35.1875px"
+    },
+    {
+      "label": "button",
+      "background": "transparent",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#1A2220",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "border": "1px solid rgb(15, 92, 100)",
+      "boxShadow": "none",
+      "fontSize": "12.8px",
+      "fontWeight": "400",
+      "height": "112px"
+    },
+    {
+      "label": "button",
+      "background": "transparent",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#1A2220",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "border": "1px solid rgb(212, 221, 216)",
+      "boxShadow": "none",
+      "fontSize": "12.8px",
+      "fontWeight": "400",
+      "height": "112.016px"
+    },
+    {
+      "label": "Beige",
+      "background": "oklab(0.435449 -0.06285 -0.0304212 / 0.05)",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#1A2220",
+      "padding": "6.4px 9.6px",
+      "borderRadius": "3.35544e+07px",
+      "border": "1px solid rgb(15, 92, 100)",
+      "boxShadow": "none",
+      "fontSize": "11.2px",
+      "fontWeight": "300",
+      "height": "30.7812px"
+    },
+    {
+      "label": "Noire",
+      "background": "transparent",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#3D4F4B",
+      "padding": "6.4px 9.6px",
+      "borderRadius": "3.35544e+07px",
+      "border": "1px solid rgb(212, 221, 216)",
+      "boxShadow": "none",
+      "fontSize": "11.2px",
+      "fontWeight": "300",
+      "height": "30.7812px"
+    },
+    {
+      "label": "1 m4,000 TND",
+      "background": "#0F5C64",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#F7FBFA",
+      "padding": "6.4px 12.8px",
+      "borderRadius": "3.35544e+07px",
+      "border": "1px solid rgb(15, 92, 100)",
+      "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, oklab(0.435449 -0.06285 -0.0304212 / 0.2) 0px 1px 3px 0px, oklab(0.435449 -0.06285 -0.0304212 / 0.2) 0px 1px 2px -1px",
+      "fontSize": "11.2px",
+      "fontWeight": "300",
+      "height": "31.4844px"
+    }
+  ],
+  "cards": [
+    {
+      "label": "card",
+      "background": "oklab(0.98975 -0.00171524 0.00223333 / 0.9)",
+      "backgroundImage": "",
+      "backdropFilter": "blur(12px)",
+      "color": "#1A2220",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "border": "",
+      "boxShadow": "none",
+      "fontSize": "12.8px",
+      "fontWeight": "400",
+      "height": "97.9688px"
+    },
+    {
+      "label": "card",
+      "background": "#FBFCFA",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#1A2220",
+      "padding": "16px",
+      "borderRadius": "23.04px",
+      "border": "2px solid oklab(0.435449 -0.06285 -0.0304212 / 0.25)",
+      "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.1) 0px 1px 2px -1px",
+      "fontSize": "12.8px",
+      "fontWeight": "400",
+      "height": "642.312px"
+    },
+    {
+      "label": "card",
+      "background": "#FBFCFA",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#1A2220",
+      "padding": "9.6px 12.8px",
+      "borderRadius": "17.92px",
+      "border": "2px solid rgb(212, 221, 216)",
+      "boxShadow": "none",
+      "fontSize": "12.8px",
+      "fontWeight": "400",
+      "height": "80.75px"
+    },
+    {
+      "label": "card",
+      "background": "#FBFCFA",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#1A2220",
+      "padding": "0px",
+      "borderRadius": "23.04px",
+      "border": "1px solid rgb(212, 221, 216)",
+      "boxShadow": "none",
+      "fontSize": "11.2px",
+      "fontWeight": "400",
+      "height": "91.75px"
+    }
+  ],
+  "nav": {
+    "label": "navigation",
+    "background": "oklab(0.98975 -0.00171524 0.00223333 / 0.9)",
+    "backgroundImage": "",
+    "backdropFilter": "blur(12px)",
+    "color": "#1A2220",
+    "padding": "0px",
+    "borderRadius": "0px",
+    "border": "",
+    "boxShadow": "none",
+    "fontSize": "12.8px",
+    "fontWeight": "400",
+    "height": "97.9688px"
+  },
+  "chips": [
+    {
+      "label": "MAISON",
+      "background": "oklab(0.984786 -0.00438127 0.0000398159 / 0.15)",
+      "color": "#F7FBFA",
+      "padding": "1.6px 6.4px",
+      "borderRadius": "3.35544e+07px",
+      "border": "0px solid rgb(212, 221, 216)",
+      "boxShadow": "none",
+      "fontSize": "9.1px",
+      "fontWeight": "500",
+      "height": "16.8281px"
+    },
+    {
+      "label": "BOUTIQUE",
+      "background": "transparent",
+      "color": "#F7FBFA",
+      "padding": "3.2px 9.6px",
+      "borderRadius": "3.35544e+07px",
+      "border": "1px solid oklab(0.984786 -0.00438127 0.0000398159 / 0.4)",
+      "boxShadow": "none",
+      "fontSize": "10.4px",
+      "fontWeight": "300",
+      "height": "23.9844px"
+    },
+    {
+      "label": "Promotion",
+      "background": "#C81E1E",
+      "color": "#FFFFFF",
+      "padding": "1.6px 6.4px",
+      "borderRadius": "10.24px",
+      "border": "0px solid rgb(212, 221, 216)",
+      "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.1) 0px 1px 2px -1px",
+      "fontSize": "10px",
+      "fontWeight": "600",
+      "height": "18.1875px"
+    }
+  ],
+  "statCells": [],
+  "tabs": [
+    {
+      "label": "4,000 TND",
+      "background": "transparent",
+      "color": "#1A2220",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "border": "0px solid rgb(212, 221, 216)",
+      "boxShadow": "none",
+      "fontSize": "19.2px",
+      "fontWeight": "600",
+      "height": "25.5938px"
+    },
+    {
+      "label": "50,000 TND",
+      "background": "transparent",
+      "color": "#3D4F4B",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "border": "0px solid rgb(212, 221, 216)",
+      "boxShadow": "none",
+      "fontSize": "9.6px",
+      "fontWeight": "400",
+      "height": "13.7812px"
+    }
+  ],
+  "backgrounds": [],
+  "glass": [
+    {
+      "backdropFilter": "blur(12px)",
+      "background": "oklab(0.98975 -0.00171524 0.00223333 / 0.9)",
+      "border": "",
+      "borderRadius": "0px",
+      "boxShadow": "",
+      "area": 188100
+    }
+  ]
+}

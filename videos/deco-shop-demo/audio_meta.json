@@ -1,0 +1,181 @@
+{
+  "bgm": {
+    "path": "assets/bgm/track.mp3",
+    "volume": 0.22,
+    "mode": "manual",
+    "duration_s": 62
+  },
+  "bgm_pending": false,
+  "voices": [
+    {
+      "frame": 1,
+      "text": "Deco Shop Plus \u2014 Votre boutique d\u00e9co & rangement",
+      "duration": 5,
+      "words": [
+        {
+          "text": "Deco Shop Plus \u2014 Votre boutique d\u00e9co & rangement",
+          "start": 0.35,
+          "end": 4.6
+        }
+      ]
+    },
+    {
+      "frame": 2,
+      "text": "D\u00e9couvrez notre boutique en ligne",
+      "duration": 8,
+      "words": [
+        {
+          "text": "D\u00e9couvrez notre boutique en ligne",
+          "start": 0.35,
+          "end": 7.6
+        }
+      ]
+    },
+    {
+      "frame": 3,
+      "text": "Coussins \u00b7 Rangement \u00b7 Maison",
+      "duration": 9,
+      "words": [
+        {
+          "text": "Coussins \u00b7 Rangement \u00b7 Maison",
+          "start": 0.35,
+          "end": 8.6
+        }
+      ]
+    },
+    {
+      "frame": 4,
+      "text": "Nos offres du moment",
+      "duration": 10,
+      "words": [
+        {
+          "text": "Nos offres du moment",
+          "start": 0.35,
+          "end": 9.6
+        }
+      ]
+    },
+    {
+      "frame": 5,
+      "text": "Choisissez taille \u00b7 couleur \u00b7 pack",
+      "duration": 11,
+      "words": [
+        {
+          "text": "Choisissez taille \u00b7 couleur \u00b7 pack",
+          "start": 0.35,
+          "end": 10.6
+        }
+      ]
+    },
+    {
+      "frame": 6,
+      "text": "Commandez en quelques clics",
+      "duration": 8,
+      "words": [
+        {
+          "text": "Commandez en quelques clics",
+          "start": 0.35,
+          "end": 7.6
+        }
+      ]
+    },
+    {
+      "frame": 7,
+      "text": "Votre maison m\u00e9rite mieux \u2014 decoshopplus.com",
+      "duration": 9,
+      "words": [
+        {
+          "text": "Votre maison m\u00e9rite mieux \u2014 decoshopplus.com",
+          "start": 0.35,
+          "end": 8.6
+        }
+      ]
+    }
+  ],
+  "sfx": [
+    {
+      "frame": 1,
+      "file": "assets/sfx/whoosh.mp3",
+      "offset_s": 0,
+      "duration_s": 0.57,
+      "volume": 0.35
+    },
+    {
+      "frame": 1,
+      "file": "assets/sfx/chime.mp3",
+      "offset_s": 0,
+      "duration_s": 2.5,
+      "volume": 0.35
+    },
+    {
+      "frame": 2,
+      "file": "assets/sfx/whoosh.mp3",
+      "offset_s": 0,
+      "duration_s": 0.57,
+      "volume": 0.35
+    },
+    {
+      "frame": 3,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 0,
+      "duration_s": 0.72,
+      "volume": 0.35
+    },
+    {
+      "frame": 3,
+      "file": "assets/sfx/whoosh.mp3",
+      "offset_s": 0,
+      "duration_s": 0.57,
+      "volume": 0.35
+    },
+    {
+      "frame": 4,
+      "file": "assets/sfx/whoosh.mp3",
+      "offset_s": 0,
+      "duration_s": 0.57,
+      "volume": 0.35
+    },
+    {
+      "frame": 4,
+      "file": "assets/sfx/pop.mp3",
+      "offset_s": 0,
+      "duration_s": 0.72,
+      "volume": 0.35
+    },
+    {
+      "frame": 5,
+      "file": "assets/sfx/click.mp3",
+      "offset_s": 0,
+      "duration_s": 0.37,
+      "volume": 0.35
+    },
+    {
+      "frame": 5,
+      "file": "assets/sfx/whoosh.mp3",
+      "offset_s": 0,
+      "duration_s": 0.57,
+      "volume": 0.35
+    },
+    {
+      "frame": 6,
+      "file": "assets/sfx/click.mp3",
+      "offset_s": 0,
+      "duration_s": 0.37,
+      "volume": 0.35
+    },
+    {
+      "frame": 6,
+      "file": "assets/sfx/chime.mp3",
+      "offset_s": 0,
+      "duration_s": 2.5,
+      "volume": 0.35
+    },
+    {
+      "frame": 7,
+      "file": "assets/sfx/chime.mp3",
+      "offset_s": 0,
+      "duration_s": 2.5,
+      "volume": 0.35
+    }
+  ]
+}

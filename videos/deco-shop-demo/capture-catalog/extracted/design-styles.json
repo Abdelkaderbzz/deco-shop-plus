@@ -1,0 +1,212 @@
+{
+  "typography": [
+    {
+      "role": "display",
+      "fontFamily": "Montserrat",
+      "fontSize": "28.8px",
+      "fontWeight": "500",
+      "lineHeight": "32px",
+      "letterSpacing": "-0.72px",
+      "color": "#1A2220",
+      "sampleText": "Boutique"
+    },
+    {
+      "role": "body",
+      "fontFamily": "Montserrat",
+      "fontSize": "13px",
+      "fontWeight": "500",
+      "lineHeight": "19.5px",
+      "letterSpacing": "0.65px",
+      "color": "#F7FBFA",
+      "sampleText": "Atelier Cité El Waha — coussins cousus à Bizerte"
+    },
+    {
+      "role": "heading",
+      "fontFamily": "Montserrat",
+      "fontSize": "12.8px",
+      "fontWeight": "500",
+      "lineHeight": "16px",
+      "letterSpacing": "-0.32px",
+      "color": "#1A2220",
+      "sampleText": "Protège-Matelas TNT Polypropylène – Fermeture Éclair"
+    },
+    {
+      "role": "link",
+      "fontFamily": "Montserrat",
+      "fontSize": "12.8px",
+      "fontWeight": "400",
+      "lineHeight": "19.2px",
+      "letterSpacing": "normal",
+      "color": "#1A2220",
+      "sampleText": "Deco Shop Plus"
+    }
+  ],
+  "spacing": {
+    "observed": [
+      3,
+      6,
+      8,
+      10,
+      11,
+      13,
+      16,
+      19,
+      26
+    ],
+    "baseUnit": 8
+  },
+  "radius": [
+    "10.24px",
+    "23.04px",
+    "3.35544e+07px"
+  ],
+  "shadows": [],
+  "buttons": [
+    {
+      "label": "button",
+      "background": "transparent",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#F7FBFA",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "border": "0px solid rgb(212, 221, 216)",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "height": "35.1875px"
+    }
+  ],
+  "cards": [
+    {
+      "label": "card",
+      "background": "oklab(0.98975 -0.00171524 0.00223333 / 0.9)",
+      "backgroundImage": "",
+      "backdropFilter": "blur(12px)",
+      "color": "#1A2220",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "border": "",
+      "boxShadow": "none",
+      "fontSize": "12.8px",
+      "fontWeight": "400",
+      "height": "97.9688px"
+    },
+    {
+      "label": "card",
+      "background": "#FBFCFA",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#1A2220",
+      "padding": "0px",
+      "borderRadius": "10.24px",
+      "border": "1px solid rgb(212, 221, 216)",
+      "boxShadow": "none",
+      "fontSize": "12.8px",
+      "fontWeight": "400",
+      "height": "393.203px"
+    }
+  ],
+  "nav": {
+    "label": "navigation",
+    "background": "oklab(0.98975 -0.00171524 0.00223333 / 0.9)",
+    "backgroundImage": "",
+    "backdropFilter": "blur(12px)",
+    "color": "#1A2220",
+    "padding": "0px",
+    "borderRadius": "0px",
+    "border": "",
+    "boxShadow": "none",
+    "fontSize": "12.8px",
+    "fontWeight": "400",
+    "height": "97.9688px"
+  },
+  "chips": [
+    {
+      "label": "MAISON",
+      "background": "oklab(0.984786 -0.00438127 0.0000398159 / 0.15)",
+      "color": "#F7FBFA",
+      "padding": "1.6px 6.4px",
+      "borderRadius": "3.35544e+07px",
+      "border": "0px solid rgb(212, 221, 216)",
+      "boxShadow": "none",
+      "fontSize": "9.1px",
+      "fontWeight": "500",
+      "height": "16.8281px"
+    },
+    {
+      "label": "BOUTIQUE",
+      "background": "transparent",
+      "color": "#F7FBFA",
+      "padding": "3.2px 9.6px",
+      "borderRadius": "3.35544e+07px",
+      "border": "1px solid oklab(0.984786 -0.00438127 0.0000398159 / 0.4)",
+      "boxShadow": "none",
+      "fontSize": "10.4px",
+      "fontWeight": "300",
+      "height": "23.9844px"
+    },
+    {
+      "label": "Tous",
+      "background": "#0F5C64",
+      "color": "#F7FBFA",
+      "padding": "6.4px 9.6px",
+      "borderRadius": "3.35544e+07px",
+      "border": "1px solid rgb(15, 92, 100)",
+      "boxShadow": "none",
+      "fontSize": "9.6px",
+      "fontWeight": "500",
+      "height": "35.1875px"
+    },
+    {
+      "label": "Coussins",
+      "background": "transparent",
+      "color": "#3D4F4B",
+      "padding": "6.4px 9.6px",
+      "borderRadius": "3.35544e+07px",
+      "border": "1px solid rgb(212, 221, 216)",
+      "boxShadow": "none",
+      "fontSize": "9.6px",
+      "fontWeight": "500",
+      "height": "35.1875px"
+    }
+  ],
+  "statCells": [],
+  "tabs": [
+    {
+      "label": "À partir de8,000 TND",
+      "background": "transparent",
+      "color": "#1A2220",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "border": "0px solid rgb(212, 221, 216)",
+      "boxShadow": "none",
+      "fontSize": "12.8px",
+      "fontWeight": "600",
+      "height": "19.1875px"
+    },
+    {
+      "label": "28,000 TND",
+      "background": "transparent",
+      "color": "#3D4F4B",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "border": "0px solid rgb(212, 221, 216)",
+      "boxShadow": "none",
+      "fontSize": "11.2px",
+      "fontWeight": "400",
+      "height": "16px"
+    }
+  ],
+  "backgrounds": [],
+  "glass": [
+    {
+      "backdropFilter": "blur(12px)",
+      "background": "oklab(0.98975 -0.00171524 0.00223333 / 0.9)",
+      "border": "",
+      "borderRadius": "0px",
+      "boxShadow": "",
+      "area": 188100
+    }
+  ]
+}

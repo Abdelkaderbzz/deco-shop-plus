@@ -1,0 +1,112 @@
+{
+  "total_duration_s": 60,
+  "width": 1080,
+  "height": 1920,
+  "groups": [
+    {
+      "id": "caption-group-0",
+      "frame": 1,
+      "start": 0.35,
+      "end": 4.72,
+      "text": "Deco Shop Plus — Votre boutique déco & rangement",
+      "words": [
+        {
+          "id": "caption-word-0-0",
+          "text": "Deco Shop Plus — Votre boutique déco & rangement",
+          "start": 0.35,
+          "end": 4.6
+        }
+      ]
+    },
+    {
+      "id": "caption-group-1",
+      "frame": 2,
+      "start": 5.35,
+      "end": 12.72,
+      "text": "Découvrez notre boutique en ligne",
+      "words": [
+        {
+          "id": "caption-word-1-0",
+          "text": "Découvrez notre boutique en ligne",
+          "start": 5.35,
+          "end": 12.6
+        }
+      ]
+    },
+    {
+      "id": "caption-group-2",
+      "frame": 3,
+      "start": 13.35,
+      "end": 21.72,
+      "text": "Coussins · Rangement · Maison",
+      "words": [
+        {
+          "id": "caption-word-2-0",
+          "text": "Coussins · Rangement · Maison",
+          "start": 13.35,
+          "end": 21.6
+        }
+      ]
+    },
+    {
+      "id": "caption-group-3",
+      "frame": 4,
+      "start": 22.35,
+      "end": 31.72,
+      "text": "Nos offres du moment",
+      "words": [
+        {
+          "id": "caption-word-3-0",
+          "text": "Nos offres du moment",
+          "start": 22.35,
+          "end": 31.6
+        }
+      ]
+    },
+    {
+      "id": "caption-group-4",
+      "frame": 5,
+      "start": 32.35,
+      "end": 42.72,
+      "text": "Choisissez taille · couleur · pack",
+      "words": [
+        {
+          "id": "caption-word-4-0",
+          "text": "Choisissez taille · couleur · pack",
+          "start": 32.35,
+          "end": 42.6
+        }
+      ]
+    },
+    {
+      "id": "caption-group-5",
+      "frame": 6,
+      "start": 43.35,
+      "end": 50.72,
+      "text": "Commandez en quelques clics",
+      "words": [
+        {
+          "id": "caption-word-5-0",
+          "text": "Commandez en quelques clics",
+          "start": 43.35,
+          "end": 50.6
+        }
+      ]
+    },
+    {
+      "id": "caption-group-6",
+      "frame": 7,
+      "start": 51.35,
+      "end": 59.72,
+      "text": "Votre maison mérite mieux — decoshopplus.com",
+      "words": [
+        {
+          "id": "caption-word-6-0",
+          "text": "Votre maison mérite mieux — decoshopplus.com",
+          "start": 51.35,
+          "end": 59.6
+        }
+      ]
+    }
+  ]
+}

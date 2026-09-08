@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "preferences": {
+    "destination": {
+      "value": "stories",
+      "confirmed_in": [
+        "deco-shop-demo"
+      ],
+      "updated_at": "2026-08-29T18:56:07.627Z"
+    },
+    "aspect": {
+      "value": "1080x1920",
+      "confirmed_in": [
+        "deco-shop-demo"
+      ],
+      "updated_at": "2026-08-29T18:56:07.681Z"
+    },
+    "language": {
+      "value": "fr",
+      "confirmed_in": [
+        "deco-shop-demo"
+      ],
+      "updated_at": "2026-08-29T18:56:07.733Z"
+    },
+    "flow": {
+      "value": "automation",
+      "confirmed_in": [
+        "deco-shop-demo"
+      ],
+      "updated_at": "2026-08-29T18:56:07.777Z"
+    },
+    "storyboard": {
+      "value": "yes",
+      "confirmed_in": [
+        "deco-shop-demo"
+      ],
+      "updated_at": "2026-08-29T18:56:07.821Z"
+    },
+    "style_preset.product-launch-video": {
+      "value": "editorial-forest",
+      "confirmed_in": [
+        "deco-shop-demo"
+      ],
+      "updated_at": "2026-08-29T19:00:59.577Z"
+    }
+  },
+  "sightings": {}
+}

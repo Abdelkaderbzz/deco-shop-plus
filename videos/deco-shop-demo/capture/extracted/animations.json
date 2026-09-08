@@ -1,0 +1,96 @@
+{
+  "summary": {
+    "webAnimations": 2,
+    "cssDeclarations": 15,
+    "scrollTargets": 15,
+    "cdpAnimations": 22,
+    "canvases": 0
+  },
+  "namedAnimations": [
+    "hero-copy-in",
+    "hero-dot-fill"
+  ],
+  "scrollTriggeredElements": 15,
+  "representativeAnimations": [
+    {
+      "type": "CSSAnimation",
+      "playState": "finished",
+      "animationName": "hero-copy-in",
+      "targetSelector": "div.absolute.inset-x-0.bottom-14",
+      "targetRect": {
+        "x": 356.1875,
+        "y": 594.3125,
+        "width": 1207.609375,
+        "height": 35.1875,
+        "top": 594.3125,
+        "right": 1563.796875,
+        "bottom": 629.5,
+        "left": 356.1875
+      },
+      "keyframes": [
+        {
+          "offset": 0,
+          "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+          "composite": "auto",
+          "transform": "translate3d(28px, 10px, 0px)",
+          "opacity": "0",
+          "computedOffset": 0
+        },
+        {
+          "offset": 1,
+          "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+          "composite": "auto",
+          "transform": "none",
+          "opacity": "1",
+          "computedOffset": 1
+        }
+      ],
+      "timing": {
+        "duration": 700,
+        "delay": 0,
+        "iterations": 1,
+        "easing": "linear",
+        "direction": "normal"
+      }
+    },
+    {
+      "type": "CSSAnimation",
+      "playState": "running",
+      "animationName": "hero-dot-fill",
+      "targetSelector": "span.hero-dot-progress.absolute.inset-y-0",
+      "targetRect": {
+        "x": 910.40625,
+        "y": 647.09375,
+        "width": 8.692626953125,
+        "height": 6.390625,
+        "top": 647.09375,
+        "right": 919.098876953125,
+        "bottom": 653.484375,
+        "left": 910.40625
+      },
+      "keyframes": [
+        {
+          "offset": 0,
+          "easing": "linear",
+          "composite": "auto",
+          "transform": "scaleX(0)",
+          "computedOffset": 0
+        },
+        {
+          "offset": 1,
+          "easing": "linear",
+          "composite": "auto",
+          "transform": "scaleX(1)",
+          "computedOffset": 1
+        }
+      ],
+      "timing": {
+        "duration": 6500,
+        "delay": 0,
+        "iterations": 1,
+        "easing": "linear",
+        "direction": "normal"
+      }
+    }
+  ]
+}

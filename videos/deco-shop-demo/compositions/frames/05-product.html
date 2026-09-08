@@ -1,0 +1,53 @@
+<template>
+  <style>
+    @font-face{font-family:'Montserrat';src:url('assets/fonts/Montserrat-Regular.woff2') format('woff2');font-weight:400 700;font-style:normal;font-display:block;}
+    *{margin:0;padding:0;box-sizing:border-box}
+    #root{position:relative;width:1080px;height:1920px;overflow:hidden;font-family:Montserrat,sans-serif;color:#1A2220}
+    .clip{position:absolute;inset:0}
+    
+.bg{background:linear-gradient(165deg,#E4EBE7 0%,#F1F4F2 50%,#d8e4df 100%)}
+.topbar{position:absolute;left:40px;top:28px;font-size:16px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#0F5C64}
+.phone{position:absolute;left:70px;top:64px;width:940px;height:1520px;border-radius:52px;background:#111;padding:14px;overflow:hidden;box-shadow:0 24px 70px rgba(26,34,32,.25)}
+.screen{width:100%;height:100%;border-radius:40px;overflow:hidden;background:#F1F4F2;position:relative}
+.screen img.page{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:contain;object-position:top center;transform-origin:50% 15%}
+.hl{position:absolute;display:flex;align-items:center;justify-content:center;padding:14px 28px;border:2px solid #0F5C64;border-radius:999px;background:rgba(247,251,250,.94);color:#0F5C64;font-size:28px;font-weight:600;letter-spacing:.04em;box-shadow:0 8px 24px rgba(26,34,32,.12);pointer-events:none;opacity:0;white-space:nowrap}
+.label{position:absolute;left:60px;right:60px;top:1610px;text-align:center;font-size:26px;font-weight:600;color:#0F5C64;opacity:0}
+
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <div data-hf-id="hf-l73h" id="root" data-composition-id="05-product" data-width="1080" data-height="1920" data-start="0" data-duration="11.5">
+    
+      <div data-hf-id="hf-4mi5" class="clip bg" id="f05-product-bg" data-start="0" data-duration="11.5" data-track-index="0"></div>
+      <div data-hf-id="hf-iwzm" class="clip topbar" id="f05-product-top" data-start="0" data-duration="11.5" data-track-index="1">DECO SHOP PLUS</div>
+      <div data-hf-id="hf-p5tn" class="clip phone" id="f05-product-phone" data-start="0" data-duration="11.5" data-track-index="2">
+        <div data-hf-id="hf-cdmk" class="screen"><img data-hf-id="hf-oj6h" class="page" id="f05-product-p0" src="assets/m-product-00.png" alt="" style="opacity:1"><img data-hf-id="hf-kqc4" class="page" id="f05-product-p1" src="assets/m-product-01.png" alt="" style="opacity:0"><img data-hf-id="hf-7dsw" class="page" id="f05-product-p2" src="assets/m-product-02.png" alt="" style="opacity:0">
+    <div data-hf-id="hf-q9l5" class="hl" id="f05-product-h1" style="left:12%;right:12%;top:62%;width:auto;height:auto">Taille</div>
+    <div data-hf-id="hf-7r1k" class="hl" id="f05-product-h2" style="left:12%;right:12%;top:72%;width:auto;height:auto">Couleur</div>
+    <div data-hf-id="hf-xkq8" class="hl" id="f05-product-h3" style="left:12%;right:12%;top:52%;width:auto;height:auto">Format</div>
+  </div>
+      </div>
+      <div data-hf-id="hf-d8za" class="clip label" id="f05-product-label" data-start="0" data-duration="11.5" data-track-index="4">Taille · Couleur · Pack</div>
+    
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    gsap.set('#f05-product-phone',{opacity:0}); gsap.set('#f05-product-label',{opacity:0,y:14});
+
+    gsap.set(['#f05-product-p1','#f05-product-p2'],{opacity:0});
+    gsap.set(['#f05-product-h1','#f05-product-h2','#f05-product-h3'],{opacity:0});
+    tl.fromTo('#f05-product-phone',{opacity:0,scale:.94},{opacity:1,scale:1,duration:.85,ease:'power3.out'},0);
+    tl.to('#f05-product-p0',{scale:1.04,duration:2.0,ease:'power2.inOut'},1.0);
+    tl.fromTo('#f05-product-h1',{opacity:0,scale:.95},{opacity:1,scale:1,duration:.45},1.6);
+    tl.to('#f05-product-h1',{opacity:0,duration:.3},3.1);
+    tl.to('#f05-product-p0',{opacity:0,duration:.4},3.2);
+    tl.fromTo('#f05-product-p1',{opacity:0},{opacity:1,duration:.5},3.2);
+    tl.fromTo('#f05-product-h2',{opacity:0,scale:.95},{opacity:1,scale:1,duration:.45},3.9);
+    tl.to(['#f05-product-p1','#f05-product-h2'],{opacity:0,duration:.35},6.4);
+    tl.fromTo('#f05-product-p2',{opacity:0},{opacity:1,duration:.5},6.4);
+    tl.fromTo('#f05-product-h3',{opacity:0,scale:.95},{opacity:1,scale:1,duration:.45},7.1);
+    tl.fromTo('#f05-product-label',{opacity:0,y:14},{opacity:1,y:0,duration:.45},9.5);
+  
+    window.__timelines["05-product"] = tl;
+  </script>
+</template>

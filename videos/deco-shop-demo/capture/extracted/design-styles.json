@@ -1,0 +1,279 @@
+{
+  "typography": [
+    {
+      "role": "heading",
+      "fontFamily": "Montserrat",
+      "fontSize": "24px",
+      "fontWeight": "500",
+      "lineHeight": "28.8px",
+      "letterSpacing": "-0.6px",
+      "color": "#1A2220",
+      "sampleText": "Pour la maison"
+    },
+    {
+      "role": "heading-3",
+      "fontFamily": "Montserrat",
+      "fontSize": "14.4px",
+      "fontWeight": "500",
+      "lineHeight": "22.4px",
+      "letterSpacing": "-0.36px",
+      "color": "#FFFFFF",
+      "sampleText": "Coussins"
+    },
+    {
+      "role": "body",
+      "fontFamily": "Montserrat",
+      "fontSize": "14.4px",
+      "fontWeight": "600",
+      "lineHeight": "22.4px",
+      "letterSpacing": "normal",
+      "color": "#1A2220",
+      "sampleText": "23,000 TND"
+    },
+    {
+      "role": "display",
+      "fontFamily": "Montserrat",
+      "fontSize": "12.8px",
+      "fontWeight": "400",
+      "lineHeight": "19.2px",
+      "letterSpacing": "normal",
+      "color": "#1A2220",
+      "sampleText": "S'installer. Lire. Rester."
+    },
+    {
+      "role": "heading-3",
+      "fontFamily": "Montserrat",
+      "fontSize": "12.8px",
+      "fontWeight": "500",
+      "lineHeight": "16px",
+      "letterSpacing": "-0.32px",
+      "color": "#1A2220",
+      "sampleText": "Rangement pour les sacs à main"
+    },
+    {
+      "role": "link",
+      "fontFamily": "Montserrat",
+      "fontSize": "10.4px",
+      "fontWeight": "300",
+      "lineHeight": "15.6px",
+      "letterSpacing": "1.56px",
+      "color": "#F7FBFA",
+      "sampleText": "BOUTIQUE"
+    }
+  ],
+  "spacing": {
+    "observed": [
+      2,
+      3,
+      6,
+      8,
+      10,
+      11,
+      13,
+      16,
+      32,
+      51
+    ],
+    "baseUnit": 8
+  },
+  "radius": [
+    "10.24px",
+    "23.04px",
+    "3.35544e+07px"
+  ],
+  "shadows": [
+    {
+      "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(15, 23, 42, 0.45) 0px 8px 24px -16px",
+      "count": 24
+    }
+  ],
+  "buttons": [
+    {
+      "label": "button",
+      "background": "transparent",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#F7FBFA",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "border": "0px solid rgb(212, 221, 216)",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "height": "35.1875px"
+    },
+    {
+      "label": "‹",
+      "background": "oklab(0 0 0 / 0.35)",
+      "backgroundImage": "",
+      "backdropFilter": "blur(8px)",
+      "color": "#FFFFFF",
+      "padding": "0px",
+      "borderRadius": "3.35544e+07px",
+      "border": "1px solid oklab(0.999994 0.0000455678 0.0000200868 / 0.3)",
+      "boxShadow": "none",
+      "fontSize": "14.4px",
+      "fontWeight": "400",
+      "height": "35.1875px"
+    }
+  ],
+  "cards": [
+    {
+      "label": "card",
+      "background": "oklab(0.98975 -0.00171524 0.00223333 / 0.9)",
+      "backgroundImage": "",
+      "backdropFilter": "blur(12px)",
+      "color": "#1A2220",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "border": "",
+      "boxShadow": "none",
+      "fontSize": "12.8px",
+      "fontWeight": "400",
+      "height": "97.9688px"
+    },
+    {
+      "label": "card",
+      "background": "#FBFCFA",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#1A2220",
+      "padding": "0px",
+      "borderRadius": "23.04px",
+      "border": "1px solid oklab(0.889241 -0.0111916 0.00366318 / 0.8)",
+      "boxShadow": "none",
+      "fontSize": "12.8px",
+      "fontWeight": "400",
+      "height": "247.5px"
+    },
+    {
+      "label": "card",
+      "background": "#FBFCFA",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#1A2220",
+      "padding": "0px",
+      "borderRadius": "10.24px",
+      "border": "1px solid rgb(212, 221, 216)",
+      "boxShadow": "none",
+      "fontSize": "12.8px",
+      "fontWeight": "400",
+      "height": "380.438px"
+    }
+  ],
+  "nav": {
+    "label": "navigation",
+    "background": "oklab(0.98975 -0.00171524 0.00223333 / 0.9)",
+    "backgroundImage": "",
+    "backdropFilter": "blur(12px)",
+    "color": "#1A2220",
+    "padding": "0px",
+    "borderRadius": "0px",
+    "border": "",
+    "boxShadow": "none",
+    "fontSize": "12.8px",
+    "fontWeight": "400",
+    "height": "97.9688px"
+  },
+  "chips": [
+    {
+      "label": "MAISON",
+      "background": "oklab(0.984786 -0.00438127 0.0000398159 / 0.15)",
+      "color": "#F7FBFA",
+      "padding": "1.6px 6.4px",
+      "borderRadius": "3.35544e+07px",
+      "border": "0px solid rgb(212, 221, 216)",
+      "boxShadow": "none",
+      "fontSize": "9.1px",
+      "fontWeight": "500",
+      "height": "16.8281px"
+    },
+    {
+      "label": "BOUTIQUE",
+      "background": "transparent",
+      "color": "#F7FBFA",
+      "padding": "3.2px 9.6px",
+      "borderRadius": "3.35544e+07px",
+      "border": "1px solid oklab(0.984786 -0.00438127 0.0000398159 / 0.4)",
+      "boxShadow": "none",
+      "fontSize": "10.4px",
+      "fontWeight": "300",
+      "height": "23.9844px"
+    },
+    {
+      "label": "Les nouveautés",
+      "background": "#FFFFFF",
+      "color": "#1A2220",
+      "padding": "8px 19.2px",
+      "borderRadius": "3.35544e+07px",
+      "border": "0px solid rgb(212, 221, 216)",
+      "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, oklab(0 0 0 / 0.25) 0px 10px 15px -3px, oklab(0 0 0 / 0.25) 0px 4px 6px -4px",
+      "fontSize": "11.2px",
+      "fontWeight": "600",
+      "height": "35.1875px"
+    },
+    {
+      "label": "-18%",
+      "background": "#C81E1E",
+      "color": "#F7FBFA",
+      "padding": "1.6px 4.8px",
+      "borderRadius": "10.24px",
+      "border": "0px solid rgb(212, 221, 216)",
+      "boxShadow": "none",
+      "fontSize": "11px",
+      "fontWeight": "600",
+      "height": "19.6875px"
+    }
+  ],
+  "statCells": [],
+  "tabs": [
+    {
+      "label": "23,000 TND",
+      "background": "transparent",
+      "color": "#1A2220",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "border": "0px solid rgb(212, 221, 216)",
+      "boxShadow": "none",
+      "fontSize": "14.4px",
+      "fontWeight": "600",
+      "height": "22.4062px"
+    },
+    {
+      "label": "28,000 TND",
+      "background": "transparent",
+      "color": "#3D4F4B",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "border": "0px solid rgb(212, 221, 216)",
+      "boxShadow": "none",
+      "fontSize": "11.2px",
+      "fontWeight": "400",
+      "height": "16px"
+    }
+  ],
+  "backgrounds": [
+    {
+      "value": "linear-gradient(to top, oklab(0 0 0 / 0.8) 0%, oklab(0 0 0 / 0.25) 50%, rgba(0, 0, 0, 0) 100%)",
+      "area": 96429
+    },
+    {
+      "value": "linear-gradient(to right in oklab, rgb(228, 235, 231) 0%, rgba(0, 0, 0, 0) 100%)",
+      "area": 25935
+    },
+    {
+      "value": "linear-gradient(to left in oklab, rgb(228, 235, 231) 0%, rgba(0, 0, 0, 0) 100%)",
+      "area": 25935
+    }
+  ],
+  "glass": [
+    {
+      "backdropFilter": "blur(12px)",
+      "background": "oklab(0.98975 -0.00171524 0.00223333 / 0.9)",
+      "border": "",
+      "borderRadius": "0px",
+      "boxShadow": "",
+      "area": 188100
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "files": [
+    {
+      "file": "2b402d8aebffd579-s.0dskwooysu3cf.woff2",
+      "family": "Montserrat",
+      "rawFamily": "Montserrat Thin",
+      "subfamily": "Regular",
+      "postscript": "Montserrat-Thin",
+      "weight": 100,
+      "style": "normal",
+      "variationAxes": [
+        "wght"
+      ],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "44fac91e6f2d2b1b-s.0f~sf101j6mzi.woff2",
+      "family": "Montserrat",
+      "rawFamily": "Montserrat Thin",
+      "subfamily": "Regular",
+      "postscript": "Montserrat-Thin",
+      "weight": 100,
+      "style": "normal",
+      "variationAxes": [
+        "wght"
+      ],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "8298327da6d5bcce-s.132ro2ak-rvxq.woff2",
+      "family": "Montserrat",
+      "rawFamily": "Montserrat Thin",
+      "subfamily": "Regular",
+      "postscript": "Montserrat-Thin",
+      "weight": 100,
+      "style": "normal",
+      "variationAxes": [
+        "wght"
+      ],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "a88409fdd7dc121c-s.0ir_pxtv760h..woff2",
+      "family": "Montserrat",
+      "rawFamily": "Montserrat Thin",
+      "subfamily": "Regular",
+      "postscript": "Montserrat-Thin",
+      "weight": 100,
+      "style": "normal",
+      "variationAxes": [
+        "wght"
+      ],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "e8f2fbee2754df70-s.p.0fzkl03jw-sdz.woff2",
+      "family": "Montserrat",
+      "rawFamily": "Montserrat Thin",
+      "subfamily": "Regular",
+      "postscript": "Montserrat-Thin",
+      "weight": 100,
+      "style": "normal",
+      "variationAxes": [
+        "wght"
+      ],
+      "identified": true,
+      "isIcon": false
+    }
+  ],
+  "families": [
+    {
+      "family": "Montserrat",
+      "weights": [
+        100
+      ],
+      "variable": true,
+      "fileCount": 5,
+      "files": [
+        "2b402d8aebffd579-s.0dskwooysu3cf.woff2",
+        "44fac91e6f2d2b1b-s.0f~sf101j6mzi.woff2",
+        "8298327da6d5bcce-s.132ro2ak-rvxq.woff2",
+        "a88409fdd7dc121c-s.0ir_pxtv760h..woff2",
+        "e8f2fbee2754df70-s.p.0fzkl03jw-sdz.woff2"
+      ]
+    }
+  ],
+  "unidentified": [],
+  "meta": {
+    "generatedAt": "2026-08-29T19:02:25.837Z",
+    "tool": "fontkit"
+  }
+}
