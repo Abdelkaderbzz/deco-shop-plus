@@ -35,6 +35,7 @@ function slugify(value) {
 const CATEGORIES = [
   { name: 'Coussins', slug: 'coussins', bannerUrl: '/categories/coussins.webp' },
   { name: 'Rangement', slug: 'rangement', bannerUrl: '/categories/rangement.webp' },
+  { name: 'Protection', slug: 'protection', bannerUrl: '/categories/protection.webp' },
 ]
 
 const OLD_CATEGORY_SLUGS = ['femme', 'homme', 'parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous', 'textiles', 'accessoires']
@@ -52,6 +53,7 @@ const IMG = {
   chairPadLifestyle: '/assets/chair-pad-lifestyle.webp',
   chairPadRed: '/assets/chair-pad-red.webp',
   chairPadRound: '/assets/chair-pad-round.webp',
+  chairPadRoundSingle: '/assets/chair-pad-round-single-primary.webp',
   chairPadBackrest: '/assets/chair-pad-backrest-primary.webp',
   chairPadBackrestGreen: '/assets/chair-pad-backrest-green.webp',
   chairPadBackrestOrange: '/assets/chair-pad-backrest-orange.webp',
@@ -151,7 +153,7 @@ const IMG = {
  *   description: string
  *   price: string
  *   compareAtPrice?: string | null
- *   category: 'coussins' | 'rangement'
+ *   category: 'coussins' | 'rangement' | 'protection'
  *   image: string
  *   images?: string[]
  *   sizes: string[]
@@ -205,13 +207,14 @@ const PRODUCTS = [
     compareAtPrice: '15.000',
     category: 'coussins',
     image: IMG.chairPad,
-    images: [IMG.chairPad, IMG.chairPadFloor, IMG.chairPadLifestyle, IMG.chairPadRed, IMG.chairPadRound],
+    images: [IMG.chairPad],
     sizes: ['Carré', 'Rond'],
     colors: CATALOG_COLORS,
     promoEnabled: true,
     promoLabel: 'Promotion',
     featured: true,
     related: [
+      'chairPadRoundSingle',
       'chairPadBackrest',
       'chairPadPack4',
       'readingPillow',
@@ -347,7 +350,26 @@ const PRODUCTS = [
     promoEnabled: true,
     promoLabel: 'Promotion',
     featured: true,
-    related: ['chairPad', 'chairPadBackrest', 'readingPillow'],
+    related: ['chairPad', 'chairPadRoundSingle', 'chairPadBackrest', 'readingPillow'],
+  },
+  {
+    key: 'chairPadRoundSingle',
+    name: 'Galette de chaise ronde capitonnée',
+    aliases: ['Galette de chaise ronde', 'Galette ronde capitonnée'],
+    brand: 'Deco Shop Plus',
+    description:
+      'Galette de chaise ronde capitonnée, vendue a l unite, avec attaches pour la fixer au dossier. Matière de fabrication : velours anti-tache. Confortable pour cuisine, salle a manger ou bureau. Ideale pour completer ou remplacer une galette du pack de 4. Disponible en Rouge, Jaune, Vert, Gris, Beige, Marine, Marron, Bordeaux et Vert pistache.',
+    price: '9.500',
+    compareAtPrice: '15.000',
+    category: 'coussins',
+    image: IMG.chairPadRoundSingle,
+    images: [IMG.chairPadRoundSingle, IMG.chairPadRound],
+    sizes: ['Rond'],
+    colors: CATALOG_COLORS,
+    promoEnabled: true,
+    promoLabel: 'Promotion',
+    featured: true,
+    related: ['chairPadPack4', 'chairPad', 'chairPadBackrest', 'readingPillow'],
   },
   {
     key: 'readingPillow',
@@ -793,7 +815,7 @@ const PRODUCTS = [
       'Boudin de porte double face pour stopper les courants d air, la poussiere et reduire le bruit. Mousse de haute densite, housse en tissu lavable, facile a installer sous la porte et a decouper a la bonne longueur. Tailles 82 cm et 92 cm. Couleurs : Noir, Gris fonce, Gris clair, Marron et Beige. Unite ou pack de 3.',
     price: '8.000',
     compareAtPrice: '8.000',
-    category: 'rangement',
+    category: 'protection',
     image: IMG.doorDraftStopperHero,
     images: [
       IMG.doorDraftStopperHero,
@@ -829,7 +851,7 @@ const PRODUCTS = [
     description:
       'Protegez votre matelas tout en gardant un confort optimal. Ce protege-matelas en TNT polypropylene non tisse enveloppe entierement votre matelas grace a sa fermeture eclair tout autour, pour un maintien parfait et une protection efficace au quotidien. TNT de qualite, maintien sans elastique, leger, resistant et facile a entretenir. Tailles : 90x190, 120x190, 140x190, 160x190, 160x200 et 180x200 cm.',
     price: '20.000',
-    category: 'rangement',
+    category: 'protection',
     image: IMG.mattressProtectorHero,
     images: [
       IMG.mattressProtectorHero,
