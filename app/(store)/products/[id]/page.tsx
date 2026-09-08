@@ -11,6 +11,7 @@ import { ProductTrustBox } from '@/components/product-trust-box'
 import { Reveal } from '@/components/reveal'
 import { productHref } from '@/lib/catalog-href'
 import { parseProductColors, isPromoActive } from '@/lib/product-colors'
+import { colorSlotsForProduct } from '@/lib/product-color-slots'
 import { parseProductBundles } from '@/lib/product-bundles'
 import { parseProductImages } from '@/lib/product-images'
 import { hasVariableSizePrices, lowestSizePrice, parseProductSizes, uniqueDimensionLabel } from '@/lib/product-sizes'
@@ -224,6 +225,7 @@ export default async function ProductDetailPage({
               bundles={bundles}
               stock={product.stock ?? 0}
               accentColor={promo ? product.promoBgColor : null}
+              colorSlots={colorSlotsForProduct(product.slug, product.name)}
             />
           )}
 

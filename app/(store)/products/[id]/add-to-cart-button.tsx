@@ -7,6 +7,7 @@ import { ProductBundleOptions } from '@/components/product-bundle-options'
 import { useToast } from '@/components/toast-provider'
 import { getErrorMessage } from '@/lib/get-error-message'
 import type { ProductColor } from '@/lib/product-colors'
+import { formatSlotColors } from '@/lib/product-color-slots'
 import { lineStockUnits, type ProductBundle } from '@/lib/product-bundles'
 import { formatPriceTnd, parsePrice } from '@/lib/product-price'
 import { priceForSize, type ProductSize } from '@/lib/product-sizes'
@@ -286,6 +287,7 @@ export function AddToCartButton({
   bundles,
   stock,
   accentColor,
+  colorSlots = 1,
 }: {
   product: Product
   sizes: ProductSize[]
@@ -293,6 +295,8 @@ export function AddToCartButton({
   bundles: ProductBundle[]
   stock: number
   accentColor?: string | null
+  /** When > 1 (e.g. pack of 4), shopper picks a color per piece. */
+  colorSlots?: number
 }) {
   const { addItem, items } = useCart()
   const { dict, locale } = useI18n()
@@ -300,13 +304,18 @@ export function AddToCartButton({
   const toast = useToast()
   const fallbackPrice = parsePrice(product.price) ?? 0
   const sizeOptions = sizes.length > 0 ? sizes : [{ name: 'Unique', price: fallbackPrice }]
+  const defaultColor = colors[0]?.name ?? ''
   const [selectedSize, setSelectedSize] = useState(sizeOptions[0]?.name ?? '')
-  const [selectedColor, setSelectedColor] = useState(colors[0]?.name ?? '')
+  const [selectedColors, setSelectedColors] = useState<string[]>(() =>
+    Array.from({ length: Math.max(1, colorSlots) }, () => defaultColor),
+  )
   const [selectedBundleName, setSelectedBundleName] = useState(bundles[0]?.name ?? '')
   const [added, setAdded] = useState(false)
 
   const selectedBundle = bundles.find((bundle) => bundle.name === selectedBundleName) ?? bundles[0]
   const selectedUnits = selectedBundle?.units ?? 1
+  // Bundles pick the piece count dynamically (2/3/4 galettes...); otherwise fall back to the fixed pack size.
+  const slotCount = colors.length > 0 ? Math.max(1, bundles.length > 0 ? selectedUnits : colorSlots) : 0
   const sizePrice = priceForSize(sizeOptions, selectedSize, fallbackPrice)
   const selectedPrice = selectedBundle?.price ?? sizePrice
   const selectedCompareAt = selectedBundle
@@ -314,14 +323,24 @@ export function AddToCartButton({
       ? selectedBundle.compareAtPrice.toFixed(3)
       : null
     : product.compareAtPrice
+  const colorLabel =
+    slotCount > 1 ? formatSlotColors(selectedColors.slice(0, slotCount)) : selectedColors[0] || ''
+  const colorsReady =
+    slotCount === 0 || selectedColors.slice(0, slotCount).every((name) => Boolean(name))
   const inCart = items
     .filter((item) => item.productId === product.id)
     .reduce((sum, item) => sum + lineStockUnits(item.quantity, item.bundleUnits), 0)
   const remaining = Math.max(0, stock - inCart)
-  const canSelect =
-    Boolean(selectedSize) &&
-    (colors.length === 0 || Boolean(selectedColor)) &&
-    remaining >= selectedUnits
+  const canSelect = Boolean(selectedSize) && colorsReady && remaining >= selectedUnits
+
+  function setSlotColor(index: number, name: string) {
+    setSelectedColors((prev) => {
+      const next = [...prev]
+      while (next.length < slotCount) next.push(defaultColor)
+      next[index] = name
+      return next
+    })
+  }
 
   function orderItem() {
     return {
@@ -329,7 +348,7 @@ export function AddToCartButton({
       productName: product.name,
       productBrand: product.brand,
       size: selectedSize,
-      color: selectedColor || '',
+      color: colorLabel,
       bundle: selectedBundle?.name ?? '',
       bundleUnits: selectedUnits,
       quantity: 1,
@@ -365,7 +384,7 @@ export function AddToCartButton({
       selectedSize
         ? `${/\d+\s*cm/i.test(selectedSize) ? w.dimensions : w.size} : ${selectedSize}`
         : null,
-      selectedColor ? `${w.color} : ${selectedColor}` : null,
+      colorLabel ? `${w.color} : ${colorLabel}` : null,
       selectedBundle ? `${w.pack} : ${selectedBundle.name} (${selectedBundle.units} ${w.pcs})` : null,
       `${w.price} : ${formatPriceTnd(selectedPrice)} TND`,
       '',
@@ -449,17 +468,17 @@ export function AddToCartButton({
         />
       ) : null}
 
-      {colors.length > 0 && (
+      {colors.length > 0 && slotCount === 1 && (
         <div>
           <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">{dict.product.color}</p>
           <div className="flex flex-wrap gap-2">
             {colors.map((color) => {
-              const selected = selectedColor === color.name
+              const selected = selectedColors[0] === color.name
               return (
                 <button
                   key={`${color.name}-${color.hex}`}
                   type="button"
-                  onClick={() => setSelectedColor(color.name)}
+                  onClick={() => setSlotColor(0, color.name)}
                   className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-light transition-all ${
                     selected
                       ? 'border-primary bg-primary/5 text-foreground'
@@ -475,6 +494,60 @@ export function AddToCartButton({
                 </button>
               )
             })}
+          </div>
+        </div>
+      )}
+
+      {colors.length > 0 && slotCount > 1 && (
+        <div className="space-y-2.5">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+            {dict.product.chooseEachColor}
+          </p>
+          <div className="space-y-2">
+            {Array.from({ length: slotCount }, (_, index) => (
+              <div key={`slot-${index}`} className="flex items-center gap-2.5">
+                <span className="w-6 shrink-0 text-xs font-medium text-muted-foreground">{index + 1}.</span>
+                <div className="flex flex-1 flex-wrap gap-1.5">
+                  {colors.map((color) => {
+                    const selected = selectedColors[index] === color.name
+                    return (
+                      <button
+                        key={`${index}-${color.name}-${color.hex}`}
+                        type="button"
+                        title={color.name}
+                        aria-label={color.name}
+                        aria-pressed={selected}
+                        onClick={() => setSlotColor(index, color.name)}
+                        className={`relative size-7 shrink-0 rounded-full border transition-all ${
+                          selected
+                            ? 'border-primary ring-2 ring-primary ring-offset-2 ring-offset-card'
+                            : 'border-black/10 hover:scale-110'
+                        }`}
+                        style={{ backgroundColor: color.hex }}
+                      >
+                        {selected && (
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="3"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            aria-hidden
+                            className="absolute inset-0 m-auto size-3.5 text-white drop-shadow-[0_0_1px_rgba(0,0,0,0.6)]"
+                          >
+                            <path d="M20 6 9 17l-5-5" />
+                          </svg>
+                        )}
+                      </button>
+                    )
+                  })}
+                </div>
+                <span className="w-14 shrink-0 truncate text-xs text-muted-foreground">
+                  {selectedColors[index] || ''}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       )}

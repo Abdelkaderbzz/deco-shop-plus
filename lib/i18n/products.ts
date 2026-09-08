@@ -36,6 +36,11 @@ const PRODUCT_AR: Record<string, ProductArCopy> = {
     description:
       'باك فيه 4 galettes de chaise rondes capitonnées، وفيهم ربطات باش تتثبّتوا في الكرسي. مادّة التصنيع: مخمل مقاوم للبقع. مريحة للكوزينة ولا قاعة الأكل. اختاروا 4 ألوان من المجموعة. التوصيل في كامل تونس.',
   },
+  'galette-de-chaise-ronde-capitonnee': {
+    name: 'Galette de chaise ronde capitonnée',
+    description:
+      'Galette de chaise ronde capitonnée تتباع بالقطعة، وفيها ربطة باش تتثبّت في الكرسي. مادّة التصنيع: مخمل مقاوم للبقع. مريحة للكوزينة، قاعة الأكل ولا البيورو. مثالية باش تكمّلوا ولا تبدّلوا galette من الباك متاع الـ 4. متوفّرة: أحمر، أصفر، أخضر، رمادي، بيج، كحلي، مرون، بوردو وفستقي.',
+  },
   'coussin-de-lecture': {
     name: 'وسادة قراءة',
     description:
@@ -144,6 +149,7 @@ const PRODUCT_AR_BY_FRENCH_NAME: Record<string, ProductArCopy> = {
     PRODUCT_AR['galette-de-chaise-capitonnee-dossier-et-assise'],
   'Pack de 4 galettes de chaise rondes capitonnées':
     PRODUCT_AR['pack-de-4-galettes-de-chaise-rondes-capitonnees'],
+  'Galette de chaise ronde capitonnée': PRODUCT_AR['galette-de-chaise-ronde-capitonnee'],
   'Coussin de lecture': PRODUCT_AR['coussin-de-lecture'],
   'Coussin de canapé': PRODUCT_AR['coussin-de-canape'],
   'Coussin de tête de lit': PRODUCT_AR['coussin-de-tete-de-lit'],
