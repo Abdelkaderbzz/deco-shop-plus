@@ -33,13 +33,14 @@ export default async function StoreLayout({ children }: { children: React.ReactN
   ]
 
   return (
-    <I18nProvider locale={locale}>
-      <CartProvider>
-        <StoreRoutePrefetch hrefs={prefetchHrefs} />
-        <JsonLd data={storeGraphJsonLd()} />
-        {banner && <SiteBanner banner={banner} />}
-        <Navbar storeCategories={storeCategories} />
-        <main className="min-h-screen">{children}</main>
+    <>
+      <JsonLd data={storeGraphJsonLd()} />
+      <I18nProvider locale={locale}>
+        <CartProvider>
+          <StoreRoutePrefetch hrefs={prefetchHrefs} />
+          {banner && <SiteBanner banner={banner} />}
+          <Navbar storeCategories={storeCategories} />
+          <main className="min-h-screen">{children}</main>
         <footer className="border-t border-border bg-card py-12">
           <div className="mx-auto max-w-7xl px-2 text-center sm:px-3">
             <Logo size="lg" className="mx-auto mb-5 justify-center" />
@@ -96,5 +97,6 @@ export default async function StoreLayout({ children }: { children: React.ReactN
         <WhatsAppButton />
       </CartProvider>
     </I18nProvider>
+    </>
   )
 }
