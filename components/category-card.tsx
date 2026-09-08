@@ -7,7 +7,7 @@ export function CategoryCard({ category }: { category: StoreCategory }) {
   return (
     <Link
       href={catalogHref({ category: category.slug })}
-      className="relative block overflow-hidden rounded-2xl border border-border/80 bg-card"
+      className="relative block min-w-0 flex-1 overflow-hidden rounded-2xl border border-border/80 bg-card"
     >
       <div className="relative aspect-[4/5] overflow-hidden bg-secondary">
         {category.image ? (
@@ -15,7 +15,7 @@ export function CategoryCard({ category }: { category: StoreCategory }) {
             src={category.image}
             alt={category.name}
             fill
-            sizes="(max-width: 640px) 40vw, 200px"
+            sizes="(max-width: 640px) 30vw, 240px"
             quality={70}
             className="object-cover"
           />

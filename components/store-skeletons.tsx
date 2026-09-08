@@ -26,9 +26,9 @@ export function ProductGridSkeleton({ count = 8 }: { count?: number }) {
 export function CategoriesSkeleton() {
   return (
     <section className="border-t border-border bg-secondary/35 py-14 md:py-16">
-      <div className="mx-auto grid max-w-7xl grid-cols-2 gap-4 px-2 sm:px-3 md:grid-cols-4">
-        {Array.from({ length: 4 }).map((_, index) => (
-          <div key={index} className="aspect-square animate-pulse rounded-2xl bg-muted/50" />
+      <div className="mx-auto flex max-w-3xl justify-center gap-3 px-2 sm:px-3 sm:gap-4">
+        {Array.from({ length: 3 }).map((_, index) => (
+          <div key={index} className="aspect-[4/5] min-w-0 flex-1 animate-pulse rounded-2xl bg-muted/50" />
         ))}
       </div>
     </section>

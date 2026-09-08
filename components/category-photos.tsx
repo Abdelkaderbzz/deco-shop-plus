@@ -28,7 +28,7 @@ export function CategoryPhotos({
           className={
             categories.length === 1
               ? 'mx-auto max-w-[11rem] sm:max-w-[13rem]'
-              : 'mx-auto grid max-w-md grid-cols-2 gap-3 sm:max-w-lg'
+              : 'mx-auto flex max-w-3xl justify-center gap-3'
           }
         >
           {categories.map((cat, index) => (
@@ -36,7 +36,7 @@ export function CategoryPhotos({
               key={cat.slug}
               href={catalogHref({ category: cat.slug })}
               prefetch={false}
-              className="overflow-hidden rounded-2xl border border-border/60"
+              className="min-w-0 flex-1 overflow-hidden rounded-2xl border border-border/60"
             >
               <div className="relative aspect-square overflow-hidden bg-secondary">
                 {cat.image ? (
@@ -45,7 +45,7 @@ export function CategoryPhotos({
                     alt={cat.name}
                     fill
                     priority={index < 2}
-                    sizes="(max-width: 640px) 40vw, 200px"
+                    sizes="(max-width: 640px) 30vw, 240px"
                     className="object-cover"
                   />
                 ) : null}
@@ -65,7 +65,7 @@ export function CategoryPhotos({
 
   return (
     <div className="mb-10 overflow-hidden rounded-[1.75rem] border border-border/60 bg-card">
-      <div className="relative aspect-[21/9] overflow-hidden bg-secondary md:aspect-[3/1]">
+      <div className="relative h-40 w-full overflow-hidden bg-secondary sm:h-48 md:h-56">
         {storeCategory.image ? (
           <Image
             src={storeCategory.image}

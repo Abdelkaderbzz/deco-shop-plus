@@ -23,7 +23,7 @@ export function CategoriesSection({ categories }: { categories: StoreCategory[] 
           className={
             categories.length === 1
               ? 'mx-auto max-w-[11rem] sm:max-w-[13rem]'
-              : 'mx-auto grid max-w-md grid-cols-2 gap-3 sm:max-w-lg sm:gap-4'
+              : 'mx-auto flex max-w-3xl justify-center gap-3 sm:gap-4'
           }
         >
           {categories.map((category) => (
