@@ -18,6 +18,12 @@ export const STORE_CATEGORIES: StoreCategory[] = [
     tagline: 'Housses et sacs pour ranger, proteger et transporter',
     image: '/categories/rangement.webp',
   },
+  {
+    slug: 'protection',
+    name: 'Protection',
+    tagline: 'Boudins de porte et protege-matelas pour la maison',
+    image: '/categories/protection-covers.webp',
+  },
 ]
 
 /** @deprecated Prefer getHeroImages() from app/actions/hero — kept for showcase gallery refs. */

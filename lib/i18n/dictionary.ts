@@ -139,10 +139,15 @@ const fr = {
       name: 'Rangement',
       tagline: 'Housses et sacs pour ranger, proteger et transporter',
     },
+    protection: {
+      name: 'Protection',
+      tagline: 'Boudins de porte et protege-matelas pour la maison',
+    },
   } as {
     all: string
     coussins: { name: string; tagline: string }
     rangement: { name: string; tagline: string }
+    protection: { name: string; tagline: string }
     [slug: string]: string | { name: string; tagline: string }
   },
   catalog: {
@@ -425,10 +430,15 @@ const ar = {
       name: 'تخزين',
       tagline: 'أغطية وأكياس للترتيب والحماية والنقل',
     },
+    protection: {
+      name: 'حماية',
+      tagline: 'سدّادات الأبواب وأغطية المراتب للدار',
+    },
   } as {
     all: string
     coussins: { name: string; tagline: string }
     rangement: { name: string; tagline: string }
+    protection: { name: string; tagline: string }
     [slug: string]: string | { name: string; tagline: string }
   },
   catalog: {

@@ -117,11 +117,14 @@ const statements = [
    ON CONFLICT ("id") DO NOTHING`,
   `INSERT INTO "categories" ("name", "slug") VALUES
     ('Coussins', 'coussins'),
-    ('Rangement', 'rangement')
+    ('Rangement', 'rangement'),
+    ('Protection', 'protection')
    ON CONFLICT ("slug") DO NOTHING`,
   `DELETE FROM "categories" WHERE "slug" IN ('parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous', 'femme', 'homme', 'textiles', 'accessoires')`,
   `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "images" text NOT NULL DEFAULT '[]'`,
   `ALTER TABLE "categories" ADD COLUMN IF NOT EXISTS "bannerUrl" text`,
+  `UPDATE "categories" SET "bannerUrl" = '/categories/protection-covers.webp', "updatedAt" = now()
+   WHERE "slug" = 'protection' AND ("bannerUrl" IS NULL OR "bannerUrl" = '' OR "bannerUrl" = '/categories/protection.webp')`,
   `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "published" boolean NOT NULL DEFAULT true`,
   `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "compareAtPrice" numeric(10, 3)`,
   `ALTER TABLE "products" ADD COLUMN IF NOT EXISTS "relatedProductIds" text NOT NULL DEFAULT '[]'`,

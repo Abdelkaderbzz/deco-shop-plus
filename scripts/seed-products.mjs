@@ -35,7 +35,7 @@ function slugify(value) {
 const CATEGORIES = [
   { name: 'Coussins', slug: 'coussins', bannerUrl: '/categories/coussins.webp' },
   { name: 'Rangement', slug: 'rangement', bannerUrl: '/categories/rangement.webp' },
-  { name: 'Protection', slug: 'protection', bannerUrl: '/categories/protection.webp' },
+  { name: 'Protection', slug: 'protection', bannerUrl: '/categories/protection-covers.webp' },
 ]
 
 const OLD_CATEGORY_SLUGS = ['femme', 'homme', 'parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous', 'textiles', 'accessoires']

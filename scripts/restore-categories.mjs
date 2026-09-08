@@ -12,8 +12,9 @@ if (!DATABASE_URL) {
 }
 
 const RESTORE_CATEGORIES = [
-  { name: 'Coussins', slug: 'coussins' },
-  { name: 'Rangement', slug: 'rangement' },
+  { name: 'Coussins', slug: 'coussins', bannerUrl: '/categories/coussins.webp' },
+  { name: 'Rangement', slug: 'rangement', bannerUrl: '/categories/rangement.webp' },
+  { name: 'Protection', slug: 'protection', bannerUrl: '/categories/protection-covers.webp' },
 ]
 
 const REMOVE_SLUGS = ['parfums', 'maquillage', 'sacs', 'soins', 'unisex', 'tous', 'femme', 'homme', 'textiles', 'accessoires']
@@ -23,9 +24,13 @@ const pool = new Pool({ connectionString: DATABASE_URL })
 try {
   for (const category of RESTORE_CATEGORIES) {
     await pool.query(
-      `INSERT INTO "categories" ("name", "slug") VALUES ($1, $2)
-       ON CONFLICT ("slug") DO UPDATE SET "name" = EXCLUDED."name", "updatedAt" = now()`,
-      [category.name, category.slug],
+      `INSERT INTO "categories" ("name", "slug", "bannerUrl", "createdAt", "updatedAt")
+       VALUES ($1, $2, $3, now(), now())
+       ON CONFLICT ("slug") DO UPDATE SET
+         "name" = EXCLUDED."name",
+         "bannerUrl" = COALESCE(EXCLUDED."bannerUrl", "categories"."bannerUrl"),
+         "updatedAt" = now()`,
+      [category.name, category.slug, category.bannerUrl ?? null],
     )
     console.log(`✓ Ensured category "${category.name}" (${category.slug})`)
   }
