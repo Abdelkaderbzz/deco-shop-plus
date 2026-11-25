@@ -32,7 +32,8 @@ const MAINTENANCE_HTML = `<!doctype html>
 </html>`
 
 function isMaintenanceMode() {
-  return process.env.MAINTENANCE_MODE === '1'
+  // On by default. Set MAINTENANCE_MODE=0 to bring the site back online.
+  return process.env.MAINTENANCE_MODE !== '0'
 }
 
 export function proxy(request: NextRequest) {
