@@ -31,9 +31,16 @@ const MAINTENANCE_HTML = `<!doctype html>
 </body>
 </html>`
 
-function isMaintenanceMode() {
+// Only the public production domains show the maintenance page.
+// Other hosts (deco-shop-plus.vercel.app, previews, localhost) keep working
+// normally so the site can still be checked while it is in maintenance.
+const MAINTENANCE_HOSTS = new Set(['decoshopplus.com', 'www.decoshopplus.com'])
+
+function isMaintenanceMode(request: NextRequest) {
   // On by default. Set MAINTENANCE_MODE=0 to bring the site back online.
-  return process.env.MAINTENANCE_MODE !== '0'
+  if (process.env.MAINTENANCE_MODE === '0') return false
+  const host = (request.headers.get('host') ?? '').split(':')[0].toLowerCase()
+  return MAINTENANCE_HOSTS.has(host)
 }
 
 export function proxy(request: NextRequest) {
@@ -42,7 +49,7 @@ export function proxy(request: NextRequest) {
     pathname.startsWith('/admin') ||
     pathname.startsWith('/api/auth')
 
-  if (isMaintenanceMode() && !isAdmin) {
+  if (isMaintenanceMode(request) && !isAdmin) {
     return new NextResponse(MAINTENANCE_HTML, {
       status: 503,
       headers: {
